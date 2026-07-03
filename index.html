@@ -1229,6 +1229,12 @@ Object.assign(I18N.es, {
   roundsS:{r32:"16avos", r16:"Octavos", qf:"Cuartos", sf:"Semis", tp:"3° puesto", f:"FINAL"},
   confB:"confirmado", confT:"Clasificación confirmada", pendB:"⏳ tentativo",
   rulesT:"Reglamento del Mundial", rulesSub:"Las reglas del torneo, en resumen y en criollo.",
+  seedStart:"⏳ Cargando el Mundial real hasta hoy…",
+  pubBtn:"Publicar mis fichas para todos",
+  pubDone:n=>"✅ "+n+" fichas publicadas: ahora todos las reciben",
+  pubNone:"No hay fichas con datos para publicar.",
+  pubNeedLogin:"Iniciá sesión para publicar tus fichas.",
+  pubNoTable:"falta la tabla shared_fichas: corré shared-fichas.sql en Supabase.",
   updNet:"el navegador no pudo conectarse con football-data.org (red o bloqueo del navegador). Probá desde otra red o avisale a Capymura 😉",
   updProxy:"falta el relay: creá la función fd-proxy en Supabase (Edge Functions → Deploy a new function → Via Editor) con el código de fd-proxy.ts.",
   updJwt:"Supabase bloqueó el relay: en la función, apagá \"Verify JWT with legacy secret\" y tocá Save changes.",
@@ -1277,6 +1283,12 @@ Object.assign(I18N.en, {
   roundsS:{r32:"R32", r16:"R16", qf:"QF", sf:"SF", tp:"3rd place", f:"FINAL"},
   confB:"confirmed", confT:"Qualification confirmed", pendB:"⏳ pending",
   rulesT:"World Cup rulebook", rulesSub:"The tournament rules, in plain words.",
+  seedStart:"⏳ Loading the real World Cup so far…",
+  pubBtn:"Publish my match data for everyone",
+  pubDone:n=>"✅ "+n+" fichas published — everyone gets them now",
+  pubNone:"No match data to publish yet.",
+  pubNeedLogin:"Sign in to publish your match data.",
+  pubNoTable:"missing shared_fichas table: run shared-fichas.sql in Supabase.",
   updNet:"the browser could not reach football-data.org (network or browser blocking). Try another network or tell Capymura 😉",
   updProxy:"relay missing: create the fd-proxy function in Supabase (Edge Functions → Deploy a new function → Via Editor) with the fd-proxy.ts code.",
   updJwt:"Supabase blocked the relay: in the function, turn OFF \"Verify JWT with legacy secret\" and hit Save changes.",
@@ -1392,6 +1404,12 @@ I18N.fr = Object.assign({}, I18N.en, {
   fichaTbd:"⏳ Les buteurs et les cartons se débloquent quand les deux équipes sont connues : terminez les groupes, choisissez le troisième, ou touchez ⟳ Résultats pour récupérer les affiches officielles.",
   confB:"confirmé", confT:"Qualification confirmée", pendB:"⏳ provisoire",
   rulesT:"Règlement de la Coupe du Monde", rulesSub:"Les règles du tournoi, en clair.",
+  seedStart:"⏳ Chargement de la vraie Coupe du Monde…",
+  pubBtn:"Publier mes fiches pour tous",
+  pubDone:n=>"✅ "+n+" fiches publiées — tout le monde les reçoit",
+  pubNone:"Aucune fiche à publier.",
+  pubNeedLogin:"Connectez-vous pour publier vos fiches.",
+  pubNoTable:"table shared_fichas manquante : exécutez shared-fichas.sql dans Supabase.",
   updNet:"le navigateur n’a pas pu joindre football-data.org (réseau ou blocage du navigateur).",
   updProxy:"relais manquant : créez la fonction fd-proxy dans Supabase (Edge Functions → Via Editor) avec le code de fd-proxy.ts.",
   updJwt:"Supabase a bloqué le relais : désactivez \"Verify JWT with legacy secret\" dans la fonction puis enregistrez.",
@@ -1506,6 +1524,12 @@ I18N.ja = Object.assign({}, I18N.en, {
   fichaTbd:"⏳ 両チームが確定すると得点者とカードを入力できます：グループを完了する、3位を選ぶ、または ⟳ 結果 で公式の対戦カードを取得してください。",
   confB:"確定", confT:"進出確定", pendB:"⏳ 暫定",
   rulesT:"ワールドカップ ルールブック", rulesSub:"大会ルールをわかりやすくまとめました。",
+  seedStart:"⏳ 実際のワールドカップを読み込み中…",
+  pubBtn:"自分の試合データをみんなに公開",
+  pubDone:n=>"✅ "+n+"件を公開しました — 全員に反映されます",
+  pubNone:"公開できるデータがありません。",
+  pubNeedLogin:"公開するにはログインしてください。",
+  pubNoTable:"shared_fichasテーブルがありません：shared-fichas.sql を実行してください。",
   updNet:"ブラウザがfootball-data.orgに接続できませんでした（ネットワークまたはブラウザのブロック）。",
   updProxy:"リレー未作成：Supabaseで fd-proxy 関数を作成してください（Edge Functions → Via Editor、fd-proxy.ts のコードを使用）。",
   updJwt:"Supabaseがリレーをブロックしました：関数の \"Verify JWT with legacy secret\" をオフにして保存してください。",
@@ -3554,7 +3578,7 @@ setInterval(()=>{
 
 const KEY_CFG = "mundial2026-cfg";
 function loadCfg(){
-  const d = {url:"", anon:"", fd:"", last:"", auto:false, sess:null};
+  const d = {url:"", anon:"", fd:"", last:"", auto:true, seeded:false, sess:null};
   try{ return Object.assign(d, JSON.parse(localStorage.getItem(KEY_CFG)||"{}")); }
   catch(e){ return d; }
 }
@@ -3705,6 +3729,45 @@ async function pullState(){
   }catch(e){ setSyncUi("err"); }
 }
 
+/* ---- fichas compartidas: tus goles y tarjetas curadas, como semilla para todos ---- */
+function fichaEmpty(f){
+  if(!f) return true;
+  const has = v => v !== undefined && v !== null && v !== "" && v !== 0;
+  return !(has(f.sc0) || has(f.sc1) || has(f.y0) || has(f.y1) || has(f.r0) || has(f.r1));
+}
+async function publishFichas(){
+  const l = L();
+  if(!(cfg.sess && cfg.sess.rt && (await ensureSession()))){ toast(l.pubNeedLogin); return; }
+  const now = new Date().toISOString();
+  const rows = Object.keys(state.f).filter(k=>!fichaEmpty(state.f[k]))
+    .map(k=>({ k, f: state.f[k], updated_at: now }));
+  if(!rows.length){ toast(l.pubNone); return; }
+  try{
+    const h = sbHeaders(true);
+    h["Authorization"] = "Bearer " + cfg.sess.at;
+    const r = await fetch(sbUrl()+"/rest/v1/shared_fichas", { method:"POST", headers:h, body: JSON.stringify(rows) });
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    toast(l.pubDone(rows.length));
+  }catch(e){
+    console.error("publishFichas:", e);
+    alert(l.updErr + (String(e.message||"").includes("404") ? l.pubNoTable : (e.message || l.updNet)));
+  }
+}
+async function pullSharedFichas(){
+  if(!relayReady()) return 0;
+  try{
+    const r = await fetch(sbUrl()+"/rest/v1/shared_fichas?select=k,f", { headers: sbHeaders(false) });
+    if(!r.ok) return 0;
+    const rows = await r.json();
+    let n = 0;
+    rows.forEach(row=>{
+      if(fichaEmpty(state.f[row.k]) && !fichaEmpty(row.f)){ state.f[row.k] = row.f; n++; }
+    });
+    if(n){ save(); renderAll(); }
+    return n;
+  }catch(e){ return 0; }
+}
+
 function openSyncPop(){
   const l = L();
   let html = '<div class="pop-head"><span class="pop-flag">☁️</span><div>' +
@@ -3722,7 +3785,7 @@ function openSyncPop(){
     '<label class="syncchk"><input type="checkbox" id="sy-auto"'+(cfg.auto?" checked":"")+'> '+l.syncAuto+'</label>' +
     '<div class="syncbtns">' +
     (syncOn()
-      ? '<button class="btn" id="sy-save">'+l.syncSave2+'</button><button class="btn danger" id="sy-out">'+l.syncLogout+'</button>'
+      ? '<button class="btn" id="sy-save">'+l.syncSave2+'</button><button class="btn" id="sy-pub">'+l.pubBtn+'</button><button class="btn danger" id="sy-out">'+l.syncLogout+'</button>'
       : '<button class="btn" id="sy-send">'+l.syncSend+'</button>') +
     '</div><p class="syncnote">'+l.syncNote2+'</p></div>';
   $("#pop-body").innerHTML = html;
@@ -3752,6 +3815,8 @@ function openSyncPop(){
   });
   const sv = $("#sy-save");
   if(sv) sv.addEventListener("click", ()=>{ grabFields(); closeTeamPop(); setSyncUi(syncUiState); });
+  const pub = $("#sy-pub");
+  if(pub) pub.addEventListener("click", ()=>{ publishFichas(); });
   const out = $("#sy-out");
   if(out) out.addEventListener("click", ()=>{ clearSession(); setSyncUi("off"); closeTeamPop(); });
 }
@@ -3942,6 +4007,7 @@ async function autoUpdate(silent){
     if(nScores || nThirds) toast(l.updDone(nScores, nThirds));
     else if(!silent) alert(l.updNone);
     setTimeout(()=>sweepDetails(!silent), 1500);  /* fichas oficiales en segundo plano */
+    setTimeout(()=>pullSharedFichas(), 900);      /* y las fichas compartidas de la comunidad */
   }catch(e){
     console.error("autoUpdate:", e);
     if(!silent){
@@ -4137,13 +4203,31 @@ function allGroupsDone(){
   for(const g in GROUPS){ if(!groupStandings(g).complete) return false; }
   return true;
 }
+function tournamentEmpty(){
+  return Object.keys(state.g).length === 0 && Object.keys(state.k).length === 0;
+}
+async function firstRunSeed(){
+  if(cfg.seeded) return;
+  if(!tournamentEmpty()){ cfg.seeded = true; saveCfg(); return; }  /* ya tiene datos (nube o manual) */
+  if(!fdOn()) return;
+  toast(L().seedStart);
+  await autoUpdate(true);            /* trae el torneo real; el sweep sigue solo */
+  if(!tournamentEmpty()){            /* sólo marcamos si de verdad entró: si falló la red, reintenta la próxima */
+    cfg.seeded = true; saveCfg();
+    if(allGroupsDone()) setTab("elim");
+  }
+}
 const justLoggedIn = handleAuthHash();
 if(allGroupsDone()) setTab("elim");
 renderAll();
 setSyncUi(syncOn() ? "ok" : "off");
 if(justLoggedIn) toast(L().syncWelcome + (cfg.sess && cfg.sess.email ? " " + cfg.sess.email : ""));
-if(syncOn()) pullState();
-maybeAutoUpdate();
+(async () => {
+  if(syncOn()) await pullState();    /* la nube primero: si ya hay datos, no sembramos */
+  await firstRunSeed();
+  maybeAutoUpdate();
+  pullSharedFichas();                /* tarjetas y goles compartidos: rellena sólo lo vacío */
+})();
 </script>
 </body>
 </html>
