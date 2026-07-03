@@ -841,15 +841,41 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
 .ftbd{font-size:.74rem;color:var(--muted);line-height:1.5;padding:2px 0}
 .synclogged{font-size:.82rem;color:var(--chalk,#eef4f9);padding:2px 0}
 .synclogged b{color:var(--celeste)}
+.lang-switch{overflow:visible !important;border:none !important;background:transparent !important}
+#lang-btn{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);
+  border-radius:10px;padding:7px 10px;cursor:pointer;font:inherit;font-size:1rem;line-height:1;color:var(--chalk,#eef4f9)}
+#lang-btn:hover{border-color:var(--celeste)}
+#lang-btn:focus-visible{outline:2px solid var(--celeste);outline-offset:2px}
+#lang-btn .caret{font-size:.55rem;opacity:.7;transform:translateY(1px)}
+#lang-menu{position:absolute;top:calc(100% + 6px);right:0;min-width:172px;background:var(--panel);
+  border:1px solid var(--line);border-radius:12px;padding:6px;z-index:80;box-shadow:0 12px 32px rgba(0,0,0,.4)}
+#lang-menu button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;
+  color:var(--chalk,#eef4f9);font:inherit;font-size:.78rem;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;padding:9px 10px;border-radius:8px;cursor:pointer;text-align:left}
+#lang-menu button:hover{background:rgba(124,192,232,.14)}
+#lang-menu button .lf{font-size:1rem}
+#lang-menu button .ck{margin-left:auto;color:var(--ok,#6fcf8e);visibility:hidden}
+#lang-menu button.sel .ck{visibility:visible}
+.standings tr.champ-row td{background:linear-gradient(90deg, rgba(228,181,74,.18), transparent)}
+.projname{opacity:.6;font-style:italic}
+.slotb{display:inline-block;font-size:.55rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  border-radius:6px;padding:1px 5px;margin-left:5px;vertical-align:2px;white-space:nowrap}
+.slotb.ok{color:var(--ok,#6fcf8e);border:1px solid var(--ok,#6fcf8e);opacity:.85}
+.slotb.pend{color:var(--gold);border:1px solid var(--gold);opacity:.9}
 </style>
 </head>
 <body>
 
 <header>
   <div class="head-inner">
-    <div class="lang-switch" role="group" aria-label="Language">
-      <button id="lang-en" data-lang="en">EN</button>
-      <button id="lang-es" data-lang="es">ES</button>
+    <div class="lang-switch">
+      <button id="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language / Idioma"><span id="lang-flag">🇦🇷</span><span class="caret">▾</span></button>
+      <div id="lang-menu" role="listbox" hidden>
+        <button data-lang="es" role="option"><span class="lf">🇦🇷</span><span>Español</span><b class="ck">✓</b></button>
+        <button data-lang="en" role="option"><span class="lf">🇬🇧</span><span>English</span><b class="ck">✓</b></button>
+        <button data-lang="fr" role="option"><span class="lf">🇫🇷</span><span>Français</span><b class="ck">✓</b></button>
+        <button data-lang="ja" role="option"><span class="lf">🇯🇵</span><span>日本語</span><b class="ck">✓</b></button>
+      </div>
     </div>
     <div class="kicker" id="t-kicker"></div>
     <div class="hstars">⭐⭐⭐</div>
@@ -1146,7 +1172,9 @@ Object.assign(I18N.es, {
   syncLogout:"Cerrar sesión",
   syncSave2:"Guardar",
   syncWelcome:"✅ Sesión iniciada:",
-  syncNote2:"🔒 Con cuentas, tus datos sólo los ve y edita tu correo: la anon key puede ser pública tranquilamente (así funciona Supabase). Cada dispositivo inicia sesión una vez con su propio link. Todo se guarda también en este dispositivo, así que sin conexión seguís igual."
+  syncNote2:"🔒 Con cuentas, tus datos sólo los ve y edita tu correo: la anon key puede ser pública tranquilamente (así funciona Supabase). Cada dispositivo inicia sesión una vez con su propio link. Todo se guarda también en este dispositivo, así que sin conexión seguís igual.",
+  roundsS:{r32:"16avos", r16:"Octavos", qf:"Cuartos", sf:"Semis", tp:"3° puesto", f:"FINAL"},
+  confB:"confirmado", confT:"Clasificación confirmada", pendB:"⏳ tentativo"
 });
 Object.assign(I18N.en, {
   syncBtn:"Sync",
@@ -1180,7 +1208,214 @@ Object.assign(I18N.en, {
   syncLogout:"Sign out",
   syncSave2:"Save",
   syncWelcome:"✅ Signed in:",
-  syncNote2:"🔒 With accounts, only your email can see and edit your data — the anon key can safely be public (that's how Supabase works). Each device signs in once with its own link. Everything is also saved on this device, so offline keeps working."
+  syncNote2:"🔒 With accounts, only your email can see and edit your data — the anon key can safely be public (that's how Supabase works). Each device signs in once with its own link. Everything is also saved on this device, so offline keeps working.",
+  roundsS:{r32:"R32", r16:"R16", qf:"QF", sf:"SF", tp:"3rd place", f:"FINAL"},
+  confB:"confirmed", confT:"Qualification confirmed", pendB:"⏳ pending"
+});
+
+I18N.fr = Object.assign({}, I18N.en, {
+  kicker:"États-Unis · Mexique · Canada — du 11 juin au 19 juillet",
+  title:"Coupe du Monde 2026", title2:"/ suivi des résultats",
+  sub:"Saisissez les buts de chaque match. Les classements, les qualifiés et le tableau final <b>se construisent tout seuls</b>. Touchez <b>📋 détails</b> sur n’importe quel match pour noter buteurs, cartons jaunes et rouges.",
+  prog:"sur 104 matchs saisis",
+  theme:{toLight:"☀️ Céleste", toDark:"🌙 Sombre"},
+  lang:"Français", pdf:"🖨 Exporter en PDF", reset:"Tout effacer",
+  tab1:"Phase de groupes", tab2:"Phase finale", tab3:"Statistiques", tab4:"La Scaloneta",
+  kohelp:"Les affiches se remplissent automatiquement avec les <b>deux premiers</b> de chaque groupe terminé et les vainqueurs de chaque rencontre. En cas de <b>match nul</b>, choisissez qui passe aux tirs au but. Les places des <b>meilleurs troisièmes</b> se choisissent à la main (la FIFA les attribue selon une table de combinaisons) : servez-vous du tableau des troisièmes.",
+  leg1:"Qualifié direct (1er et 2e)", leg2:"Troisième — peut être parmi les 8 meilleurs", leg3:"Parcours du vainqueur",
+  hint:"← Faites défiler pour voir tout le tableau →",
+  group:"Groupe", complete:"✓ terminé", hs:"", teamCol:"Équipe",
+  th:["MJ","Diff","BP","Pts"],
+  thirdsT:"Meilleurs troisièmes",
+  thirdsP:"Les 8 premiers de ce tableau complètent les 16es de finale. Il se classe tout seul à mesure que les groupes se terminent.",
+  thirdsEmpty:"Aucun groupe terminé pour l’instant.",
+  rounds:{r32:"16es de finale", r16:"8es de finale", qf:"Quarts de finale", sf:"Demi-finales", tp:"3e place", f:"Finale"},
+  roundsS:{r32:"16es", r16:"8es", qf:"Quarts", sf:"Demies", tp:"3e place", f:"FINALE"},
+  champ:"Champion", champTbd:"Décidé le 19 juillet",
+  pickThird:"Choisissez le troisième…", sug:"Suggérés (groupes ", oth:"Autres troisièmes",
+  pen:"Égalité — qui passe aux tirs au but ?",
+  pos:(p,g)=>(p===1?"1er":"2e")+" Groupe "+g, third:gs=>"3e de "+gs.join("/"), win:m=>"Vainqueur du "+m, lose:m=>"Perdant du "+m,
+  wd:{sun:"Dim",mon:"Lun",tue:"Mar",wed:"Mer",thu:"Jeu",fri:"Ven",sat:"Sam"},
+  ficha:"📋 détails",
+  fGoles:"⚽ Buteurs", fGolesPh:"Mbappé x2, Griezmann…",
+  fFig:"⭐ Homme du match", fFigPh:"Nom du joueur",
+  fStars:"Grand match",
+  statsLeaders:"Leaders du tournoi",
+  lAtk:"⚽ Meilleure attaque", lDef:"🧱 Meilleure défense", lConc:"🥅 Plus de buts encaissés",
+  lYel:"🟨 Plus de cartons jaunes", lRed:"🟥 Plus de cartons rouges", lFp:"😇 Meilleur fair-play",
+  statsTeams:"Statistiques par équipe",
+  statsTeamsSub:"Touchez une colonne pour trier. Fair-play : 🟨 −1 · 🟥 −4 (critère FIFA simplifié). En groupes, il départage après points, différence et buts.",
+  sTh:{team:"Équipe",pj:"MJ",gf:"BP",gc:"BC",dg:"Diff",y:"🟨",r:"🟥",fp:"FP"},
+  noStats:"Pas encore de données : saisissez des résultats et des détails.",
+  boot:"Soulier d’Or — Buteurs",
+  bootSub:"Construit à partir des buteurs saisis dans les détails.",
+  bTh:{p:"Joueur",t:"Équipe",g:"Buts"},
+  awardsT:"Trophées du tournoi",
+  awardsSub:"Notez les vainqueurs à la fin de la Coupe du Monde.",
+  aw:{botin:"Soulier d’Or (meilleur buteur)", balon:"Ballon d’Or (meilleur joueur)", guante:"Gant d’Or (meilleur gardien)", joven:"Meilleur jeune joueur", fairplay:"Prix du Fair-play (équipe)"},
+  awSug:"Suggestion : ", awPh:"Écrivez le nom…",
+  argNext:"Prochain match", argPlaying:"Jour de match ! Saisissez le résultat à la fin.",
+  argDone:"Parcours terminé.", argChamp:"CHAMPIONS DU MONDE !! 🏆",
+  argDays:"j", argHs:"h", argMin:"m", argVs:"vs",
+  argRecord:[["MJ","pj"],["V","w"],["N","d"],["D","l"],["BP","gf"],["BC","gc"],["🟨","y"],["🟥","r"]],
+  caminoT:"Le parcours",
+  caminoSub:"Phase de groupes + la route qui s’ouvre dans le tableau.",
+  pendiente:"à déterminer",
+  routesPre:"Parcours possibles en phase finale :",
+  route1:"<b>Comme 1er du groupe J :</b> match 86 (ven 03/07, Miami) → 8es #95 (Atlanta) → quart #100 (Kansas City) → demi #102 (Atlanta) → FINALE (dim 19/07, New Jersey).",
+  route2:"<b>Comme 2e du groupe J :</b> match 84 (jeu 02/07, Los Angeles) → 8es #93 (Dallas) → quart #98 (Los Angeles) → demi #101 (Dallas) → FINALE (dim 19/07, New Jersey).",
+  squadT:"L’effectif",
+  squadSub:"Les 26 de Scaloni. Buts et distinctions s’additionnent depuis vos détails.",
+  qTh:{p:"Joueur",pos:"Poste",g:"⚽",f:"⭐ HdM"},
+  posNames:{GK:"Gardien",DF:"Défenseur",MF:"Milieu",FW:"Attaquant"},
+  footer:"Coupe du Monde 2026 · 48 équipes · 104 matchs · horaires en heure locale.",
+  confirmReset:"Effacer tous les résultats saisis ? Cette action est irréversible.",
+  wdl:["V","N","D"],
+  thForm:"Forme",
+  thg:["MJ","V","N","D","BP","BC","Diff","Pts"],
+  scAdd:"+ Ajouter un buteur…",
+  mvpNone:"— choisir l’homme du match —",
+  chipHint:"Touchez : +1 · Appui long : −1",
+  lbAtk:"⚽ Attaque", lbAtkN:"meilleure attaque",
+  lbDef:"🧱 Défense", lbDefN:"moins de buts encaissés · min. 2 MJ",
+  lbDis:"🟨🟥 Discipline", lbDisN:"plus de cartons cumulés",
+  fullTable:"Tableau complet par équipe",
+  koList:"Par tour", koBoard:"Tableau",
+  fit:"⤢ Ajuster à la largeur", fit100:"🔍 Taille réelle",
+  credit:"Design de Capymura",
+  collapseAll:"⊟ Tout replier", expandAll:"⊞ Tout déplier",
+  injT:"🚑 Infirmerie", injSub:"Forfaits — joueurs retirés de la Coupe du Monde.",
+  injAdd:"+ Déclarer un forfait…", injPh:"Motif / date (facultatif)", injNone:"Aucun forfait dans l’effectif 🙌",
+  todayT:"⚽ Au programme aujourd’hui", todayNone:"Pas de match aujourd’hui",
+  ft:"Terminé", ftTip:"Cochez à la fin du match — les feux d’artifice attendent le coup de sifflet final",
+  argScor:"Buteurs · Argentine", argScorNone:"Pas encore de buts — ça va venir 🇦🇷", qualTip:"Qualifié pour la phase finale", thG:"V",
+  posPl:{GK:"Gardiens",DF:"Défenseurs",MF:"Milieux",FW:"Attaquants"},
+  popRes:"Résultats",
+  popEmpty:"Aucun résultat saisi pour cette équipe.",
+  badFile:"Ce fichier n’est pas une sauvegarde valide.",
+  fileName:"coupe-du-monde-2026.json",
+  syncBtn:"Sync", syncT:"Synchronisation cloud",
+  syncSub2:"Connectez-vous avec votre e-mail : vous recevez un lien magique et votre tournoi est enregistré sur votre compte, sur tous vos appareils.",
+  syncEmail:"Votre e-mail", syncSend:"M’envoyer le lien de connexion",
+  syncSent:"📬 Vérifiez votre boîte mail et touchez le lien (pensez aux spams).",
+  syncNeedMail:"Saisissez un e-mail valide.", syncNeedCfg:"URL et anon key Supabase manquantes.",
+  syncLogged:"Connecté en tant que", syncLogout:"Se déconnecter", syncSave2:"Enregistrer", syncWelcome:"✅ Connecté :",
+  syncNote2:"🔒 Avec les comptes, vos données ne sont visibles et modifiables que par votre e-mail : l’anon key peut être publique sans risque (c’est le principe de Supabase). Chaque appareil se connecte une fois avec son propre lien. Tout est aussi enregistré sur cet appareil : hors ligne, tout continue de fonctionner.",
+  syncOpt:"facultatif — pour le bouton ⟳ Résultats", syncFdPh:"clé gratuite de football-data.org",
+  syncAuto:"Récupérer automatiquement les résultats officiels à l’ouverture",
+  updBtn:"⟳ Résultats",
+  updNoKey:"Clé football-data.org manquante — ajoutez-la ci-dessous.",
+  updBadKey:"Clé refusée par football-data.org. Vérifiez-la dans ☁.",
+  updRate:"Trop de requêtes — attendez une minute et réessayez.",
+  updDone:(n,t)=>"✅ "+n+" résultat"+(n>1?"s":"")+" officiel"+(n>1?"s":"")+" chargé"+(n>1?"s":"")+(t?" · "+t+" troisième"+(t>1?"s":"")+" attribué"+(t>1?"s":""):""),
+  updNone:"Tout est à jour : aucun nouveau résultat.",
+  updErr:"Mise à jour impossible : ",
+  scAddTxt:"Buteur… (ex : Mbappé x2)", scAddBtn:"ajouter un buteur",
+  mvpAuto:"auto : ",
+  fichaTbd:"⏳ Les buteurs et les cartons se débloquent quand les deux équipes sont connues : terminez les groupes, choisissez le troisième, ou touchez ⟳ Résultats pour récupérer les affiches officielles.",
+  confB:"confirmé", confT:"Qualification confirmée", pendB:"⏳ provisoire"
+});
+I18N.ja = Object.assign({}, I18N.en, {
+  kicker:"アメリカ · メキシコ · カナダ — 6月11日〜7月19日",
+  title:"ワールドカップ2026", title2:"/ 結果トラッカー",
+  sub:"各試合のゴール数を入力するだけ。順位表・勝ち抜け・決勝トーナメント表は<b>自動で完成</b>します。どの試合でも<b>📋 詳細</b>をタップして得点者やイエロー・レッドカードを記録できます。",
+  prog:"/ 104試合 入力済み",
+  theme:{toLight:"☀️ ライト", toDark:"🌙 ダーク"},
+  lang:"日本語", pdf:"🖨 PDF出力", reset:"すべて消去",
+  tab1:"グループステージ", tab2:"決勝トーナメント", tab3:"スタッツ", tab4:"ラ・スカロネタ",
+  kohelp:"各グループが終了すると<b>1位・2位</b>と各試合の勝者で対戦カードが自動的に埋まります。<b>引き分け</b>の場合はPK戦の勝者を選んでください。<b>ベスト3位</b>の枠は手動で選びます（FIFAは組み合わせ表で決定）：3位チームの表を参考にしてください。",
+  leg1:"直接進出（1位・2位）", leg2:"3位 — ベスト8枠に入る可能性", leg3:"勝者のルート",
+  hint:"← 横にスクロールして全体を表示 →",
+  group:"グループ", complete:"✓ 終了", hs:"", teamCol:"チーム",
+  th:["試","差","得","勝点"],
+  thirdsT:"ベスト3位チーム",
+  thirdsP:"この表の上位8チームがラウンド32に進みます。グループ終了に合わせて自動で並び替わります。",
+  thirdsEmpty:"終了したグループはまだありません。",
+  rounds:{r32:"ラウンド32", r16:"ラウンド16", qf:"準々決勝", sf:"準決勝", tp:"3位決定戦", f:"決勝"},
+  roundsS:{r32:"R32", r16:"R16", qf:"準々決勝", sf:"準決勝", tp:"3位決定", f:"決勝"},
+  champ:"優勝", champTbd:"7月19日に決定",
+  pickThird:"3位チームを選択…", sug:"推奨（グループ ", oth:"その他の3位",
+  pen:"引き分け — PK戦の勝者は？",
+  pos:(p,g)=>"グループ"+g+" "+p+"位", third:gs=>gs.join("/")+" の3位", win:m=>"試合"+m+"の勝者", lose:m=>"試合"+m+"の敗者",
+  wd:{sun:"日",mon:"月",tue:"火",wed:"水",thu:"木",fri:"金",sat:"土"},
+  ficha:"📋 詳細",
+  fGoles:"⚽ 得点者", fGolesPh:"三笘 x2, 久保…",
+  fFig:"⭐ マン・オブ・ザ・マッチ", fFigPh:"選手名",
+  fStars:"好ゲーム",
+  statsLeaders:"大会リーダー",
+  lAtk:"⚽ 最多得点", lDef:"🧱 最少失点", lConc:"🥅 最多失点",
+  lYel:"🟨 最多イエロー", lRed:"🟥 最多レッド", lFp:"😇 ベストフェアプレー",
+  statsTeams:"チーム別スタッツ",
+  statsTeamsSub:"列をタップで並び替え。フェアプレー：🟨 −1 · 🟥 −4（FIFA簡易基準）。グループでは勝点・得失点差・得点の後の順位決定に使われます。",
+  sTh:{team:"チーム",pj:"試",gf:"得",gc:"失",dg:"差",y:"🟨",r:"🟥",fp:"FP"},
+  noStats:"まだデータがありません。結果と詳細を入力してください。",
+  boot:"ゴールデンブーツ — 得点ランキング",
+  bootSub:"詳細に記録した得点者から自動集計されます。",
+  bTh:{p:"選手",t:"チーム",g:"得点"},
+  awardsT:"大会アワード",
+  awardsSub:"大会終了後に受賞者を記録しましょう。",
+  aw:{botin:"ゴールデンブーツ（得点王）", balon:"ゴールデンボール（最優秀選手）", guante:"ゴールデングローブ（最優秀GK）", joven:"最優秀若手選手", fairplay:"フェアプレー賞（チーム）"},
+  awSug:"候補： ", awPh:"名前を入力…",
+  argNext:"次の試合", argPlaying:"試合当日！終了後に結果を入力してください。",
+  argDone:"大会終了。", argChamp:"世界チャンピオン!! 🏆",
+  argDays:"日", argHs:"時間", argMin:"分", argVs:"vs",
+  argRecord:[["試","pj"],["勝","w"],["分","d"],["敗","l"],["得","gf"],["失","gc"],["🟨","y"],["🟥","r"]],
+  caminoT:"道のり",
+  caminoSub:"グループステージ + トーナメントで開けていくルート。",
+  pendiente:"未定",
+  routesPre:"決勝トーナメントの想定ルート：",
+  route1:"<b>グループJ 1位の場合：</b>試合86（7/3 金・マイアミ）→ R16 #95（アトランタ）→ 準々決勝 #100（カンザスシティ）→ 準決勝 #102（アトランタ）→ 決勝（7/19 日・ニュージャージー）。",
+  route2:"<b>グループJ 2位の場合：</b>試合84（7/2 木・ロサンゼルス）→ R16 #93（ダラス）→ 準々決勝 #98（ロサンゼルス）→ 準決勝 #101（ダラス）→ 決勝（7/19 日・ニュージャージー）。",
+  squadT:"メンバー",
+  squadSub:"スカローニの26人。得点とMOMは詳細から自動集計されます。",
+  qTh:{p:"選手",pos:"ポジション",g:"⚽",f:"⭐ MOM"},
+  posNames:{GK:"GK",DF:"DF",MF:"MF",FW:"FW"},
+  footer:"ワールドカップ2026 · 48チーム · 104試合 · キックオフは端末の現地時間で表示。",
+  confirmReset:"入力したすべての結果を消去しますか？この操作は取り消せません。",
+  wdl:["勝","分","敗"],
+  thForm:"直近",
+  thg:["試","勝","分","敗","得","失","差","勝点"],
+  scAdd:"+ 得点者を追加…",
+  mvpNone:"— MOMを選択 —",
+  chipHint:"タップ：+1 · 長押し：−1",
+  lbAtk:"⚽ 攻撃", lbAtkN:"最多得点",
+  lbDef:"🧱 守備", lbDefN:"最少失点 · 2試合以上",
+  lbDis:"🟨🟥 規律", lbDisN:"累計カード最多",
+  fullTable:"チーム別フルテーブル",
+  koList:"ラウンド別", koBoard:"トーナメント表",
+  fit:"⤢ 幅に合わせる", fit100:"🔍 実寸表示",
+  credit:"デザイン：Capymura",
+  collapseAll:"⊟ すべて折りたたむ", expandAll:"⊞ すべて展開",
+  injT:"🚑 負傷者情報", injSub:"離脱者 — ワールドカップから外れた選手。",
+  injAdd:"+ 離脱を登録…", injPh:"理由／日付（任意）", injNone:"離脱者なし 🙌",
+  todayT:"⚽ 本日の試合", todayNone:"本日は試合がありません",
+  ft:"試合終了", ftTip:"試合が終わったらチェック — 花火は終了のホイッスルを待ちます",
+  argScor:"得点者 · アルゼンチン", argScorNone:"まだゴールなし — これからです 🇦🇷", qualTip:"決勝トーナメント進出", thG:"勝",
+  posPl:{GK:"GK",DF:"DF",MF:"MF",FW:"FW"},
+  popRes:"試合結果",
+  popEmpty:"このチームの結果はまだ入力されていません。",
+  badFile:"有効なバックアップファイルではありません。",
+  fileName:"worldcup-2026.json",
+  syncBtn:"同期", syncT:"クラウド同期",
+  syncSub2:"メールでログイン：マジックリンクが届き、トーナメントがアカウントに保存され、すべての端末で使えます。",
+  syncEmail:"メールアドレス", syncSend:"ログインリンクを送信",
+  syncSent:"📬 メールを確認してリンクをタップしてください（迷惑メールも確認）。",
+  syncNeedMail:"有効なメールアドレスを入力してください。", syncNeedCfg:"SupabaseのURLとanonキーが未設定です。",
+  syncLogged:"ログイン中：", syncLogout:"ログアウト", syncSave2:"保存", syncWelcome:"✅ ログインしました：",
+  syncNote2:"🔒 アカウント制では、データを見たり編集できるのはあなたのメールだけです。anonキーは公開されても安全（それがSupabaseの仕組み）。各端末は自分宛てのリンクで一度だけログインします。データはこの端末にも保存されるので、オフラインでもそのまま使えます。",
+  syncOpt:"任意 — ⟳ 結果ボタン用", syncFdPh:"football-data.org の無料キー",
+  syncAuto:"アプリを開いたとき公式結果を自動取得",
+  updBtn:"⟳ 結果",
+  updNoKey:"football-data.orgのキーがありません — 下で追加してください。",
+  updBadKey:"football-data.orgがキーを拒否しました。☁で確認してください。",
+  updRate:"リクエストが多すぎます — 1分待って再試行してください。",
+  updDone:(n,t)=>"✅ 公式結果 "+n+"件を取得"+(t?" · 3位枠 "+t+"件を設定":""),
+  updNone:"最新の状態です。新しい結果はありません。",
+  updErr:"更新できませんでした：",
+  scAddTxt:"得点者…（例：Mbappé x2）", scAddBtn:"得点者を追加",
+  mvpAuto:"自動： ",
+  fichaTbd:"⏳ 両チームが確定すると得点者とカードを入力できます：グループを完了する、3位を選ぶ、または ⟳ 結果 で公式の対戦カードを取得してください。",
+  confB:"確定", confT:"進出確定", pendB:"⏳ 暫定"
 });
 
 const CAPY_ICON = "data:image/jpeg;base64,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";
@@ -1217,8 +1452,12 @@ const T = {
   POR:["Portugal","Portugal","🇵🇹"], COL:["Colombia","Colombia","🇨🇴"], UZB:["Uzbekistán","Uzbekistan","🇺🇿"], COD:["RD Congo","DR Congo","🇨🇩"],
   ENG:["Inglaterra","England","🏴󠁧󠁢󠁥󠁮󠁧󠁿"], CRO:["Croacia","Croatia","🇭🇷"], GHA:["Ghana","Ghana","🇬🇭"], PAN:["Panamá","Panama","🇵🇦"]
 };
-function tname(c){ return T[c] ? T[c][2] + " " + T[c][LANG==="es"?0:1] : "—"; }
-function tshort(c){ return T[c] ? T[c][LANG==="es"?0:1] : "—"; }
+function tlocal(c){
+  const x = T_L[LANG];
+  return (x && x[c]) || T[c][LANG==="es"?0:1];
+}
+function tname(c){ return T[c] ? T[c][2] + " " + tlocal(c) : "—"; }
+function tshort(c){ return T[c] ? tlocal(c) : "—"; }
 /* bandera clickeable + nombre — tocá la bandera para ver totales y resultados */
 function tlabel(c){
   if(!T[c]) return "—";
@@ -1244,7 +1483,37 @@ const VEN = {
   "Los Ángeles":["Los Ángeles","Los Angeles"],
   "Filadelfia":["Filadelfia","Philadelphia"]
 };
-function ven(v){ return VEN[v] ? VEN[v][LANG==="es"?0:1] : v; }
+function ven(v){
+  const x = VEN_L[LANG];
+  if(x && x[v]) return x[v];
+  return VEN[v] ? VEN[v][LANG==="es"?0:1] : v;
+}
+
+/* nombres de selecciones en FR y JA (fallback: inglés) */
+const T_L = {
+  es:null, en:null,
+  fr:{MEX:"Mexique",RSA:"Afrique du Sud",KOR:"Corée du Sud",CZE:"Tchéquie",CAN:"Canada",BIH:"Bosnie-Herz.",QAT:"Qatar",SUI:"Suisse",
+    BRA:"Brésil",MAR:"Maroc",SCO:"Écosse",HAI:"Haïti",USA:"États-Unis",PAR:"Paraguay",AUS:"Australie",TUR:"Turquie",
+    GER:"Allemagne",CUW:"Curaçao",CIV:"Côte d’Ivoire",ECU:"Équateur",NED:"Pays-Bas",JPN:"Japon",SWE:"Suède",TUN:"Tunisie",
+    BEL:"Belgique",IRN:"Iran",EGY:"Égypte",NZL:"Nouvelle-Zélande",ESP:"Espagne",URU:"Uruguay",KSA:"Arabie saoudite",CPV:"Cap-Vert",
+    FRA:"France",SEN:"Sénégal",NOR:"Norvège",IRQ:"Irak",ARG:"Argentine",ALG:"Algérie",AUT:"Autriche",JOR:"Jordanie",
+    POR:"Portugal",COL:"Colombie",UZB:"Ouzbékistan",COD:"RD Congo",ENG:"Angleterre",CRO:"Croatie",GHA:"Ghana",PAN:"Panama"},
+  ja:{MEX:"メキシコ",RSA:"南アフリカ",KOR:"韓国",CZE:"チェコ",CAN:"カナダ",BIH:"ボスニアH",QAT:"カタール",SUI:"スイス",
+    BRA:"ブラジル",MAR:"モロッコ",SCO:"スコットランド",HAI:"ハイチ",USA:"アメリカ",PAR:"パラグアイ",AUS:"オーストラリア",TUR:"トルコ",
+    GER:"ドイツ",CUW:"キュラソー",CIV:"コートジボワール",ECU:"エクアドル",NED:"オランダ",JPN:"日本",SWE:"スウェーデン",TUN:"チュニジア",
+    BEL:"ベルギー",IRN:"イラン",EGY:"エジプト",NZL:"ニュージーランド",ESP:"スペイン",URU:"ウルグアイ",KSA:"サウジアラビア",CPV:"カーボベルデ",
+    FRA:"フランス",SEN:"セネガル",NOR:"ノルウェー",IRQ:"イラク",ARG:"アルゼンチン",ALG:"アルジェリア",AUT:"オーストリア",JOR:"ヨルダン",
+    POR:"ポルトガル",COL:"コロンビア",UZB:"ウズベキスタン",COD:"コンゴDR",ENG:"イングランド",CRO:"クロアチア",GHA:"ガーナ",PAN:"パナマ"}
+};
+/* sedes: FR usa las formas inglesas; JA en katakana */
+const VEN_L = {
+  es:null, en:null,
+  fr:{"Cdad. de México":"Mexico","Nueva Jersey":"New Jersey","Los Ángeles":"Los Angeles","Filadelfia":"Philadelphie"},
+  ja:{"Cdad. de México":"メキシコシティ","Guadalajara":"グアダラハラ","Atlanta":"アトランタ","Monterrey":"モンテレイ",
+    "Boston":"ボストン","Nueva Jersey":"ニュージャージー","Houston":"ヒューストン","Dallas":"ダラス",
+    "San Francisco":"サンフランシスコ","Seattle":"シアトル","Toronto":"トロント","Los Ángeles":"ロサンゼルス",
+    "Vancouver":"バンクーバー","Miami":"マイアミ","Kansas City":"カンザスシティ","Filadelfia":"フィラデルフィア"}
+};
 
 const GROUPS = {
   A:["MEX","RSA","KOR","CZE"], B:["CAN","BIH","QAT","SUI"], C:["BRA","MAR","SCO","HAI"],
@@ -1409,7 +1678,7 @@ function save(){
   schedulePush();  /* sync en la nube (si está conectado) */
 }
 let state = load();
-let LANG = (state.lang==="en") ? "en" : "es";
+let LANG = ["en","fr","ja"].indexOf(state.lang)>=0 ? state.lang : "es";
 const L = () => I18N[LANG];
 const openFichas = new Set();
 let statsSort = {key:"gf", dir:-1};
@@ -1502,10 +1771,13 @@ function koTeams(m){
   function slot(s){
     if(s.t==="pos"){
       const st = groupStandings(s.g);
-      return { code: st.complete ? st.list[s.p-1].c : null, label: L().pos(s.p, s.g) };
+      if(st.complete) return { code: st.list[s.p-1].c, conf: true, label: L().pos(s.p, s.g) };
+      /* grupo sin terminar: mostramos al que hoy ocupa ese puesto, como tentativo */
+      const anyPlayed = st.list.some(r=>r.pj>0);
+      return { code: null, proj: anyPlayed ? st.list[s.p-1].c : null, label: L().pos(s.p, s.g) };
     }
     if(s.t==="third"){
-      return { code: state.third[m.id] || null, label: L().third(s.gs) };
+      return { code: state.third[m.id] || null, conf: !!state.third[m.id], label: L().third(s.gs) };
     }
     const prev = KO_BY_ID[s.m];
     const w = koWinner(prev);
@@ -1674,7 +1946,7 @@ function artDate(d, h){
 /* hora local del dispositivo — cada visitante ve los horarios en su zona */
 function locParts(d, h){
   const dt = artDate(d, h);
-  const loc = LANG==="es" ? "es-AR" : "en-GB";
+  const loc = {es:"es-AR", en:"en-GB", fr:"fr-FR", ja:"ja-JP"}[LANG] || "en-GB";
   const ds = new Intl.DateTimeFormat(loc, {day:"numeric", month:"numeric"}).format(dt);
   const hs = new Intl.DateTimeFormat(loc, {hour:"2-digit", minute:"2-digit", hour12:false}).format(dt);
   let wd = new Intl.DateTimeFormat(loc, {weekday:"short"}).format(dt).replace(".","");
@@ -1690,9 +1962,7 @@ function argMatchList(){
     out.push({key:"g:"+i, idx:i, tag:(L().group)+" J", home:m[4], away:m[5],
       hs:s?val(s[0]):null, as:s?val(s[1]):null, d:m[1], h:m[2], v:m[3], date:artDate(m[1],m[2])});
   });
-  const labels = LANG==="es"
-    ? {r32:"16avos", r16:"Octavos", qf:"Cuartos", sf:"Semis", tp:"3° puesto", f:"FINAL"}
-    : {r32:"R32", r16:"R16", qf:"QF", sf:"SF", tp:"3rd place", f:"FINAL"};
+  const labels = L().roundsS;
   KO.forEach(m=>{
     const t = koTeams(m);
     if(t.a.code!=="ARG" && t.b.code!=="ARG") return;
@@ -1721,8 +1991,9 @@ function renderChrome(){
   $("#t-sub").innerHTML = l.sub;
   $("#t-prog").textContent = l.prog;
   $("#btn-theme").textContent = (state.theme==="light") ? l.theme.toDark : l.theme.toLight;
-  $("#lang-en").classList.toggle("on", LANG==="en");
-  $("#lang-es").classList.toggle("on", LANG==="es");
+  const LANG_FLAGS = {es:"🇦🇷", en:"🇬🇧", fr:"🇫🇷", ja:"🇯🇵"};
+  const lf = $("#lang-flag"); if(lf) lf.textContent = LANG_FLAGS[LANG] || "🌐";
+  document.querySelectorAll("#lang-menu button").forEach(x=> x.classList.toggle("sel", x.dataset.lang===LANG));
   $("#btn-reset").textContent = l.reset;
   $("#t-tab1").textContent = l.tab1;
   $("#t-tab2").textContent = l.tab2;
@@ -1875,12 +2146,13 @@ function groupTableHTML(g){
   const pickedThirds = new Set(Object.values(state.third||{}));
   st.list.forEach((r,idx)=>{
     let cls = st.complete ? (idx<2 ? "q1" : idx===2 ? "q3" : "") : "";
+    if(st.complete && idx===0) cls += " champ-row";
     if(r.c==="ARG") cls += " arg-row";
     const qual = st.complete && (idx<2 || (idx===2 && pickedThirds.has(r.c)));
     const dots = r.form.map(f=>'<span class="fdot '+f.r+'" title="'+esc(f.s+" vs "+tshort(f.o))+'"></span>').join("");
     html += '<tr class="'+cls+'">' +
       '<td class="num">'+(idx+1)+'</td>' +
-      '<td class="team">'+tlabel(r.c)+(r.c==="ARG"?" ⭐⭐⭐":"")+(qual?' <span class="qbadge" title="'+l.qualTip+'">✔</span>':'')+'</td>' +
+      '<td class="team">'+(st.complete && idx===0 ? '👑 ' : '')+tlabel(r.c)+(r.c==="ARG"?" ⭐⭐⭐":"")+(qual?' <span class="qbadge" title="'+l.qualTip+'">✔</span>':'')+'</td>' +
       '<td>'+r.pj+'</td><td>'+r.pg+'</td><td>'+r.pe+'</td><td>'+r.pp+'</td>' +
       '<td>'+r.gf+'</td><td>'+r.gc+'</td><td>'+(r.dg>0?"+":"")+r.dg+'</td>' +
       '<td class="pts">'+r.pts+'</td><td class="form">'+dots+'</td></tr>';
@@ -1901,7 +2173,7 @@ function renderGroups(){
     if(coll){
       const anyPlayed = st.list.some(r=>r.pj>0);
       mini = '<span class="gmini">' +
-        st.list.map((r,i)=>'<span class="gflag'+(i===0 && anyPlayed ?' lead':'')+'" title="'+esc(tshort(r.c))+(i===0&&anyPlayed?' · '+r.pts+' pts':'')+'">'+T[r.c][2]+'</span>').join("") +
+        st.list.map((r,i)=>'<span class="gflag'+(i===0 && anyPlayed ?' lead':'')+'" title="'+esc(tshort(r.c))+(i===0&&anyPlayed?' · '+r.pts+' pts':'')+'">'+(i===0&&st.complete?'👑':'')+T[r.c][2]+'</span>').join("") +
         (st.complete ? ' <span class="gdone">✓</span>' : '') +
       '</span>';
     }
@@ -1977,12 +2249,23 @@ function koCard(m, opts){
   let html = '<div class="kcard'+(opts&&opts.final?" final-card":"")+(w?" live-gold":"")+'" data-mid="'+m.id+'">' +
     '<div class="knum"><span><b>'+m.id+'</b> · '+(lp=>lp.wd+' '+lp.d+' · '+lp.h+l.hs)(locParts(m.d,m.h))+'</span><span>'+(isArgMatch?ftChip(key,m.d,m.h,val(s[0])!==null&&val(s[1])!==null):"")+fichaBtn(key)+'</span></div>' +
     '<div class="kvenue">'+esc(ven(m.v))+'</div>';
+  const noScore = val(s[0])===null && val(s[1])===null;
   [["a",0],["b",1]].forEach(([side,idx])=>{
     const slot = t[side];
     let cls = "";
     if(w && slot.code){ cls = (w.win===slot.code) ? " winner" : " loser"; }
+    let inner, badge = "";
+    if(slot.code){
+      inner = tlabel(slot.code);
+      if(slot.conf && noScore) badge = ' <span class="slotb ok" title="'+l.confT+'">✓ '+l.confB+'</span>';
+    } else if(slot.proj){
+      inner = '<span class="projname" title="'+esc(slot.label)+'">'+tlabel(slot.proj)+'</span>';
+      badge = ' <span class="slotb pend">'+l.pendB+'</span>';
+    } else {
+      inner = esc(slot.label);
+    }
     html += '<div class="kteam'+cls+'">' +
-      '<span class="tname'+(slot.code?"":" tbd")+'">'+(slot.code ? tlabel(slot.code) : esc(slot.label))+'</span>' +
+      '<span class="tname'+(slot.code?"":" tbd")+'">'+inner+badge+'</span>' +
       scoreInput("k", m.id, idx, val(s[idx])) + '</div>';
   });
   if(t.a.code || t.b.code){
@@ -2970,14 +3253,28 @@ document.body.addEventListener("contextmenu", e=>{
   if(!chipLong) bumpAny(ch, -1);
 });
 
-document.querySelectorAll(".lang-switch button").forEach(b=>{
-  b.addEventListener("click", ()=>{
-    if(LANG===b.dataset.lang) return;
-    LANG = b.dataset.lang;
+function closeLangMenu(){
+  const m = $("#lang-menu");
+  if(m && !m.hidden){ m.hidden = true; $("#lang-btn").setAttribute("aria-expanded","false"); }
+}
+$("#lang-btn").addEventListener("click", e=>{
+  e.stopPropagation();
+  const m = $("#lang-menu");
+  m.hidden = !m.hidden;
+  $("#lang-btn").setAttribute("aria-expanded", String(!m.hidden));
+});
+document.querySelectorAll("#lang-menu button").forEach(x=>{
+  x.addEventListener("click", e=>{
+    e.stopPropagation();
+    closeLangMenu();
+    if(LANG === x.dataset.lang) return;
+    LANG = x.dataset.lang;
     state.lang = LANG;
     save(); renderAll();
   });
 });
+document.addEventListener("click", e=>{ if(!e.target.closest(".lang-switch")) closeLangMenu(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeLangMenu(); });
 
 /* panel de equipo: cerrar */
 $("#pop-x").addEventListener("click", closeTeamPop);
@@ -3183,7 +3480,7 @@ async function pullState(){
       const row = rows[0];
       if(row.updated_at !== cfg.last && row.state){
         state = Object.assign(defaultState(), row.state);
-        LANG = (state.lang==="en") ? "en" : "es";
+        LANG = ["en","fr","ja"].indexOf(state.lang)>=0 ? state.lang : "es";
         memState = state;
         try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
         cfg.last = row.updated_at; saveCfg();
@@ -3391,7 +3688,12 @@ function maybeAutoUpdate(){
 document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible"){ pullState(); maybeAutoUpdate(); } });
 setInterval(()=>{ if(document.visibilityState==="visible") pullState(); }, 90000);
 
+function allGroupsDone(){
+  for(const g in GROUPS){ if(!groupStandings(g).complete) return false; }
+  return true;
+}
 const justLoggedIn = handleAuthHash();
+if(allGroupsDone()) setTab("elim");
 renderAll();
 setSyncUi(syncOn() ? "ok" : "off");
 if(justLoggedIn) toast(L().syncWelcome + (cfg.sess && cfg.sess.email ? " " + cfg.sess.email : ""));
