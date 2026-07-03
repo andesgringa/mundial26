@@ -873,9 +873,9 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
 <header>
   <div class="head-inner">
     <div class="lang-switch">
-      <button id="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language / Idioma"><span id="lang-flag">🇲🇽</span><span class="caret">▾</span></button>
+      <button id="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language / Idioma"><span id="lang-flag">🇦🇷</span><span class="caret">▾</span></button>
       <div id="lang-menu" role="listbox" hidden>
-        <button data-lang="es" role="option"><span class="lf">🇲🇽</span><span>Español</span><b class="ck">✓</b></button>
+        <button data-lang="es" role="option"><span class="lf">🇦🇷</span><span>Español</span><b class="ck">✓</b></button>
         <button data-lang="en" role="option"><span class="lf">🇺🇸</span><span>English</span><b class="ck">✓</b></button>
         <button data-lang="fr" role="option"><span class="lf">🇨🇦</span><span>Français</span><b class="ck">✓</b></button>
         <button data-lang="ja" role="option"><span class="lf">🇯🇵</span><span>日本語</span><b class="ck">✓</b></button>
@@ -2039,7 +2039,7 @@ function renderChrome(){
   $("#t-sub").innerHTML = l.sub;
   $("#t-prog").textContent = l.prog;
   $("#btn-theme").textContent = (state.theme==="light") ? l.theme.toDark : l.theme.toLight;
-  const LANG_FLAGS = {es:"🇲🇽", en:"🇺🇸", fr:"🇨🇦", ja:"🇯🇵"};
+  const LANG_FLAGS = {es:"🇦🇷", en:"🇺🇸", fr:"🇨🇦", ja:"🇯🇵"};
   const lf = $("#lang-flag"); if(lf) lf.textContent = LANG_FLAGS[LANG] || "🌐";
   document.querySelectorAll("#lang-menu button").forEach(x=> x.classList.toggle("sel", x.dataset.lang===LANG));
   $("#btn-reset").textContent = l.reset;
