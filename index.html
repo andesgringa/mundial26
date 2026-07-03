@@ -721,6 +721,23 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.75rem;text
 footer .credit{display:flex;align-items:center;justify-content:center;gap:11px;margin-top:12px;font-weight:700;letter-spacing:.05em;font-size:1.05rem;color:var(--chalk)}
 footer .credit img{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);display:block}
 #fx{position:fixed;inset:0;z-index:95;pointer-events:none}
+#upd-bar{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:24px;z-index:98;
+  display:flex;align-items:center;gap:14px;max-width:calc(100vw - 32px);
+  background:var(--panel);border:1px solid var(--gold);border-radius:12px;
+  padding:10px 14px;font-size:.85rem;color:var(--chalk);
+  box-shadow:0 10px 28px rgba(0,0,0,.45);
+}
+#upd-bar button{
+  font-family:inherit;font-weight:700;font-size:.8rem;letter-spacing:.04em;
+  color:#0a1420;background:var(--gold);border:none;border-radius:8px;
+  padding:8px 14px;cursor:pointer;white-space:nowrap;min-height:36px;
+}
+#upd-bar button:hover{background:var(--gold-deep);color:#fff}
+@media screen and (max-width:720px){
+  #upd-bar{bottom:calc(84px + env(safe-area-inset-bottom))}
+  #upd-bar button{min-height:44px}
+}
 @media (max-width:540px){
   .bracket-head,.bracket-grid{grid-template-columns:212px 212px 212px 212px 244px}
   input.score{width:40px}
@@ -1050,6 +1067,7 @@ const I18N = {
     champ:"Campeón", champTbd:"Se define el 19 de julio",
     pickThird:"Elegí el tercero…", sug:"Sugeridos (grupos ", oth:"Otros terceros",
     pen:"Empate — ¿quién pasa por penales?",
+    updNewV:"🔄 Hay una versión nueva de la app", updNewBtn:"Actualizar",
     pos:(p,g)=>p+"° Grupo "+g, third:gs=>"3° de "+gs.join("/"), win:m=>"Ganador "+m, lose:m=>"Perdedor "+m,
     wd:{sun:"Dom",mon:"Lun",tue:"Mar",wed:"Mié",thu:"Jue",fri:"Vie",sat:"Sáb"},
     ficha:"📋 ficha",
@@ -1131,6 +1149,7 @@ const I18N = {
     champ:"Champion", champTbd:"Decided on July 19",
     pickThird:"Pick the third-place team…", sug:"Suggested (groups ", oth:"Other thirds",
     pen:"Draw — who wins on penalties?",
+    updNewV:"🔄 A new version of the app is available", updNewBtn:"Refresh",
     pos:(p,g)=>(p===1?"1st":"2nd")+" Group "+g, third:gs=>"3rd of "+gs.join("/"), win:m=>"Winner of "+m, lose:m=>"Loser of "+m,
     wd:{sun:"Sun",mon:"Mon",tue:"Tue",wed:"Wed",thu:"Thu",fri:"Fri",sat:"Sat"},
     ficha:"📋 details",
@@ -1328,6 +1347,7 @@ I18N.fr = Object.assign({}, I18N.en, {
   champ:"Champion", champTbd:"Décidé le 19 juillet",
   pickThird:"Choisissez le troisième…", sug:"Suggérés (groupes ", oth:"Autres troisièmes",
   pen:"Égalité — qui passe aux tirs au but ?",
+  updNewV:"🔄 Nouvelle version de l’app disponible", updNewBtn:"Mettre à jour",
   pos:(p,g)=>(p===1?"1er":"2e")+" Groupe "+g, third:gs=>"3e de "+gs.join("/"), win:m=>"Vainqueur du "+m, lose:m=>"Perdant du "+m,
   wd:{sun:"Dim",mon:"Lun",tue:"Mar",wed:"Mer",thu:"Jeu",fri:"Ven",sat:"Sam"},
   ficha:"📋 détails",
@@ -1448,6 +1468,7 @@ I18N.ja = Object.assign({}, I18N.en, {
   champ:"優勝", champTbd:"7月19日に決定",
   pickThird:"3位チームを選択…", sug:"推奨（グループ ", oth:"その他の3位",
   pen:"引き分け — PK戦の勝者は？",
+  updNewV:"🔄 新しいバージョンがあります", updNewBtn:"更新",
   pos:(p,g)=>"グループ"+g+" "+p+"位", third:gs=>gs.join("/")+" の3位", win:m=>"試合"+m+"の勝者", lose:m=>"試合"+m+"の敗者",
   wd:{sun:"日",mon:"月",tue:"火",wed:"水",thu:"木",fri:"金",sat:"土"},
   ficha:"📋 詳細",
@@ -2738,19 +2759,20 @@ function renderStats(){
   html += lbPanel(l.lbDef, l.lbDefN, def, r=>r.gc,
     r=>'<i class="def" style="width:'+((maxGc+1-r.gc)/(maxGc+1)*100).toFixed(0)+'%"></i>');
 
-  /* disciplina: barra apilada — el largo rankea (🟥 pesa x4) y los segmentos
-     se parten con el mismo peso, así el rojo ocupa lo que aporta al ranking.
-     Desempate: más rojas primero, después alfabético (orden estable). */
+  /* disciplina: manda el total de tarjetas — literal con el subtítulo.
+     La barra mide el total y los segmentos son la partición real 🟨/🟥.
+     Desempate: más rojas primero, después alfabético. El criterio FIFA
+     ponderado sigue vivo en la columna FP de la tabla completa. */
   const dis = rows.filter(r=>r.y>0 || r.r>0)
-    .sort((a,b)=> (b.y+4*b.r)-(a.y+4*a.r) || b.r-a.r || tshort(a.c).localeCompare(tshort(b.c)))
+    .sort((a,b)=> (b.y+b.r)-(a.y+a.r) || b.r-a.r || tshort(a.c).localeCompare(tshort(b.c)))
     .slice(0,10);
-  const maxPen = Math.max(1, ...dis.map(r=>r.y+4*r.r));
+  const maxCards = Math.max(1, ...dis.map(r=>r.y+r.r));
   html += lbPanel(l.lbDis, l.lbDisN, dis,
     r=>'<span>🟨 '+r.y+'</span><span>🟥 '+r.r+'</span>',
     r=>{
-      const pen = r.y + 4*r.r;
-      const w = pen/maxPen*100;
-      const yw = (r.y/pen*w).toFixed(1), rw = (4*r.r/pen*w).toFixed(1);
+      const tot = r.y + r.r;
+      const w = tot/maxCards*100;
+      const yw = (r.y/tot*w).toFixed(1), rw = (r.r/tot*w).toFixed(1);
       return '<i class="disy" style="width:'+yw+'%"></i><i class="disr" style="width:'+rw+'%"></i>';
     });
 
@@ -4320,6 +4342,40 @@ function maybeAutoUpdate(){
   autoUpdate(true);
 }
 document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible"){ pullState(); maybeAutoUpdate(); } });
+
+/* ----- versión nueva: service worker + aviso para pestañas abiertas mucho tiempo ----- */
+function showUpdateBar(){
+  if($("#upd-bar")) return;
+  const l = L();
+  const bar = document.createElement("div");
+  bar.id = "upd-bar";
+  bar.setAttribute("role","status");
+  bar.innerHTML = '<span>'+l.updNewV+'</span><button type="button">'+l.updNewBtn+'</button>';
+  bar.querySelector("button").addEventListener("click", ()=> location.reload());
+  document.body.appendChild(bar);
+}
+let bootVTag;   /* undefined = todavía no medimos; null = no se pudo (offline) */
+async function versionTag(){
+  try{
+    const r = await fetch(location.pathname, {method:"HEAD", cache:"no-cache"});
+    if(!r.ok) return null;
+    return r.headers.get("etag") || r.headers.get("last-modified") || null;
+  }catch(e){ return null; }
+}
+async function checkFresh(){
+  const tag = await versionTag();
+  if(tag===null) return;                      /* sin red o sin cabeceras: no molestamos */
+  if(bootVTag===undefined){ bootVTag = tag; return; }
+  if(tag !== bootVTag) showUpdateBar();
+}
+if("serviceWorker" in navigator && location.protocol==="https:"){
+  navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+if(location.protocol==="https:" || location.protocol==="http:"){
+  checkFresh();                                /* fija la versión de arranque */
+  setInterval(checkFresh, 30*60000);           /* y revisa cada 30 minutos */
+  document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible") checkFresh(); });
+}
 setInterval(()=>{ if(document.visibilityState==="visible") pullState(); }, 90000);
 
 function allGroupsDone(){
