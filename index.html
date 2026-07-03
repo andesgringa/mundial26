@@ -3605,10 +3605,17 @@ async function fetchFixtures(){
     if(!(sbUrl() && sbAnon())) throw e;
     const h = { "apikey": sbAnon(), "x-fd-key": fdKey() };
     if(cfg.sess && cfg.sess.rt && (await ensureSession())) h["Authorization"] = "Bearer " + cfg.sess.at;
-    /* probamos los dos nombres posibles del relay */
-    let r2 = await fetch(sbUrl()+"/functions/v1/fd-proxy", { headers: h });
-    if(r2.status===404) r2 = await fetch(sbUrl()+"/functions/v1/smart-processor", { headers: h });
-    if(r2.status===404) throw { msg: L().updProxy };
+    /* probamos los nombres posibles del relay — cada intento aislado,
+       porque un slug inexistente hace que el navegador tire error en vez de 404 */
+    async function tryRelay(name){
+      try{
+        const r = await fetch(sbUrl()+"/functions/v1/"+name, { headers: h });
+        return (r && r.status !== 404) ? r : null;
+      }catch(err){ return null; }
+    }
+    let r2 = await tryRelay("smart-processor");
+    if(!r2) r2 = await tryRelay("fd-proxy");
+    if(!r2) throw { msg: L().updProxy };
     if(r2.status===401) throw { msg: L().updJwt };
     r2.viaRelay = true;
     return r2;
