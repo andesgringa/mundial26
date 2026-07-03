@@ -433,6 +433,20 @@ input.score{
 input.score::-webkit-outer-spin-button,input.score::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 input.score:focus{border-color:var(--gold)}
 input.score::placeholder{color:var(--muted);opacity:.45;font-weight:400}
+input.pscore{
+  width:40px;height:32px;text-align:center;
+  font-family:"Saira";font-weight:700;font-size:.95rem;
+  color:var(--celeste);background:var(--inp);
+  border:1px solid var(--line);border-radius:8px;
+  -moz-appearance:textfield;appearance:textfield;
+}
+input.pscore::-webkit-outer-spin-button,input.pscore::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input.pscore:focus{border-color:var(--celeste)}
+input.pscore::placeholder{color:var(--muted);opacity:.45;font-weight:400}
+.pen-row.pscores{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:7px}
+.pen-row.pscores .pflag{font-size:.72rem;color:var(--muted);white-space:nowrap}
+.pen-row.pscores .pflag b{color:var(--chalk);letter-spacing:.03em}
+.pen-or{font-size:.68rem;color:var(--muted);margin:8px 0 2px;text-align:center}
 .dash{color:var(--muted)}
 
 /* ---------- ficha del partido ---------- */
@@ -766,6 +780,7 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
   .inj-x{min-width:44px;min-height:44px}
   .star-btn{font-size:1.3rem;padding:6px 4px}
   input.score{width:50px;height:44px}
+  input.pscore{width:46px;height:44px}
   .kteam{grid-template-columns:1fr 54px}
   .kteam input.score{height:42px}
   select.sq,select.third{min-height:44px}
@@ -1050,6 +1065,10 @@ const I18N = {
     champ:"Campeón", champTbd:"Se define el 19 de julio",
     pickThird:"Elegí el tercero…", sug:"Sugeridos (grupos ", oth:"Otros terceros",
     pen:"Empate — ¿quién pasa por penales?",
+    penScoreLb:"Resultado de la tanda",
+    penOr:"…o marcá directo quién pasó:",
+    penRes:"Penales",
+    penAria:g=>"Penales "+g,
     pos:(p,g)=>p+"° Grupo "+g, third:gs=>"3° de "+gs.join("/"), win:m=>"Ganador "+m, lose:m=>"Perdedor "+m,
     wd:{sun:"Dom",mon:"Lun",tue:"Mar",wed:"Mié",thu:"Jue",fri:"Vie",sat:"Sáb"},
     ficha:"📋 ficha",
@@ -1131,6 +1150,10 @@ const I18N = {
     champ:"Champion", champTbd:"Decided on July 19",
     pickThird:"Pick the third-place team…", sug:"Suggested (groups ", oth:"Other thirds",
     pen:"Draw — who wins on penalties?",
+    penScoreLb:"Shootout score",
+    penOr:"…or just tap who went through:",
+    penRes:"Penalties",
+    penAria:g=>"Penalties "+g,
     pos:(p,g)=>(p===1?"1st":"2nd")+" Group "+g, third:gs=>"3rd of "+gs.join("/"), win:m=>"Winner of "+m, lose:m=>"Loser of "+m,
     wd:{sun:"Sun",mon:"Mon",tue:"Tue",wed:"Wed",thu:"Thu",fri:"Fri",sat:"Sat"},
     ficha:"📋 details",
@@ -1328,6 +1351,10 @@ I18N.fr = Object.assign({}, I18N.en, {
   champ:"Champion", champTbd:"Décidé le 19 juillet",
   pickThird:"Choisissez le troisième…", sug:"Suggérés (groupes ", oth:"Autres troisièmes",
   pen:"Égalité — qui passe aux tirs au but ?",
+  penScoreLb:"Score des tirs au but",
+  penOr:"…ou touchez directement le vainqueur :",
+  penRes:"T.A.B.",
+  penAria:g=>"Tirs au but "+g,
   pos:(p,g)=>(p===1?"1er":"2e")+" Groupe "+g, third:gs=>"3e de "+gs.join("/"), win:m=>"Vainqueur du "+m, lose:m=>"Perdant du "+m,
   wd:{sun:"Dim",mon:"Lun",tue:"Mar",wed:"Mer",thu:"Jeu",fri:"Ven",sat:"Sam"},
   ficha:"📋 détails",
@@ -1448,6 +1475,10 @@ I18N.ja = Object.assign({}, I18N.en, {
   champ:"優勝", champTbd:"7月19日に決定",
   pickThird:"3位チームを選択…", sug:"推奨（グループ ", oth:"その他の3位",
   pen:"引き分け — PK戦の勝者は？",
+  penScoreLb:"PK戦のスコア",
+  penOr:"…または勝者を直接タップ：",
+  penRes:"PK戦",
+  penAria:g=>"PK戦 "+g,
   pos:(p,g)=>"グループ"+g+" "+p+"位", third:gs=>gs.join("/")+" の3位", win:m=>"試合"+m+"の勝者", lose:m=>"試合"+m+"の敗者",
   wd:{sun:"日",mon:"月",tue:"火",wed:"水",thu:"木",fri:"金",sat:"土"},
   ficha:"📋 詳細",
@@ -1890,7 +1921,7 @@ const KEY = "mundial2026-resultados";
 let memState = null;
 function defaultState(){
   const prefLight = (typeof matchMedia==="function") && matchMedia("(prefers-color-scheme: light)").matches;
-  return {g:{}, k:{}, pen:{}, third:{}, f:{}, awards:{}, inj:{}, ft:{}, fdIds:{}, fdDet:{}, lang:"es", theme: prefLight ? "light" : "dark", koview:"list"};
+  return {g:{}, k:{}, pen:{}, pens:{}, third:{}, f:{}, awards:{}, inj:{}, ft:{}, fdIds:{}, fdDet:{}, lang:"es", theme: prefLight ? "light" : "dark", koview:"list"};
 }
 function load(){
   try{
@@ -2022,6 +2053,14 @@ function koWinner(m){
   const h=val(s[0]), a=val(s[1]);
   if(h>a) return {win:t.a.code, lose:t.b.code};
   if(h<a) return {win:t.b.code, lose:t.a.code};
+  /* empate: primero el resultado de la tanda, si define; si no, la elección manual */
+  const ps = state.pens && state.pens[m.id];
+  if(ps){
+    const pa = val(ps[0]), pb = val(ps[1]);
+    if(pa!==null && pb!==null && pa!==pb){
+      return pa>pb ? {win:t.a.code, lose:t.b.code, pens:[pa,pb]} : {win:t.b.code, lose:t.a.code, pens:[pa,pb]};
+    }
+  }
   const p = state.pen[m.id];
   if(p==="a") return {win:t.a.code, lose:t.b.code};
   if(p==="b") return {win:t.b.code, lose:t.a.code};
@@ -2518,11 +2557,27 @@ function koCard(m, opts){
   if(m.b.t==="third") html += thirdOptions(m);
   if(drawNeedsPen){
     const p = state.pen[m.id];
+    const ps = (state.pens && state.pens[m.id]) || ["",""];
+    const pa = val(ps[0]), pb = val(ps[1]);
+    const decided = pa!==null && pb!==null && pa!==pb;
+    const penIn = side =>
+      '<input class="pscore" type="number" min="0" max="30" inputmode="numeric" placeholder="·" ' +
+      'aria-label="'+esc(l.penAria(tshort(side===0?t.a.code:t.b.code)))+'" ' +
+      'data-pm="'+m.id+'" data-side="'+side+'" value="'+(val(ps[side])===null?"":ps[side])+'">';
     html += '<div class="pen">'+l.pen +
-      '<div class="pen-row">' +
-      '<button class="pen-btn'+(p==="a"?" sel":"")+'" data-pen="'+m.id+'" data-side="a">'+esc(tshort(t.a.code))+'</button>' +
-      '<button class="pen-btn'+(p==="b"?" sel":"")+'" data-pen="'+m.id+'" data-side="b">'+esc(tshort(t.b.code))+'</button>' +
-      '</div></div>';
+      '<div class="pen-row pscores" aria-label="'+esc(l.penScoreLb)+'">' +
+        '<span class="pflag">'+T[t.a.code][2]+' <b>'+esc(t.a.code)+'</b></span>' +
+        penIn(0)+'<span class="dash">–</span>'+penIn(1) +
+        '<span class="pflag"><b>'+esc(t.b.code)+'</b> '+T[t.b.code][2]+'</span>' +
+      '</div>';
+    if(!decided){
+      html += '<div class="pen-or">'+l.penOr+'</div>' +
+        '<div class="pen-row">' +
+        '<button class="pen-btn'+(p==="a"?" sel":"")+'" data-pen="'+m.id+'" data-side="a">'+esc(tshort(t.a.code))+'</button>' +
+        '<button class="pen-btn'+(p==="b"?" sel":"")+'" data-pen="'+m.id+'" data-side="b">'+esc(tshort(t.b.code))+'</button>' +
+        '</div>';
+    }
+    html += '</div>';
   }
   html += fichaPanel(key, t.a.code, t.b.code);
   html += '</div>';
@@ -2947,7 +3002,10 @@ function teamSummary(code){
     else if(gf<gc) r = "l";
     else if(m.ko){
       const w = koWinner(m.ko);
-      if(w){ r = (w.win===code) ? "w" : "l"; pen = " (pen)"; }
+      if(w){
+        r = (w.win===code) ? "w" : "l";
+        pen = w.pens ? " ("+(isH ? w.pens[0]+"–"+w.pens[1] : w.pens[1]+"–"+w.pens[0])+" p)" : " (pen)";
+      }
     }
     out[r]++;
     let tag;
@@ -3276,6 +3334,8 @@ function scheduleRender(){
     if(ae && ae.classList){
       if(ae.classList.contains("score"))
         sel = 'input.score[data-kind="'+ae.dataset.kind+'"][data-key="'+ae.dataset.key+'"][data-side="'+ae.dataset.side+'"]';
+      else if(ae.classList.contains("pscore"))
+        sel = 'input.pscore[data-pm="'+ae.dataset.pm+'"][data-side="'+ae.dataset.side+'"]';
       else if(ae.dataset && ae.dataset.fk !== undefined)
         sel = '[data-fk="'+ae.dataset.fk+'"][data-ff="'+ae.dataset.ff+'"]';
       else if(ae.dataset && ae.dataset.ficha)
@@ -3333,6 +3393,19 @@ document.body.addEventListener("change", e=>{
       setFicha(key, field, scSerialize(rows));
       save(); renderAll();
     }
+    return;
+  }
+  if(el.classList.contains("pscore")){
+    const id = Number(el.dataset.pm), side = Number(el.dataset.side);
+    if(!state.pens) state.pens = {};
+    if(!state.pens[id]) state.pens[id] = ["",""];
+    let v = el.value === "" ? "" : Math.max(0, Math.min(30, Math.round(Number(el.value))));
+    state.pens[id][side] = v === "" ? "" : String(v);
+    if(state.pens[id][0]==="" && state.pens[id][1]==="") delete state.pens[id];
+    /* si la tanda define al ganador, la elección manual sobra */
+    const ps = state.pens[id];
+    if(ps && val(ps[0])!==null && val(ps[1])!==null && val(ps[0])!==val(ps[1])) delete state.pen[id];
+    save(); scheduleRender();
     return;
   }
   if(el.classList.contains("score")){
@@ -3583,10 +3656,12 @@ document.addEventListener("keydown", e=>{
     openTeamPop(e.target.dataset.team);
   }
   /* Enter en gol local → salta al visitante; en el visitante → confirma */
-  if(e.key==="Enter" && e.target.classList && e.target.classList.contains("score")){
+  if(e.key==="Enter" && e.target.classList && (e.target.classList.contains("score")||e.target.classList.contains("pscore"))){
+    const isPen = e.target.classList.contains("pscore");
     if(e.target.dataset.side==="0"){
-      const next = document.querySelector(
-        'input.score[data-kind="'+e.target.dataset.kind+'"][data-key="'+e.target.dataset.key+'"][data-side="1"]');
+      const next = isPen
+        ? document.querySelector('input.pscore[data-pm="'+e.target.dataset.pm+'"][data-side="1"]')
+        : document.querySelector('input.score[data-kind="'+e.target.dataset.kind+'"][data-key="'+e.target.dataset.key+'"][data-side="1"]');
       if(next){ e.preventDefault(); next.focus(); next.select(); }
     } else {
       e.target.blur();
@@ -3605,7 +3680,7 @@ document.addEventListener("keydown", e=>{
 
 /* seleccionar el contenido al enfocar un casillero de gol/tarjeta */
 document.body.addEventListener("focusin", e=>{
-  if(e.target.matches && e.target.matches("input.score, input.cnum")) e.target.select();
+  if(e.target.matches && e.target.matches("input.score, input.cnum, input.pscore")) e.target.select();
 });
 
 /* PDF: imprime la pestaña visible, expandiendo todo y restaurando después */
@@ -4080,7 +4155,13 @@ async function autoUpdate(silent){
       if(!cur || cur[0]!==String(H) || cur[1]!==String(A)){ state.k[id] = [String(H), String(A)]; nScores++; }
       if(H===A && am.score.winner && am.score.winner!=="DRAW"){
         const homeWins = am.score.winner==="HOME_TEAM";
-        state.pen[id] = homeWins ? (flip ? "b" : "a") : (flip ? "a" : "b");
+        const off = am.score.penalties;
+        if(off && off.home!==null && off.home!==undefined && off.away!==null && off.away!==undefined){
+          if(!state.pens) state.pens = {};
+          state.pens[id] = flip ? [String(off.away), String(off.home)] : [String(off.home), String(off.away)];
+        } else {
+          state.pen[id] = homeWins ? (flip ? "b" : "a") : (flip ? "a" : "b");
+        }
       }
       state.ft["k:"+id] = true;
     });
@@ -4129,7 +4210,13 @@ function applyDetail(key, am){
       state.k[n] = [String(H), String(A)];
       if(H===A && am.score.winner && am.score.winner!=="DRAW"){
         const homeWins = am.score.winner==="HOME_TEAM";
-        state.pen[n] = homeWins ? (flip?"b":"a") : (flip?"a":"b");
+        const off = am.score.penalties;
+        if(off && off.home!==null && off.home!==undefined && off.away!==null && off.away!==undefined){
+          if(!state.pens) state.pens = {};
+          state.pens[n] = flip ? [String(off.away), String(off.home)] : [String(off.home), String(off.away)];
+        } else {
+          state.pen[n] = homeWins ? (flip?"b":"a") : (flip?"a":"b");
+        }
       }
     }
     if(am.status==="FINISHED") state.ft[key] = true;
