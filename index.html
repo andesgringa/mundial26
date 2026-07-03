@@ -845,9 +845,15 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
 .ftbd{font-size:.74rem;color:var(--muted);line-height:1.5;padding:2px 0}
 .synclogged{font-size:.82rem;color:var(--chalk,#eef4f9);padding:2px 0}
 .synclogged b{color:var(--celeste)}
-.lang-switch{overflow:visible !important;border:none !important;background:transparent !important}
+.lang-switch{overflow:visible !important;border:none !important;background:transparent !important;
+  display:flex;align-items:center;gap:8px}
+.lang-switch .btn.theme{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:0 12px;font:inherit;font-size:.78rem;font-weight:700;letter-spacing:.03em;
+  color:var(--chalk,#eef4f9);cursor:pointer;line-height:1;height:36px;display:inline-flex;align-items:center}
+.lang-switch .btn.theme:hover{border-color:var(--celeste)}
+@media (max-width:520px){ .lang-switch .btn.theme{font-size:.7rem;padding:7px 9px} }
 #lang-btn{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);
-  border-radius:10px;padding:7px 10px;cursor:pointer;font:inherit;font-size:1rem;line-height:1;color:var(--chalk,#eef4f9)}
+  border-radius:10px;padding:0 10px;height:36px;cursor:pointer;font:inherit;font-size:1rem;line-height:1;color:var(--chalk,#eef4f9)}
 #lang-btn:hover{border-color:var(--celeste)}
 #lang-btn:focus-visible{outline:2px solid var(--celeste);outline-offset:2px}
 #lang-btn .caret{font-size:.55rem;opacity:.7;transform:translateY(1px)}
@@ -866,6 +872,15 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
   border-radius:6px;padding:1px 5px;margin-left:5px;vertical-align:2px;white-space:nowrap}
 .slotb.ok{color:var(--ok,#6fcf8e);border:1px solid var(--ok,#6fcf8e);opacity:.85}
 .slotb.pend{color:var(--gold);border:1px solid var(--gold);opacity:.9}
+.rules{margin-top:12px;font-size:.9rem;line-height:1.6;max-width:720px}
+.rules-card{padding:20px 22px 26px}
+.rules-card h2{margin:0 0 4px}
+.rules-sub{margin:0 0 6px;color:var(--muted);font-size:.82rem}
+@media (max-width:520px){ .tab{font-size:.66rem;padding:10px 4px;letter-spacing:.03em} }
+.rules .rsec{margin-bottom:14px}
+.rules .rsec b{display:block;color:var(--gold);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px}
+.rules .rsec p{margin:0;color:var(--chalk,#eef4f9)}
+.rules .rnote{font-size:.7rem;color:var(--muted);margin-top:10px}
 </style>
 </head>
 <body>
@@ -873,6 +888,7 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
 <header>
   <div class="head-inner">
     <div class="lang-switch">
+      <button class="btn theme" id="btn-theme"></button>
       <button id="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language / Idioma"><span id="lang-flag">🇦🇷</span><span class="caret">▾</span></button>
       <div id="lang-menu" role="listbox" hidden>
         <button data-lang="es" role="option"><span class="lf">🇦🇷</span><span>Español</span><b class="ck">✓</b></button>
@@ -891,15 +907,15 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
       <div class="toolbar">
         <button class="btn" id="btn-update"></button>
         <button class="btn" id="btn-sync"></button>
-        <button class="btn theme" id="btn-theme"></button>
         <button class="btn danger" id="btn-reset"></button>
       </div>
     </div>
     <nav class="tabs" role="tablist">
+      <button class="tab arg" data-tab="arg" role="tab" id="t-tab4"></button>
       <button class="tab active" data-tab="grupos" role="tab" id="t-tab1"></button>
       <button class="tab" data-tab="elim" role="tab" id="t-tab2"></button>
       <button class="tab" data-tab="stats" role="tab" id="t-tab3"></button>
-      <button class="tab arg" data-tab="arg" role="tab" id="t-tab4"></button>
+      <button class="tab" data-tab="rules" role="tab" id="t-tab5"></button>
     </nav>
     <div class="today" id="today-strip" hidden></div>
   </div>
@@ -944,6 +960,14 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
     <div class="stats-wrap" id="stats-wrap"></div>
   </section>
 
+  <section id="view-rules" hidden>
+    <div class="card rules-card">
+      <h2 id="rules-title"></h2>
+      <p class="rules-sub" id="rules-sub"></p>
+      <div class="rules" id="rules-body"></div>
+    </div>
+  </section>
+
   <section id="view-arg" hidden>
     <div class="arg-wrap" id="arg-wrap"></div>
   </section>
@@ -983,7 +1007,7 @@ const I18N = {
     prog:"de 104 partidos cargados",
     theme:{toLight:"☀️ Celeste", toDark:"🌙 Oscuro"},
     lang:"English", pdf:"🖨 Exportar PDF", reset:"Borrar todo",
-    tab1:"Fase de grupos", tab2:"Eliminatorias", tab3:"Estadísticas", tab4:"La Scaloneta",
+    tab1:"Grupos", tab2:"Eliminatorias", tab3:"Stats", tab4:"Scaloneta", tab5:"Reglas",
     kohelp:"Los cruces se completan automáticamente con los <b>1° y 2°</b> de cada grupo terminado y con los ganadores de cada llave. Si un partido termina <b>empatado</b>, elegí quién pasa por penales. Los lugares de <b>mejores terceros</b> se eligen a mano (FIFA los define con una tabla de combinaciones): usá la tabla de terceros como guía.",
     leg1:"Clasifica directo (1° y 2°)", leg2:"Tercero — puede entrar entre los 8 mejores", leg3:"Camino del ganador",
     hint:"← Desplazá para ver el cuadro completo →",
@@ -1064,7 +1088,7 @@ const I18N = {
     prog:"of 104 matches entered",
     theme:{toLight:"☀️ Celeste", toDark:"🌙 Dark"},
     lang:"Español", pdf:"🖨 Export PDF", reset:"Reset all",
-    tab1:"Group stage", tab2:"Eliminations", tab3:"Stats", tab4:"La Scaloneta",
+    tab1:"Groups", tab2:"Knockouts", tab3:"Stats", tab4:"Scaloneta", tab5:"Rules",
     kohelp:"Matchups fill in automatically with the <b>top two</b> of each finished group and the winners of each tie. If a match ends in a <b>draw</b>, pick who goes through on penalties. The <b>best third-place</b> slots are picked by hand (FIFA assigns them with a combination table): use the thirds table as a guide.",
     leg1:"Qualifies directly (1st & 2nd)", leg2:"Third place — can be among the best 8", leg3:"Winner's path",
     hint:"← Scroll to see the full bracket →",
@@ -1179,6 +1203,7 @@ Object.assign(I18N.es, {
   syncNote2:"🔒 Con cuentas, tus datos sólo los ve y edita tu correo: la anon key puede ser pública tranquilamente (así funciona Supabase). Cada dispositivo inicia sesión una vez con su propio link. Todo se guarda también en este dispositivo, así que sin conexión seguís igual.",
   roundsS:{r32:"16avos", r16:"Octavos", qf:"Cuartos", sf:"Semis", tp:"3° puesto", f:"FINAL"},
   confB:"confirmado", confT:"Clasificación confirmada", pendB:"⏳ tentativo",
+  rulesT:"Reglamento del Mundial", rulesSub:"Las reglas del torneo, en resumen y en criollo.",
   updNet:"el navegador no pudo conectarse con football-data.org (red o bloqueo del navegador). Probá desde otra red o avisale a Capymura 😉",
   updProxy:"falta el relay: creá la función fd-proxy en Supabase (Edge Functions → Deploy a new function → Via Editor) con el código de fd-proxy.ts.",
   updJwt:"Supabase bloqueó el relay: en la función, apagá \"Verify JWT with legacy secret\" y tocá Save changes.",
@@ -1226,6 +1251,7 @@ Object.assign(I18N.en, {
   syncNote2:"🔒 With accounts, only your email can see and edit your data — the anon key can safely be public (that's how Supabase works). Each device signs in once with its own link. Everything is also saved on this device, so offline keeps working.",
   roundsS:{r32:"R32", r16:"R16", qf:"QF", sf:"SF", tp:"3rd place", f:"FINAL"},
   confB:"confirmed", confT:"Qualification confirmed", pendB:"⏳ pending",
+  rulesT:"World Cup rulebook", rulesSub:"The tournament rules, in plain words.",
   updNet:"the browser could not reach football-data.org (network or browser blocking). Try another network or tell Capymura 😉",
   updProxy:"relay missing: create the fd-proxy function in Supabase (Edge Functions → Deploy a new function → Via Editor) with the fd-proxy.ts code.",
   updJwt:"Supabase blocked the relay: in the function, turn OFF \"Verify JWT with legacy secret\" and hit Save changes.",
@@ -1246,7 +1272,7 @@ I18N.fr = Object.assign({}, I18N.en, {
   prog:"sur 104 matchs saisis",
   theme:{toLight:"☀️ Céleste", toDark:"🌙 Sombre"},
   lang:"Français", pdf:"🖨 Exporter en PDF", reset:"Tout effacer",
-  tab1:"Phase de groupes", tab2:"Phase finale", tab3:"Statistiques", tab4:"La Scaloneta",
+  tab1:"Groupes", tab2:"Tableau", tab3:"Stats", tab4:"Scaloneta", tab5:"Règles",
   kohelp:"Les affiches se remplissent automatiquement avec les <b>deux premiers</b> de chaque groupe terminé et les vainqueurs de chaque rencontre. En cas de <b>match nul</b>, choisissez qui passe aux tirs au but. Les places des <b>meilleurs troisièmes</b> se choisissent à la main (la FIFA les attribue selon une table de combinaisons) : servez-vous du tableau des troisièmes.",
   leg1:"Qualifié direct (1er et 2e)", leg2:"Troisième — peut être parmi les 8 meilleurs", leg3:"Parcours du vainqueur",
   hint:"← Faites défiler pour voir tout le tableau →",
@@ -1340,6 +1366,7 @@ I18N.fr = Object.assign({}, I18N.en, {
   mvpAuto:"auto : ",
   fichaTbd:"⏳ Les buteurs et les cartons se débloquent quand les deux équipes sont connues : terminez les groupes, choisissez le troisième, ou touchez ⟳ Résultats pour récupérer les affiches officielles.",
   confB:"confirmé", confT:"Qualification confirmée", pendB:"⏳ provisoire",
+  rulesT:"Règlement de la Coupe du Monde", rulesSub:"Les règles du tournoi, en clair.",
   updNet:"le navigateur n’a pas pu joindre football-data.org (réseau ou blocage du navigateur).",
   updProxy:"relais manquant : créez la fonction fd-proxy dans Supabase (Edge Functions → Via Editor) avec le code de fd-proxy.ts.",
   updJwt:"Supabase a bloqué le relais : désactivez \"Verify JWT with legacy secret\" dans la fonction puis enregistrez.",
@@ -1359,7 +1386,7 @@ I18N.ja = Object.assign({}, I18N.en, {
   prog:"/ 104試合 入力済み",
   theme:{toLight:"☀️ ライト", toDark:"🌙 ダーク"},
   lang:"日本語", pdf:"🖨 PDF出力", reset:"すべて消去",
-  tab1:"グループステージ", tab2:"決勝トーナメント", tab3:"スタッツ", tab4:"ラ・スカロネタ",
+  tab1:"グループ", tab2:"トーナメント", tab3:"スタッツ", tab4:"スカロネタ", tab5:"ルール",
   kohelp:"各グループが終了すると<b>1位・2位</b>と各試合の勝者で対戦カードが自動的に埋まります。<b>引き分け</b>の場合はPK戦の勝者を選んでください。<b>ベスト3位</b>の枠は手動で選びます（FIFAは組み合わせ表で決定）：3位チームの表を参考にしてください。",
   leg1:"直接進出（1位・2位）", leg2:"3位 — ベスト8枠に入る可能性", leg3:"勝者のルート",
   hint:"← 横にスクロールして全体を表示 →",
@@ -1453,6 +1480,7 @@ I18N.ja = Object.assign({}, I18N.en, {
   mvpAuto:"自動： ",
   fichaTbd:"⏳ 両チームが確定すると得点者とカードを入力できます：グループを完了する、3位を選ぶ、または ⟳ 結果 で公式の対戦カードを取得してください。",
   confB:"確定", confT:"進出確定", pendB:"⏳ 暫定",
+  rulesT:"ワールドカップ ルールブック", rulesSub:"大会ルールをわかりやすくまとめました。",
   updNet:"ブラウザがfootball-data.orgに接続できませんでした（ネットワークまたはブラウザのブロック）。",
   updProxy:"リレー未作成：Supabaseで fd-proxy 関数を作成してください（Edge Functions → Via Editor、fd-proxy.ts のコードを使用）。",
   updJwt:"Supabaseがリレーをブロックしました：関数の \"Verify JWT with legacy secret\" をオフにして保存してください。",
@@ -1465,6 +1493,62 @@ I18N.ja = Object.assign({}, I18N.en, {
   fdSweepDone:(d,t)=> d===t ? "✅ "+d+"試合の公式データを取得しました" : "✅ "+d+"/"+t+"試合 — 次回続行します",
   updSecret:"リレーに FD_KEY シークレットがありません：Supabase → Edge Functions → Secrets で FD_KEY を追加してください。"
 });
+
+/* ---- Reglamento resumido (redacción propia, no es el texto oficial de la FIFA) ---- */
+const RULES = {
+es: `
+<div class="rsec"><b>Formato del torneo</b><p>48 selecciones en 12 grupos de 4. Cada equipo juega 3 partidos de grupo. Avanzan a los 16avos de final los <b>2 primeros de cada grupo</b> más los <b>8 mejores terceros</b>: 32 equipos y 104 partidos en total, del 11 de junio al 19 de julio en Estados Unidos, México y Canadá.</p></div>
+<div class="rsec"><b>Puntos en la fase de grupos</b><p>Victoria 3 · Empate 1 · Derrota 0.</p></div>
+<div class="rsec"><b>Desempates en el grupo</b><p>En orden: 1) puntos · 2) diferencia de gol · 3) goles a favor · 4) puntos entre los equipos empatados · 5) diferencia de gol entre ellos · 6) goles entre ellos · 7) puntos de fair play · 8) sorteo.</p></div>
+<div class="rsec"><b>Fair play (conducta)</b><p>Amarilla −1 · Segunda amarilla (expulsión) −3 · Roja directa −4 · Amarilla + roja directa −5. Se usa como desempate.</p></div>
+<div class="rsec"><b>Mejores terceros</b><p>Los 12 terceros se ordenan por puntos, diferencia de gol, goles a favor y fair play; entran los 8 primeros. Su ubicación en el cuadro sigue una tabla de combinaciones oficial (por eso la app la asigna sola con ⟳).</p></div>
+<div class="rsec"><b>Eliminatorias</b><p>Si hay empate a los 90': prórroga de 30'. Si sigue: penales. No hay partidos de vuelta.</p></div>
+<div class="rsec"><b>Suspensiones por tarjetas</b><p>Dos amarillas en partidos distintos = un partido de suspensión. Las amarillas sueltas se borran después de los cuartos (para no perderse la final por acumulación). Roja = mínimo un partido.</p></div>
+<div class="rsec"><b>Planteles y cambios</b><p>26 jugadores por selección. 5 cambios en 3 ventanas (más el entretiempo); en la prórroga, una ventana y un cambio extra. Los cambios por conmoción cerebral son adicionales.</p></div>
+<div class="rsec"><b>Premios</b><p>Botín de Oro (goles; desempata por asistencias y minutos), Balón de Oro (mejor jugador), Guante de Oro (mejor arquero), mejor jugador joven y premio Fair Play.</p></div>
+<p class="rnote">Resumen no oficial para uso de esta app. El reglamento completo está en FIFA.com.</p>`,
+en: `
+<div class="rsec"><b>Tournament format</b><p>48 teams in 12 groups of 4. Everyone plays 3 group matches. The <b>top 2 of each group</b> plus the <b>8 best third-placed teams</b> advance to a round of 32 — 104 matches in total, June 11 to July 19 across the USA, Mexico and Canada.</p></div>
+<div class="rsec"><b>Group-stage points</b><p>Win 3 · Draw 1 · Loss 0.</p></div>
+<div class="rsec"><b>Group tiebreakers</b><p>In order: 1) points · 2) goal difference · 3) goals scored · 4) points among the tied teams · 5) goal difference among them · 6) goals among them · 7) fair play points · 8) drawing of lots.</p></div>
+<div class="rsec"><b>Fair play (conduct)</b><p>Yellow −1 · Second yellow (sent off) −3 · Straight red −4 · Yellow then straight red −5. Used as a tiebreaker.</p></div>
+<div class="rsec"><b>Best third-placed teams</b><p>All 12 thirds are ranked by points, goal difference, goals and fair play; the top 8 go through. Their bracket slots follow an official combination table (which is why the app assigns them automatically with ⟳).</p></div>
+<div class="rsec"><b>Knockout rounds</b><p>Level after 90 minutes: 30 minutes of extra time. Still level: penalty shootout. No replays.</p></div>
+<div class="rsec"><b>Card suspensions</b><p>Two yellows in different matches = a one-match ban. Single yellows are wiped after the quarterfinals (so nobody misses the final by accumulation). A red means at least one match out.</p></div>
+<div class="rsec"><b>Squads & substitutions</b><p>26-player squads. 5 substitutions in 3 windows (plus half-time); extra time adds one more window and sub. Concussion substitutions are additional.</p></div>
+<div class="rsec"><b>Awards</b><p>Golden Boot (goals; assists then minutes break ties), Golden Ball (best player), Golden Glove (best goalkeeper), Best Young Player, and the Fair Play Trophy.</p></div>
+<p class="rnote">Unofficial summary written for this app. The full regulations live at FIFA.com.</p>`,
+fr: `
+<div class="rsec"><b>Format du tournoi</b><p>48 équipes en 12 groupes de 4. Chacune joue 3 matchs de groupe. Les <b>2 premiers de chaque groupe</b> et les <b>8 meilleurs troisièmes</b> se qualifient pour les 16es de finale — 104 matchs au total, du 11 juin au 19 juillet aux États-Unis, au Mexique et au Canada.</p></div>
+<div class="rsec"><b>Points en phase de groupes</b><p>Victoire 3 · Nul 1 · Défaite 0.</p></div>
+<div class="rsec"><b>Départages dans le groupe</b><p>Dans l’ordre : 1) points · 2) différence de buts · 3) buts marqués · 4) points entre les équipes à égalité · 5) différence de buts entre elles · 6) buts entre elles · 7) points de fair-play · 8) tirage au sort.</p></div>
+<div class="rsec"><b>Fair-play (conduite)</b><p>Jaune −1 · Deuxième jaune (expulsion) −3 · Rouge direct −4 · Jaune puis rouge direct −5. Sert de critère de départage.</p></div>
+<div class="rsec"><b>Meilleurs troisièmes</b><p>Les 12 troisièmes sont classés par points, différence de buts, buts et fair-play ; les 8 premiers passent. Leur place dans le tableau suit une table officielle de combinaisons (d’où l’attribution automatique via ⟳).</p></div>
+<div class="rsec"><b>Phase finale</b><p>Égalité après 90 minutes : prolongation de 30 minutes. Toujours égalité : tirs au but. Pas de match retour.</p></div>
+<div class="rsec"><b>Suspensions</b><p>Deux jaunes dans des matchs différents = un match de suspension. Les jaunes isolés sont effacés après les quarts (personne ne rate la finale par accumulation). Un rouge = au moins un match.</p></div>
+<div class="rsec"><b>Effectifs et remplacements</b><p>26 joueurs par équipe. 5 remplacements en 3 fenêtres (plus la mi-temps) ; la prolongation ajoute une fenêtre et un remplacement. Les remplacements pour commotion sont en supplément.</p></div>
+<div class="rsec"><b>Récompenses</b><p>Soulier d’Or (buts ; départage aux passes puis aux minutes), Ballon d’Or (meilleur joueur), Gant d’Or (meilleur gardien), meilleur jeune joueur et Prix du Fair-play.</p></div>
+<p class="rnote">Résumé non officiel rédigé pour cette app. Le règlement complet est sur FIFA.com.</p>`,
+ja: `
+<div class="rsec"><b>大会フォーマット</b><p>48チームが4チームずつ12グループに分かれ、各チームがグループで3試合を戦います。<b>各グループの上位2チーム</b>と<b>成績上位の3位8チーム</b>がラウンド32へ進出。全104試合、6月11日〜7月19日、アメリカ・メキシコ・カナダで開催。</p></div>
+<div class="rsec"><b>グループステージの勝点</b><p>勝ち3 · 引き分け1 · 負け0。</p></div>
+<div class="rsec"><b>グループ内の順位決定</b><p>順に：1) 勝点 · 2) 得失点差 · 3) 総得点 · 4) 当該チーム間の勝点 · 5) 当該チーム間の得失点差 · 6) 当該チーム間の得点 · 7) フェアプレーポイント · 8) 抽選。</p></div>
+<div class="rsec"><b>フェアプレーポイント</b><p>イエロー −1 · 2枚目のイエロー（退場）−3 · 一発レッド −4 · イエロー後の一発レッド −5。順位決定に使われます。</p></div>
+<div class="rsec"><b>ベスト3位チーム</b><p>12チームの3位を勝点・得失点差・得点・フェアプレーで順位付けし、上位8チームが進出。トーナメントでの配置は公式の組み合わせ表に従います（アプリが ⟳ で自動設定する理由です）。</p></div>
+<div class="rsec"><b>決勝トーナメント</b><p>90分で同点なら30分の延長戦。それでも同点ならPK戦。再試合はありません。</p></div>
+<div class="rsec"><b>カードによる出場停止</b><p>別々の試合でイエロー2枚＝次の1試合出場停止。累積の単発イエローは準々決勝終了後にリセット（累積で決勝を欠場しないため）。レッドは最低1試合の出場停止。</p></div>
+<div class="rsec"><b>登録メンバーと交代</b><p>各チーム26人。交代は3回の機会で5人まで（ハーフタイムは別枠）；延長戦では機会と人数が1つずつ追加。脳振とうによる交代は別枠です。</p></div>
+<div class="rsec"><b>表彰</b><p>ゴールデンブーツ（得点；同数ならアシスト、出場時間）、ゴールデンボール（最優秀選手）、ゴールデングローブ（最優秀GK）、最優秀若手選手、フェアプレー賞。</p></div>
+<p class="rnote">このアプリのための非公式まとめです。正式なレギュレーションは FIFA.com をご覧ください。</p>`
+};
+
+function renderRules(){
+  const l = L();
+  const t = $("#rules-title"), s = $("#rules-sub"), b = $("#rules-body");
+  if(t) t.textContent = "📖 " + l.rulesT;
+  if(s) s.textContent = l.rulesSub;
+  if(b) b.innerHTML = RULES[LANG] || RULES.en;
+}
 
 const CAPY_ICON = "data:image/jpeg;base64,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";
 
@@ -2062,6 +2146,8 @@ function renderChrome(){
   if(mt) mt.setAttribute("content", state.theme==="light" ? "#75aadb" : "#0a1420");
   $("#arg-squad").innerHTML = SQUAD_AZ.map(p=>'<option value="'+esc(p[0])+'">').join("");
   const bu = $("#btn-update"); if(bu && !bu.disabled) bu.textContent = l.updBtn;
+  const t5 = $("#t-tab5"); if(t5) t5.textContent = l.tab5;
+  renderRules();
   setSyncUi(syncUiState);
 }
 
@@ -2832,6 +2918,7 @@ function setTab(which){
   $("#view-elim").hidden = which!=="elim";
   $("#view-stats").hidden = which!=="stats";
   $("#view-arg").hidden = which!=="arg";
+  $("#view-rules").hidden = which!=="rules";
   $("#main").classList.toggle("wide", which==="elim");
   if(which==="elim") requestAnimationFrame(drawConnectors);
 }
