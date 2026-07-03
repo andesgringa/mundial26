@@ -3901,11 +3901,13 @@ async function fetchDetailApply(key){
     const am = await r.json();
     if(am && am.matches) return { ok:false, msg:L().fdOld };  /* relay viejo */
     if(!am || !am.score) return { ok:false, msg:"?" };
+    /* ¿vino de la caché del relay? entonces no gastamos límite y no hace falta esperar */
+    const hit = !!(r.headers && r.headers.get && r.headers.get("x-cache")==="HIT");
     applyDetail(key, am);
     if(!state.fdDet) state.fdDet = {};
     if(am.status==="FINISHED") state.fdDet[key] = true;
     save(); renderAll();
-    return { ok:true };
+    return { ok:true, hit };
   }catch(e){ console.error("detail sweep:", e); return { ok:false, msg:L().updNet }; }
 }
 async function sweepDetails(manual){
@@ -3923,7 +3925,7 @@ async function sweepDetails(manual){
       break;
     }
     done++;
-    if(done < pend.length) await new Promise(r=>setTimeout(r, FD_SWEEP_MS));
+    if(done < pend.length) await new Promise(r=>setTimeout(r, res.hit ? 150 : FD_SWEEP_MS));
   }
   sweepRunning = false;
   if(done && (manual || done === pend.length)) toast(L().fdSweepDone(done, pend.length));
