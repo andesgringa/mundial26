@@ -872,10 +872,35 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
   border-radius:6px;padding:1px 5px;margin-left:5px;vertical-align:2px;white-space:nowrap}
 .slotb.ok{color:var(--ok,#6fcf8e);border:1px solid var(--ok,#6fcf8e);opacity:.85}
 .slotb.pend{color:var(--gold);border:1px solid var(--gold);opacity:.9}
-.rules{margin-top:12px;font-size:.9rem;line-height:1.6;max-width:720px}
+.rules{margin-top:14px;font-size:.9rem;line-height:1.6;max-width:720px}
 .rules-card{padding:20px 22px 26px}
 .rules-card h2{margin:0 0 4px}
 .rules-sub{margin:0 0 6px;color:var(--muted);font-size:.82rem}
+.rcard{background:var(--panel-2,var(--panel));border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.rcard.open{border-color:var(--gold)}
+.rhead{display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;cursor:pointer;
+  padding:13px 16px;color:var(--chalk,#eef4f9);font:inherit;text-align:left}
+.rhead .ric{font-size:1.15rem;width:26px;text-align:center}
+.rhead .rt{flex:1;font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase}
+.rhead .rarr{color:var(--muted);font-size:.7rem;transition:transform .18s}
+.rcard:not(.open) .rarr{transform:rotate(-90deg)}
+.rcard.open .rhead .rt{color:var(--gold)}
+.rbody{padding:2px 16px 15px 54px}
+.rbody p{margin:0 0 8px;color:var(--chalk,#eef4f9)}
+.rbody p:last-child{margin-bottom:0}
+.rchips{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 2px}
+.rchip{border:1px solid var(--line);border-radius:9px;padding:5px 10px;font-size:.76rem;background:var(--inp)}
+.rchip b{color:var(--gold)}
+.rchip.win{border-color:var(--ok,#6fcf8e)} .rchip.draw{border-color:var(--celeste)} .rchip.loss{border-color:var(--muted)}
+.rchip.yc{border-color:#e4c94a;background:rgba(228,201,74,.08)}
+.rchip.rc{border-color:var(--red);background:rgba(214,69,47,.08)}
+.rlist{margin:4px 0 0;padding-left:2px;list-style:none;counter-reset:rl}
+.rlist li{counter-increment:rl;padding:5px 0;border-bottom:1px dashed var(--line-soft,var(--line));font-size:.84rem}
+.rlist li:last-child{border-bottom:none}
+.rlist li::before{content:counter(rl);display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;
+  border-radius:50%;background:var(--inp);border:1px solid var(--gold);color:var(--gold);font-size:.68rem;font-weight:700;margin-right:10px}
+.rsmall{font-size:.74rem;color:var(--muted)}
+@media (max-width:520px){ .rbody{padding-left:16px} }
 @media (max-width:520px){ .tab{font-size:.66rem;padding:10px 4px;letter-spacing:.03em} }
 .rules .rsec{margin-bottom:14px}
 .rules .rsec b{display:block;color:var(--gold);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px}
@@ -1495,59 +1520,97 @@ I18N.ja = Object.assign({}, I18N.en, {
 });
 
 /* ---- Reglamento resumido (redacción propia, no es el texto oficial de la FIFA) ---- */
+const R_IC = ["🏆","🎯","🚩","🟥","⚖️","😇","🥉","⚔️","🟨","👥","🏅","🆕"];
+function rchips(items){ return '<div class="rchips">' + items.map(x=>'<span class="rchip'+(x[1]?' '+x[1]:'')+'">'+x[0]+'</span>').join('') + '</div>'; }
+function rlist(items){ return '<ol class="rlist">' + items.map(x=>'<li>'+x+'</li>').join('') + '</ol>'; }
+
 const RULES = {
-es: `
-<div class="rsec"><b>Formato del torneo</b><p>48 selecciones en 12 grupos de 4. Cada equipo juega 3 partidos de grupo. Avanzan a los 16avos de final los <b>2 primeros de cada grupo</b> más los <b>8 mejores terceros</b>: 32 equipos y 104 partidos en total, del 11 de junio al 19 de julio en Estados Unidos, México y Canadá.</p></div>
-<div class="rsec"><b>Puntos en la fase de grupos</b><p>Victoria 3 · Empate 1 · Derrota 0.</p></div>
-<div class="rsec"><b>Desempates en el grupo</b><p>En orden: 1) puntos · 2) diferencia de gol · 3) goles a favor · 4) puntos entre los equipos empatados · 5) diferencia de gol entre ellos · 6) goles entre ellos · 7) puntos de fair play · 8) sorteo.</p></div>
-<div class="rsec"><b>Fair play (conducta)</b><p>Amarilla −1 · Segunda amarilla (expulsión) −3 · Roja directa −4 · Amarilla + roja directa −5. Se usa como desempate.</p></div>
-<div class="rsec"><b>Mejores terceros</b><p>Los 12 terceros se ordenan por puntos, diferencia de gol, goles a favor y fair play; entran los 8 primeros. Su ubicación en el cuadro sigue una tabla de combinaciones oficial (por eso la app la asigna sola con ⟳).</p></div>
-<div class="rsec"><b>Eliminatorias</b><p>Si hay empate a los 90': prórroga de 30'. Si sigue: penales. No hay partidos de vuelta.</p></div>
-<div class="rsec"><b>Suspensiones por tarjetas</b><p>Dos amarillas en partidos distintos = un partido de suspensión. Las amarillas sueltas se borran después de los cuartos (para no perderse la final por acumulación). Roja = mínimo un partido.</p></div>
-<div class="rsec"><b>Planteles y cambios</b><p>26 jugadores por selección. 5 cambios en 3 ventanas (más el entretiempo); en la prórroga, una ventana y un cambio extra. Los cambios por conmoción cerebral son adicionales.</p></div>
-<div class="rsec"><b>Premios</b><p>Botín de Oro (goles; desempata por asistencias y minutos), Balón de Oro (mejor jugador), Guante de Oro (mejor arquero), mejor jugador joven y premio Fair Play.</p></div>
-<p class="rnote">Resumen no oficial para uso de esta app. El reglamento completo está en FIFA.com.</p>`,
-en: `
-<div class="rsec"><b>Tournament format</b><p>48 teams in 12 groups of 4. Everyone plays 3 group matches. The <b>top 2 of each group</b> plus the <b>8 best third-placed teams</b> advance to a round of 32 — 104 matches in total, June 11 to July 19 across the USA, Mexico and Canada.</p></div>
-<div class="rsec"><b>Group-stage points</b><p>Win 3 · Draw 1 · Loss 0.</p></div>
-<div class="rsec"><b>Group tiebreakers</b><p>In order: 1) points · 2) goal difference · 3) goals scored · 4) points among the tied teams · 5) goal difference among them · 6) goals among them · 7) fair play points · 8) drawing of lots.</p></div>
-<div class="rsec"><b>Fair play (conduct)</b><p>Yellow −1 · Second yellow (sent off) −3 · Straight red −4 · Yellow then straight red −5. Used as a tiebreaker.</p></div>
-<div class="rsec"><b>Best third-placed teams</b><p>All 12 thirds are ranked by points, goal difference, goals and fair play; the top 8 go through. Their bracket slots follow an official combination table (which is why the app assigns them automatically with ⟳).</p></div>
-<div class="rsec"><b>Knockout rounds</b><p>Level after 90 minutes: 30 minutes of extra time. Still level: penalty shootout. No replays.</p></div>
-<div class="rsec"><b>Card suspensions</b><p>Two yellows in different matches = a one-match ban. Single yellows are wiped after the quarterfinals (so nobody misses the final by accumulation). A red means at least one match out.</p></div>
-<div class="rsec"><b>Squads & substitutions</b><p>26-player squads. 5 substitutions in 3 windows (plus half-time); extra time adds one more window and sub. Concussion substitutions are additional.</p></div>
-<div class="rsec"><b>Awards</b><p>Golden Boot (goals; assists then minutes break ties), Golden Ball (best player), Golden Glove (best goalkeeper), Best Young Player, and the Fair Play Trophy.</p></div>
-<p class="rnote">Unofficial summary written for this app. The full regulations live at FIFA.com.</p>`,
-fr: `
-<div class="rsec"><b>Format du tournoi</b><p>48 équipes en 12 groupes de 4. Chacune joue 3 matchs de groupe. Les <b>2 premiers de chaque groupe</b> et les <b>8 meilleurs troisièmes</b> se qualifient pour les 16es de finale — 104 matchs au total, du 11 juin au 19 juillet aux États-Unis, au Mexique et au Canada.</p></div>
-<div class="rsec"><b>Points en phase de groupes</b><p>Victoire 3 · Nul 1 · Défaite 0.</p></div>
-<div class="rsec"><b>Départages dans le groupe</b><p>Dans l’ordre : 1) points · 2) différence de buts · 3) buts marqués · 4) points entre les équipes à égalité · 5) différence de buts entre elles · 6) buts entre elles · 7) points de fair-play · 8) tirage au sort.</p></div>
-<div class="rsec"><b>Fair-play (conduite)</b><p>Jaune −1 · Deuxième jaune (expulsion) −3 · Rouge direct −4 · Jaune puis rouge direct −5. Sert de critère de départage.</p></div>
-<div class="rsec"><b>Meilleurs troisièmes</b><p>Les 12 troisièmes sont classés par points, différence de buts, buts et fair-play ; les 8 premiers passent. Leur place dans le tableau suit une table officielle de combinaisons (d’où l’attribution automatique via ⟳).</p></div>
-<div class="rsec"><b>Phase finale</b><p>Égalité après 90 minutes : prolongation de 30 minutes. Toujours égalité : tirs au but. Pas de match retour.</p></div>
-<div class="rsec"><b>Suspensions</b><p>Deux jaunes dans des matchs différents = un match de suspension. Les jaunes isolés sont effacés après les quarts (personne ne rate la finale par accumulation). Un rouge = au moins un match.</p></div>
-<div class="rsec"><b>Effectifs et remplacements</b><p>26 joueurs par équipe. 5 remplacements en 3 fenêtres (plus la mi-temps) ; la prolongation ajoute une fenêtre et un remplacement. Les remplacements pour commotion sont en supplément.</p></div>
-<div class="rsec"><b>Récompenses</b><p>Soulier d’Or (buts ; départage aux passes puis aux minutes), Ballon d’Or (meilleur joueur), Gant d’Or (meilleur gardien), meilleur jeune joueur et Prix du Fair-play.</p></div>
-<p class="rnote">Résumé non officiel rédigé pour cette app. Le règlement complet est sur FIFA.com.</p>`,
-ja: `
-<div class="rsec"><b>大会フォーマット</b><p>48チームが4チームずつ12グループに分かれ、各チームがグループで3試合を戦います。<b>各グループの上位2チーム</b>と<b>成績上位の3位8チーム</b>がラウンド32へ進出。全104試合、6月11日〜7月19日、アメリカ・メキシコ・カナダで開催。</p></div>
-<div class="rsec"><b>グループステージの勝点</b><p>勝ち3 · 引き分け1 · 負け0。</p></div>
-<div class="rsec"><b>グループ内の順位決定</b><p>順に：1) 勝点 · 2) 得失点差 · 3) 総得点 · 4) 当該チーム間の勝点 · 5) 当該チーム間の得失点差 · 6) 当該チーム間の得点 · 7) フェアプレーポイント · 8) 抽選。</p></div>
-<div class="rsec"><b>フェアプレーポイント</b><p>イエロー −1 · 2枚目のイエロー（退場）−3 · 一発レッド −4 · イエロー後の一発レッド −5。順位決定に使われます。</p></div>
-<div class="rsec"><b>ベスト3位チーム</b><p>12チームの3位を勝点・得失点差・得点・フェアプレーで順位付けし、上位8チームが進出。トーナメントでの配置は公式の組み合わせ表に従います（アプリが ⟳ で自動設定する理由です）。</p></div>
-<div class="rsec"><b>決勝トーナメント</b><p>90分で同点なら30分の延長戦。それでも同点ならPK戦。再試合はありません。</p></div>
-<div class="rsec"><b>カードによる出場停止</b><p>別々の試合でイエロー2枚＝次の1試合出場停止。累積の単発イエローは準々決勝終了後にリセット（累積で決勝を欠場しないため）。レッドは最低1試合の出場停止。</p></div>
-<div class="rsec"><b>登録メンバーと交代</b><p>各チーム26人。交代は3回の機会で5人まで（ハーフタイムは別枠）；延長戦では機会と人数が1つずつ追加。脳振とうによる交代は別枠です。</p></div>
-<div class="rsec"><b>表彰</b><p>ゴールデンブーツ（得点；同数ならアシスト、出場時間）、ゴールデンボール（最優秀選手）、ゴールデングローブ（最優秀GK）、最優秀若手選手、フェアプレー賞。</p></div>
-<p class="rnote">このアプリのための非公式まとめです。正式なレギュレーションは FIFA.com をご覧ください。</p>`
+es: {
+  note: "Resumen no oficial para uso de esta app. El reglamento completo está en FIFA.com.",
+  secs: [
+    ["Formato del torneo", '<p>48 selecciones en 12 grupos de 4; cada equipo juega 3 partidos de grupo. Avanzan los <b>2 primeros de cada grupo</b> y los <b>8 mejores terceros</b>: 32 equipos siguen en eliminatorias.</p>' + rchips([["48 equipos"],["12 grupos"],["104 partidos"],["11 jun – 19 jul"],["🇺🇸 🇲🇽 🇨🇦"]])],
+    ["Puntos en el grupo", '<p>Cada resultado suma puntos para la tabla del grupo; el que más junta en sus 3 partidos termina arriba.</p>' + rchips([["Victoria <b>3</b>","win"],["Empate <b>1</b>","draw"],["Derrota <b>0</b>","loss"]]) + '<p class="rsmall">Ejemplo: 2 victorias y 1 empate = 7 puntos.</p>'],
+    ["El offside (fuera de juego)", '<p>Un atacante está en <b>offside</b> si, en el momento exacto del pase, está en campo rival y más cerca del arco que la pelota y que el <b>anteúltimo</b> defensor (el arquero cuenta como uno). A la misma altura, está habilitado.</p><p>Estar en offside no es falta en sí: se cobra sólo si <b>participa de la jugada</b>. En 2026 lo revisa el VAR con tecnología semiautomática en segundos.</p>' + rchips([["Se mide al pase, no al recibir"],["Misma altura = habilitado"],["No existe en laterales, córners ni saques de arco"],["En campo propio, nunca"]])],
+    ["Faltas y tarjetas", '<p>Una <b>falta</b> es jugar al rival en vez de a la pelota: patada, empujón, agarrón o mano deliberada. Se cobra tiro libre — y <b>penal</b> si ocurre dentro del área propia.</p><p>🟨 <b>Amarilla</b>: advertencia — juego brusco, perder tiempo, protestar, sacarse la camiseta. 🟥 <b>Roja</b>: afuera — juego violento, escupir, insultar o cortar con falta una chance clara de gol. Dos amarillas en el mismo partido = roja, y el equipo sigue con 10.</p>'],
+    ["Desempates en el grupo", '<p>Si dos o más equipos terminan con los mismos puntos, se aplica esta lista en orden hasta separarlos:</p>' + rlist(["Puntos","Diferencia de gol","Goles a favor","Puntos entre los empatados","Diferencia de gol entre ellos","Goles entre ellos","Fair play","Ranking FIFA (edición del 11 de junio)"])],
+    ["Fair play (conducta)", '<p>Un puntaje de conducta que sólo aparece como desempate: menos tarjetas, mejor puntaje. Cada tarjeta resta:</p>' + rchips([["🟨 <b>−1</b>","yc"],["🟨🟨 <b>−3</b>","yc"],["🟥 <b>−4</b>","rc"],["🟨+🟥 <b>−5</b>","rc"]])],
+    ["Mejores terceros", '<p>Salir tercero no elimina: los 12 terceros se comparan entre sí (puntos, diferencia, goles, fair play) y <b>los 8 mejores también clasifican</b>. Su lugar en el cuadro sigue una tabla oficial de combinaciones — por eso la app los asigna sola con ⟳.</p>'],
+    ["Eliminatorias", '<p>Desde los 16avos, el que pierde se va a casa. Empate a los 90&#39;: <b>prórroga de 30&#39;</b>. Si sigue empatado: <b>penales</b>. Sin partidos de vuelta.</p>'],
+    ["Suspensiones por tarjetas", '<p>Dos 🟨 en partidos distintos = <b>un partido afuera</b> — pero sólo dentro de la misma ventana: el contador se pone en cero <b>dos veces</b>, al terminar la fase de grupos y después de los cuartos. Las amarillas de la clasificación no se arrastran; una roja grave de la clasificación sí puede. 🟥 = mínimo un partido.</p>'],
+    ["Planteles y cambios", '<p>Cada selección inscribe 26 jugadores y puede rotar así durante un partido:</p>' + rchips([["26 jugadores"],["5 cambios"],["3 ventanas + entretiempo"],["+1 en prórroga"],["conmoción: aparte"]]) + '<p class="rsmall">Las ventanas evitan que cada cambio corte el partido.</p>'],
+    ["Premios", '<p>Trofeos individuales que se entregan al final del torneo:</p>' + rchips([["🥇 Botín de Oro"],["⚽ Balón de Oro"],["🧤 Guante de Oro"],["🌟 Mejor joven"],["😇 Fair Play"]]) + '<p class="rsmall">El Botín (goleador) desempata por asistencias y después por minutos jugados.</p>'],
+    ["Novedades 2026", '<p>🖥️ El VAR ahora puede corregir una <b>expulsión errónea por doble amarilla</b>.</p><p>🚑 El jugador lesionado debe <b>salir de la cancha</b> antes de volver — adiós al teatro.</p><p>⏱️ Los árbitros usan <b>relojes</b> para acelerar reanudaciones y cambios.</p><p>🥤 Pausas de hidratación cuando aprieta el calor.</p><p>🧮 El desempate final ya no es sorteo: decide el <b>ranking FIFA</b>.</p>']
+  ]
+},
+en: {
+  note: "Unofficial summary written for this app. The full regulations live at FIFA.com.",
+  secs: [
+    ["Tournament format", '<p>48 teams in 12 groups of 4; everyone plays 3 group matches. The <b>top 2 of each group</b> and the <b>8 best thirds</b> advance: 32 teams reach the knockouts.</p>' + rchips([["48 teams"],["12 groups"],["104 matches"],["Jun 11 – Jul 19"],["🇺🇸 🇲🇽 🇨🇦"]])],
+    ["Group-stage points", '<p>Every result earns points toward the group table; whoever collects the most across 3 matches finishes top.</p>' + rchips([["Win <b>3</b>","win"],["Draw <b>1</b>","draw"],["Loss <b>0</b>","loss"]]) + '<p class="rsmall">Example: 2 wins and a draw = 7 points.</p>'],
+    ["Offside", '<p>An attacker is <b>offside</b> if, at the exact moment the ball is passed, they are in the opponent&#39;s half and closer to goal than both the ball and the <b>second-last</b> defender (the keeper counts as one). Level is onside.</p><p>Being offside isn&#39;t itself a foul — it&#39;s only flagged if the player <b>gets involved in the play</b>. In 2026, semi-automated VAR checks it in seconds.</p>' + rchips([["Judged at the pass, not the reception"],["Level = onside"],["No offside from throw-ins, corners or goal kicks"],["Never in your own half"]])],
+    ["Fouls & cards", '<p>A <b>foul</b> is playing the opponent instead of the ball: a kick, push, hold or deliberate handball. It gives a free kick — a <b>penalty</b> if it happens inside your own box.</p><p>🟨 <b>Yellow</b>: a warning — reckless play, time-wasting, dissent, removing your shirt. 🟥 <b>Red</b>: off you go — violent play, spitting, abuse, or fouling away a clear goal chance. Two yellows in one match = red, and the team plays on with 10.</p>'],
+    ["Group tiebreakers", '<p>If two or more teams finish level on points, this list applies in order until they&#39;re separated:</p>' + rlist(["Points","Goal difference","Goals scored","Points among tied teams","Goal difference among them","Goals among them","Fair play","FIFA World Ranking (June 11 edition)"])],
+    ["Fair play (conduct)", '<p>A conduct score used only as a tiebreaker: fewer cards, better score. Each card deducts:</p>' + rchips([["🟨 <b>−1</b>","yc"],["🟨🟨 <b>−3</b>","yc"],["🟥 <b>−4</b>","rc"],["🟨+🟥 <b>−5</b>","rc"]])],
+    ["Best third-placed teams", '<p>Finishing third isn&#39;t the end: all 12 thirds are compared with each other (points, difference, goals, fair play) and <b>the best 8 also qualify</b>. Their bracket slots follow an official combination table — which is why the app assigns them automatically with ⟳.</p>'],
+    ["Knockout rounds", '<p>From the round of 32, lose and you&#39;re out. Level after 90&#39;: <b>30&#39; of extra time</b>. Still level: <b>penalties</b>. No replays.</p>'],
+    ["Card suspensions", '<p>Two 🟨 in different matches = <b>a one-match ban</b> — but only within the same window: the count resets <b>twice</b>, after the group stage and after the quarterfinals. Qualifying yellows don&#39;t carry in; a serious qualifying red-card ban can. 🟥 = at least one match out.</p>'],
+    ["Squads & substitutions", '<p>Each team registers 26 players and can rotate like this during a match:</p>' + rchips([["26 players"],["5 subs"],["3 windows + half-time"],["+1 in extra time"],["concussion: extra"]]) + '<p class="rsmall">Windows keep every substitution from stopping the game.</p>'],
+    ["Awards", '<p>Individual trophies handed out when it&#39;s all over:</p>' + rchips([["🥇 Golden Boot"],["⚽ Golden Ball"],["🧤 Golden Glove"],["🌟 Best young player"],["😇 Fair Play"]]) + '<p class="rsmall">The Boot (top scorer) breaks ties by assists, then minutes played.</p>'],
+    ["New in 2026", '<p>🖥️ VAR can now overturn a <b>wrongful second-yellow sending-off</b>.</p><p>🚑 Injured players must <b>leave the pitch</b> before returning — goodbye, theatrics.</p><p>⏱️ Referees run <b>timers</b> to speed up restarts and substitutions.</p><p>🥤 Cooling breaks when the heat demands it.</p><p>🧮 The final tiebreaker is no longer lots: the <b>FIFA ranking</b> decides.</p>']
+  ]
+},
+fr: {
+  note: "Résumé non officiel rédigé pour cette app. Le règlement complet est sur FIFA.com.",
+  secs: [
+    ["Format du tournoi", '<p>48 équipes en 12 groupes de 4 ; chacune joue 3 matchs de groupe. Les <b>2 premiers de chaque groupe</b> et les <b>8 meilleurs troisièmes</b> se qualifient : 32 équipes en phase finale.</p>' + rchips([["48 équipes"],["12 groupes"],["104 matchs"],["11 juin – 19 juil"],["🇺🇸 🇲🇽 🇨🇦"]])],
+    ["Points en phase de groupes", '<p>Chaque résultat rapporte des points au classement du groupe ; celui qui en cumule le plus en 3 matchs finit premier.</p>' + rchips([["Victoire <b>3</b>","win"],["Nul <b>1</b>","draw"],["Défaite <b>0</b>","loss"]]) + '<p class="rsmall">Exemple : 2 victoires et 1 nul = 7 points.</p>'],
+    ["Le hors-jeu", '<p>Un attaquant est <b>hors-jeu</b> si, au moment exact de la passe, il est dans la moitié adverse et plus près du but que le ballon et que l&#39;<b>avant-dernier</b> défenseur (le gardien compte). À la même hauteur, il est en jeu.</p><p>Être hors-jeu n&#39;est pas une faute en soi : ce n&#39;est signalé que si le joueur <b>participe à l&#39;action</b>. En 2026, la VAR semi-automatisée vérifie en quelques secondes.</p>' + rchips([["Jugé à la passe, pas à la réception"],["Même hauteur = en jeu"],["Pas de hors-jeu sur touche, corner ou six mètres"],["Jamais dans son propre camp"]])],
+    ["Fautes et cartons", '<p>Une <b>faute</b>, c&#39;est jouer l&#39;adversaire au lieu du ballon : coup de pied, poussée, tirage ou main volontaire. Coup franc — et <b>penalty</b> si c&#39;est dans sa propre surface.</p><p>🟨 <b>Jaune</b> : avertissement — jeu dangereux, perte de temps, contestation, maillot retiré. 🟥 <b>Rouge</b> : expulsion — jeu violent, crachat, insulte, ou faute qui prive d&#39;une occasion nette de but. Deux jaunes dans le même match = rouge, et l&#39;équipe finit à 10.</p>'],
+    ["Départages dans le groupe", '<p>Si deux équipes ou plus finissent à égalité de points, cette liste s&#39;applique dans l&#39;ordre :</p>' + rlist(["Points","Différence de buts","Buts marqués","Points entre équipes à égalité","Différence de buts entre elles","Buts entre elles","Fair-play","Classement FIFA (édition du 11 juin)"])],
+    ["Fair-play (conduite)", '<p>Un score de conduite utilisé uniquement comme départage : moins de cartons, meilleur score. Chaque carton retire :</p>' + rchips([["🟨 <b>−1</b>","yc"],["🟨🟨 <b>−3</b>","yc"],["🟥 <b>−4</b>","rc"],["🟨+🟥 <b>−5</b>","rc"]])],
+    ["Meilleurs troisièmes", '<p>Finir troisième n&#39;élimine pas : les 12 troisièmes sont comparés entre eux (points, différence, buts, fair-play) et <b>les 8 meilleurs se qualifient aussi</b>. Leur place suit une table officielle — d&#39;où l&#39;attribution automatique via ⟳.</p>'],
+    ["Phase finale", '<p>À partir des 16es, qui perd rentre à la maison. Égalité après 90&#39; : <b>prolongation de 30&#39;</b>. Toujours égalité : <b>tirs au but</b>. Pas de match retour.</p>'],
+    ["Suspensions", '<p>Deux 🟨 dans des matchs différents = <b>un match de suspension</b> — mais seulement dans la même fenêtre : le compteur repart à zéro <b>deux fois</b>, après la phase de groupes et après les quarts. Les jaunes des qualifications ne comptent pas ; un rouge grave en qualifications peut se reporter. 🟥 = au moins un match.</p>'],
+    ["Effectifs et remplacements", '<p>Chaque équipe inscrit 26 joueurs et peut tourner ainsi pendant un match :</p>' + rchips([["26 joueurs"],["5 remplacements"],["3 fenêtres + mi-temps"],["+1 en prolongation"],["commotion : en plus"]]) + '<p class="rsmall">Les fenêtres évitent que chaque changement coupe le match.</p>'],
+    ["Récompenses", '<p>Trophées individuels remis à la fin du tournoi :</p>' + rchips([["🥇 Soulier d&#39;Or"],["⚽ Ballon d&#39;Or"],["🧤 Gant d&#39;Or"],["🌟 Meilleur jeune"],["😇 Fair-play"]]) + '<p class="rsmall">Le Soulier (meilleur buteur) se départage aux passes décisives, puis aux minutes jouées.</p>'],
+    ["Nouveautés 2026", '<p>🖥️ La VAR peut désormais annuler une <b>expulsion erronée pour deuxième jaune</b>.</p><p>🚑 Le joueur blessé doit <b>quitter le terrain</b> avant de revenir — fini le cinéma.</p><p>⏱️ Les arbitres utilisent des <b>chronos</b> pour accélérer reprises et remplacements.</p><p>🥤 Pauses fraîcheur en cas de forte chaleur.</p><p>🧮 Le dernier départage n&#39;est plus le tirage au sort : le <b>classement FIFA</b> décide.</p>']
+  ]
+},
+ja: {
+  note: "このアプリのための非公式まとめです。正式なレギュレーションは FIFA.com をご覧ください。",
+  secs: [
+    ["大会フォーマット", '<p>48チームが4チームずつ12グループに。各チームがグループで3試合。<b>各グループの上位2チーム</b>と<b>成績上位の3位8チーム</b>が進出：計32チームで決勝トーナメント。</p>' + rchips([["48チーム"],["12グループ"],["104試合"],["6/11〜7/19"],["🇺🇸 🇲🇽 🇨🇦"]])],
+    ["グループの勝点", '<p>試合結果ごとに勝点が加算され、3試合の合計が多いチームが上位になります。</p>' + rchips([["勝ち <b>3</b>","win"],["引き分け <b>1</b>","draw"],["負け <b>0</b>","loss"]]) + '<p class="rsmall">例：2勝1分＝勝点7。</p>'],
+    ["オフサイド", '<p>攻撃側の選手は、<b>パスが出た瞬間</b>に相手陣内で、ボールと<b>後ろから2人目</b>の守備者（GKも含む）より前にいると<b>オフサイド</b>。同じ高さならセーフです。</p><p>オフサイドの位置にいるだけでは反則になりません — <b>プレーに関与</b>したときだけ笛が鳴ります。2026年は半自動VARが数秒で判定します。</p>' + rchips([["判定はパスの瞬間"],["同じ高さ＝オンサイド"],["スローイン・コーナー・ゴールキックでは無し"],["自陣では発生しない"]])],
+    ["ファウルとカード", '<p><b>ファウル</b>とは、ボールではなく相手をプレーすること：キック、押す、引っ張る、故意のハンド。フリーキックになり、自陣のペナルティエリア内なら<b>PK</b>です。</p><p>🟨 <b>イエロー</b>：警告 — ラフプレー、遅延行為、抗議、ユニフォームを脱ぐ。🟥 <b>レッド</b>：退場 — 乱暴な行為、唾吐き、侮辱、決定機の阻止。同じ試合でイエロー2枚＝レッドとなり、チームは10人で戦います。</p>'],
+    ["グループの順位決定", '<p>勝点が並んだ場合、次の順で差がつくまで比較します：</p>' + rlist(["勝点","得失点差","総得点","当該チーム間の勝点","当該チーム間の得失点差","当該チーム間の得点","フェアプレー","FIFAランキング（6月11日版）"])],
+    ["フェアプレーポイント", '<p>順位決定にだけ使われる「行儀の点数」：カードが少ないほど良い成績です。各カードの減点：</p>' + rchips([["🟨 <b>−1</b>","yc"],["🟨🟨 <b>−3</b>","yc"],["🟥 <b>−4</b>","rc"],["🟨+🟥 <b>−5</b>","rc"]])],
+    ["ベスト3位チーム", '<p>3位でも終わりではありません：12チームの3位同士を比較し（勝点・得失点差・得点・フェアプレー）、<b>上位8チームも進出</b>。トーナメントでの配置は公式の組み合わせ表に従います — アプリが ⟳ で自動設定する理由です。</p>'],
+    ["決勝トーナメント", '<p>ラウンド32からは負けたら終わり。90分で同点なら<b>30分の延長戦</b>。それでも同点なら<b>PK戦</b>。再試合なし。</p>'],
+    ["カードによる出場停止", '<p>別々の試合で🟨2枚＝<b>次の1試合出場停止</b>。ただし同じ期間内のみ：カウントは<b>2回リセット</b>されます（グループステージ後と準々決勝後）。予選のイエローは持ち越されません（重大なレッドの出場停止は持ち越される場合あり）。🟥＝最低1試合。</p>'],
+    ["メンバーと交代", '<p>各チーム26人を登録し、試合中は次のとおり交代できます：</p>' + rchips([["26人登録"],["交代5人"],["3回の機会＋HT"],["延長で+1"],["脳振とう：別枠"]]) + '<p class="rsmall">交代機会を制限することで試合の流れを止めません。</p>'],
+    ["表彰", '<p>大会終了時に贈られる個人タイトル：</p>' + rchips([["🥇 ゴールデンブーツ"],["⚽ ゴールデンボール"],["🧤 ゴールデングローブ"],["🌟 最優秀若手"],["😇 フェアプレー賞"]]) + '<p class="rsmall">得点王はアシスト数、次に出場時間で決定。</p>'],
+    ["2026年の新ルール", '<p>🖥️ VARが<b>誤った2枚目イエローでの退場</b>を取り消せるように。</p><p>🚑 負傷した選手は復帰前に<b>一度ピッチ外へ</b> — 時間稼ぎ対策。</p><p>⏱️ 審判が<b>タイマー</b>で再開と交代を迅速化。</p><p>🥤 猛暑時のクーリングブレイク。</p><p>🧮 最終の順位決定は抽選ではなく<b>FIFAランキング</b>に。</p>']
+  ]
+}
 };
 
+let openRule = 0;
 function renderRules(){
   const l = L();
+  const R = RULES[LANG] || RULES.en;
   const t = $("#rules-title"), s = $("#rules-sub"), b = $("#rules-body");
   if(t) t.textContent = "📖 " + l.rulesT;
   if(s) s.textContent = l.rulesSub;
-  if(b) b.innerHTML = RULES[LANG] || RULES.en;
+  if(!b) return;
+  b.innerHTML = R.secs.map((sec, i) =>
+    '<div class="rcard'+(openRule===i?" open":"")+'">' +
+      '<button type="button" class="rhead" data-rule="'+i+'" aria-expanded="'+(openRule===i)+'">' +
+        '<span class="ric">'+R_IC[i]+'</span><span class="rt">'+sec[0]+'</span><span class="rarr">▾</span>' +
+      '</button>' +
+      '<div class="rbody"'+(openRule===i?"":" hidden")+'>'+sec[1]+'</div>' +
+    '</div>'
+  ).join("") + '<p class="rnote">'+R.note+'</p>';
 }
 
 const CAPY_ICON = "data:image/jpeg;base64,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";
@@ -3222,6 +3285,13 @@ document.body.addEventListener("change", e=>{
 });
 
 document.body.addEventListener("click", e=>{
+  const rh = e.target.closest("[data-rule]");
+  if(rh){
+    const i = Number(rh.dataset.rule);
+    openRule = (openRule === i) ? -1 : i;
+    renderRules();
+    return;
+  }
   const fdb = e.target.closest("[data-fdmatch]");
   if(fdb){ officialDetail(fdb.dataset.fdmatch); return; }
   const ab = e.target.closest("[data-scaddbtn]");
