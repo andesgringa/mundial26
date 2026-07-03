@@ -3882,19 +3882,21 @@ function pendingDetails(){
 }
 async function fetchDetailApply(key){
   const fid = state.fdIds && state.fdIds[key];
-  if(!fid) return false;
+  if(!fid) return { ok:false, msg:L().fdNoId };
   try{
     let r = await fetchFD(fid);
     if(r.status===429){ await new Promise(x=>setTimeout(x, 65000)); r = await fetchFD(fid); }
-    if(!r.ok) return false;
+    if(r.status===400 || r.status===401 || r.status===403) return { ok:false, msg:L().updBadKey };
+    if(!r.ok) return { ok:false, msg:"HTTP "+r.status };
     const am = await r.json();
-    if(!am || am.matches || !am.score) return false;
+    if(am && am.matches) return { ok:false, msg:L().fdOld };  /* relay viejo */
+    if(!am || !am.score) return { ok:false, msg:"?" };
     applyDetail(key, am);
     if(!state.fdDet) state.fdDet = {};
     if(am.status==="FINISHED") state.fdDet[key] = true;
     save(); renderAll();
-    return true;
-  }catch(e){ console.error("detail sweep:", e); return false; }
+    return { ok:true };
+  }catch(e){ console.error("detail sweep:", e); return { ok:false, msg:L().updNet }; }
 }
 async function sweepDetails(manual){
   if(sweepRunning || !fdKey()) return;
@@ -3904,7 +3906,12 @@ async function sweepDetails(manual){
   if(manual) toast(L().fdSweepStart(pend.length));
   let done = 0;
   for(const k of pend){
-    if(!(await fetchDetailApply(k))) break;
+    const res = await fetchDetailApply(k);
+    if(!res.ok){
+      /* si el barrido muere en el primer intento, decimos POR QUÉ, fuerte y claro */
+      if(manual && done===0) alert(L().updErr + (res.msg || L().updNet));
+      break;
+    }
     done++;
     if(done < pend.length) await new Promise(r=>setTimeout(r, FD_SWEEP_MS));
   }
