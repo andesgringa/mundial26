@@ -802,6 +802,42 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
   footer .credit img{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
+<style>
+/* --- sync + resultados oficiales + goleadores por equipo --- */
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);opacity:0;pointer-events:none;
+  background:var(--panel);color:var(--chalk,#eef4f9);border:1px solid var(--line);padding:10px 16px;
+  border-radius:12px;font-size:.85rem;z-index:120;transition:opacity .25s,transform .25s;
+  box-shadow:0 8px 28px rgba(0,0,0,.45);max-width:min(92vw,480px);text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.syncform{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.syncform label{display:flex;flex-direction:column;gap:4px;font-size:.72rem;color:var(--muted);letter-spacing:.02em}
+.syncform label .opt{opacity:.7;font-weight:400}
+.syncform input{background:var(--inp);border:1px solid var(--line);border-radius:9px;padding:9px 11px;
+  color:inherit;font:inherit;font-size:.85rem;min-width:0}
+.syncform input:focus{outline:none;border-color:var(--celeste)}
+.syncbtns{display:flex;gap:8px;margin-top:2px}
+.syncnote{font-size:.68rem;color:var(--muted);line-height:1.45;margin:2px 0 0}
+.scrow{display:flex;gap:6px;margin-top:4px}
+.scrow .sc-txt{flex:1;background:var(--inp);border:1px solid var(--line);border-radius:9px;padding:7px 10px;
+  color:inherit;font:inherit;font-size:.8rem;min-width:0}
+.scrow .sc-txt:focus{outline:none;border-color:var(--celeste)}
+.scrow button{background:var(--inp);border:1px solid var(--line);border-radius:9px;color:var(--celeste);
+  font-size:1rem;line-height:1;padding:4px 12px;cursor:pointer}
+.scrow button:hover{border-color:var(--celeste)}
+.gcount{font-size:.7rem;font-weight:700;margin-left:6px;opacity:.9;letter-spacing:.03em}
+.gcount.ok{color:var(--ok,#79d08c)}
+.gcount.warn{color:var(--gold)}
+.pop-tot.extra{margin-top:4px}
+.chiplab{display:inline-flex;align-items:center;gap:4px;margin-right:5px;font-size:.85rem;line-height:1}
+.chiplab b{font-size:.6rem;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.kcards.stack{flex-direction:column;align-items:flex-start;gap:5px}
+.kcards.stack .chipset{width:100%;justify-content:flex-start}
+.mvpline{font-size:.72rem;color:var(--muted);margin-top:8px}
+.mvpline b{color:var(--gold)}
+.autotag{font-size:.58rem;border:1px solid var(--line);border-radius:6px;padding:1px 5px;letter-spacing:.08em;text-transform:uppercase;opacity:.8;vertical-align:1px}
+.syncchk{flex-direction:row !important;align-items:center;gap:8px}
+.syncchk input{width:auto;accent-color:var(--celeste)}
+</style>
 </head>
 <body>
 
@@ -819,6 +855,8 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
       <div class="progress"><i id="prog-bar"></i></div>
       <div class="progress-label"><b id="prog-n">0</b> <span id="t-prog"></span></div>
       <div class="toolbar">
+        <button class="btn" id="btn-update"></button>
+        <button class="btn" id="btn-sync"></button>
         <button class="btn theme" id="btn-theme"></button>
         <button class="btn danger" id="btn-reset"></button>
       </div>
@@ -889,6 +927,17 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
 
 <script>
 "use strict";
+
+/* ================= CONFIG =================
+   Completá estos valores (o dejalos vacíos y cargalos desde el botón ☁ Sync,
+   que los guarda sólo en este dispositivo).
+   - Supabase: Project Settings → API → Project URL + anon public key
+   - football-data.org: clave gratuita en football-data.org/client/register  */
+const CONFIG = {
+  SUPABASE_URL: "",
+  SUPABASE_ANON_KEY: "",
+  FOOTBALL_DATA_KEY: ""
+};
 
 /* ================= IDIOMAS ================= */
 
@@ -1060,8 +1109,70 @@ const I18N = {
 /* ================= DATOS ================= */
 
 /* Capymura — ícono del estudio, incrustado para que el archivo siga siendo uno solo */
+/* --- textos nuevos: sync + resultados oficiales + goleadores de todos --- */
+Object.assign(I18N.es, {
+  syncBtn:"Sync",
+  syncT:"Sincronización en la nube",
+  syncSub:"Guardá tu torneo en Supabase y abrilo desde cualquier dispositivo con tu nombre.",
+  syncName:"Tu nombre (usá el mismo en todos tus dispositivos)",
+  syncNamePh:"ej: capymura-2026",
+  syncOpt:"opcional — para el botón ⟳ Resultados",
+  syncFdPh:"clave gratuita de football-data.org",
+  syncSave:"Guardar y conectar", syncOff:"Desconectar",
+  syncNote:"⚠️ Sin contraseña: cualquiera que conozca tu nombre exacto puede ver y editar ese torneo — elegí uno difícil de adivinar. Todo se guarda también en este dispositivo, así que sin conexión seguís trabajando igual.",
+  updBtn:"⟳ Resultados",
+  updNoKey:"Falta la clave de football-data.org — cargala acá abajo.",
+  updBadKey:"football-data.org rechazó la clave. Revisala en ☁ Sync.",
+  updRate:"Demasiadas consultas seguidas — esperá un minuto y probá de nuevo.",
+  updDone:(n,t)=>"✅ "+n+" resultado"+(n===1?"":"s")+" oficial"+(n===1?"":"es")+" cargado"+(n===1?"":"s")+(t?" · "+t+" tercero"+(t===1?"":"s")+" asignado"+(t===1?"":"s"):""),
+  updNone:"Todo al día: no había resultados nuevos.",
+  updErr:"No se pudo actualizar: ",
+  scAddTxt:"Goleador… (ej: Mbappé x2)",
+  scAddBtn:"agregar goleador",
+  mvpAuto:"auto: ",
+  syncAuto:"Actualizar resultados oficiales automáticamente al abrir la app"
+});
+Object.assign(I18N.en, {
+  syncBtn:"Sync",
+  syncT:"Cloud sync",
+  syncSub:"Save your tournament to Supabase and open it on any device with your name.",
+  syncName:"Your name (use the same one on every device)",
+  syncNamePh:"e.g. capymura-2026",
+  syncOpt:"optional — for the ⟳ Results button",
+  syncFdPh:"free key from football-data.org",
+  syncSave:"Save & connect", syncOff:"Disconnect",
+  syncNote:"⚠️ No password: anyone who knows your exact name can view and edit that tournament — pick one that's hard to guess. Everything is also saved on this device, so you can keep working offline.",
+  updBtn:"⟳ Results",
+  updNoKey:"Missing football-data.org key — add it below.",
+  updBadKey:"football-data.org rejected the key. Check it in ☁ Sync.",
+  updRate:"Too many requests — wait a minute and try again.",
+  updDone:(n,t)=>"✅ "+n+" official result"+(n===1?"":"s")+" loaded"+(t?" · "+t+" third"+(t===1?"":"s")+" assigned":""),
+  updNone:"All up to date: no new results.",
+  updErr:"Couldn't update: ",
+  scAddTxt:"Scorer… (e.g. Mbappé x2)",
+  scAddBtn:"add scorer",
+  mvpAuto:"auto: ",
+  syncAuto:"Fetch official results automatically when the app opens"
+});
+
 const CAPY_ICON = "data:image/jpeg;base64,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";
 
+
+/* colores de festejo por selección (bandera) */
+const TEAM_COLORS = {
+  MEX:["#006847","#ffffff","#ce1126"], RSA:["#007a4d","#ffb612","#e03c31"], KOR:["#cd2e3a","#0047a0","#ffffff"], CZE:["#d7141a","#11457e","#ffffff"],
+  CAN:["#d80621","#ffffff"], BIH:["#002f6c","#fecb00","#ffffff"], QAT:["#8a1538","#ffffff"], SUI:["#d52b1e","#ffffff"],
+  BRA:["#009739","#fedd00","#012169"], MAR:["#c1272d","#006233"], SCO:["#0065bf","#ffffff"], HAI:["#00209f","#d21034","#ffffff"],
+  USA:["#3c3b6e","#ffffff","#b22234"], PAR:["#d52b1e","#0038a8","#ffffff"], AUS:["#ffcd00","#00843d"], TUR:["#e30a17","#ffffff"],
+  GER:["#ffce00","#dd0000","#ffffff"], CUW:["#002b7f","#f9e814","#ffffff"], CIV:["#ff8200","#ffffff","#009a44"], ECU:["#ffd100","#0072ce","#ef3340"],
+  NED:["#ff4f00","#ffffff","#21468b"], JPN:["#bc002d","#ffffff"], SWE:["#005293","#fecb00"], TUN:["#e70013","#ffffff"],
+  BEL:["#fdda24","#ef3340","#ffffff"], IRN:["#239f40","#ffffff","#da0000"], EGY:["#ce1126","#ffffff","#c09300"], NZL:["#ffffff","#000000","#cccccc"],
+  ESP:["#aa151b","#f1bf00"], URU:["#75aadb","#ffffff"], KSA:["#006c35","#ffffff"], CPV:["#003893","#f7d116","#cf2027"],
+  FRA:["#0055a4","#ffffff","#ef4135"], SEN:["#00853f","#fdef42","#e31b23"], NOR:["#ba0c2f","#00205b","#ffffff"], IRQ:["#ce1126","#ffffff","#007a3d"],
+  ARG:["#75aadb","#ffffff","#f4c848"], ALG:["#006233","#ffffff","#d21034"], AUT:["#ed2939","#ffffff"], JOR:["#007a3d","#ce1126","#ffffff"],
+  POR:["#046a38","#da291c","#ffe900"], COL:["#fcd116","#003893","#ce1126"], UZB:["#0099b5","#ffffff","#1eb53a"], COD:["#007fff","#f7d618","#ce1021"],
+  ENG:["#ffffff","#cf081f","#dfe6ec"], CRO:["#ff0000","#ffffff","#171796"], GHA:["#ce1126","#fcd116","#006b3f"], PAN:["#da121a","#072357","#ffffff"]
+};
 
 /* code: [nombre ES, name EN, bandera] */
 const T = {
@@ -1267,6 +1378,7 @@ function load(){
 function save(){
   memState = state;
   try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+  schedulePush();  /* sync en la nube (si está conectado) */
 }
 let state = load();
 let LANG = (state.lang==="en") ? "en" : "es";
@@ -1494,8 +1606,9 @@ function argPlayerStats(){
         if(p) p.g += gl.n;
       });
     });
-    if(f.mvp && (m.home==="ARG"||m.away==="ARG")){
-      const p = rows.find(r=>matchPlayer(f.mvp, r.name));
+    const eff = mvpFor(m.key, m.home, m.away);
+    if(eff && (m.home==="ARG"||m.away==="ARG")){
+      const p = rows.find(r=>matchPlayer(eff.name, r.name));
       if(p) p.f++;
     }
   });
@@ -1601,6 +1714,8 @@ function renderChrome(){
   const mt = document.querySelector("#meta-theme");
   if(mt) mt.setAttribute("content", state.theme==="light" ? "#75aadb" : "#0a1420");
   $("#arg-squad").innerHTML = SQUAD_AZ.map(p=>'<option value="'+esc(p[0])+'">').join("");
+  const bu = $("#btn-update"); if(bu && !bu.disabled) bu.textContent = l.updBtn;
+  setSyncUi(syncUiState);
 }
 
 function fichaBtn(key){
@@ -1615,6 +1730,7 @@ function chips(key, i, code){
   const hint = L().chipHint;
   const minus = '<span class="cx" aria-label="−1">−</span>';
   return '<span class="chipset">' +
+    '<span class="chiplab" title="'+esc(tshort(code))+'">'+T[code][2]+'<b>'+esc(code)+'</b></span>' +
     '<button class="card-chip'+(y?'':' off')+'" data-ck="'+key+'" data-cf="y'+i+'" title="'+hint+'" aria-label="🟨 '+esc(tshort(code))+': '+y+'">🟨 '+y+(y?minus:'')+'</button>' +
     '<button class="card-chip'+(r?'':' off')+'" data-ck="'+key+'" data-cf="r'+i+'" title="'+hint+'" aria-label="🟥 '+esc(tshort(code))+': '+r+'">🟥 '+r+(r?minus:'')+'</button>' +
   '</span>';
@@ -1624,36 +1740,97 @@ function scSerialize(rows){
   return rows.filter(r=>r.n>0).map(r=> r.n>1 ? r.name+" x"+r.n : r.name).join(", ");
 }
 
+function scoreForKey(key){
+  const bag = key[0]==="g" ? state.g : state.k;
+  const s = bag[key.slice(2)];
+  return s ? [val(s[0]), val(s[1])] : [null, null];
+}
+
+function addScorer(key, field, raw){
+  const adds = parseScorers(raw);
+  if(!adds.length) return;
+  const rows = parseScorers(fichaVal(key, field));
+  adds.forEach(a=>{
+    const r = rows.find(x=>x.name.toLowerCase()===a.name.toLowerCase());
+    if(r) r.n = Math.min(9, r.n + a.n); else rows.push(a);
+  });
+  setFicha(key, field, scSerialize(rows));
+  save(); renderAll();
+}
+
+/* figura del partido automática: goleador del ganador (o del partido) */
+function matchTopScorer(key, homeCode, awayCode){
+  const f = fichaOf(key);
+  if(!f) return null;
+  const sc = scoreForKey(key);
+  if(sc[0]===null || sc[1]===null) return null;
+  let winSide = sc[0]>sc[1] ? 0 : sc[1]>sc[0] ? 1 : -1;
+  if(winSide<0 && key[0]==="k"){
+    const w = koWinner(KO_BY_ID[Number(key.slice(2))]);
+    if(w) winSide = (w.win===homeCode) ? 0 : (w.win===awayCode ? 1 : -1);
+  }
+  const top = rows => rows.slice().sort((a,b)=> b.n-a.n)[0] || null;
+  const best = (winSide>=0 && top(parseScorers(f["sc"+winSide]))) ||
+               top(parseScorers(f.sc0).concat(parseScorers(f.sc1)));
+  return best ? best.name : null;
+}
+function mvpFor(key, homeCode, awayCode){
+  const manual = fichaVal(key, "mvp");
+  if(manual) return { name: manual, auto: false };
+  const auto = matchTopScorer(key, homeCode, awayCode);
+  return auto ? { name: auto, auto: true } : null;
+}
+
 function fichaPanel(key, homeCode, awayCode){
   if(!openFichas.has(key)) return "";
-  if(homeCode!=="ARG" && awayCode!=="ARG") return "";
   const l = L();
-  const i = homeCode==="ARG" ? 0 : 1;
-  const field = "sc"+i;
-  const scorers = parseScorers(fichaVal(key, field));
-  /* chips de goleadores: tocá +1 · la ✕ resta (y elimina en 0) */
-  const gchips = scorers.map(g=>
-    '<button class="gchip" data-gk="'+key+'" data-gf="'+field+'" data-name="'+esc(g.name)+'" title="'+l.chipHint+'">⚽ '+esc(g.name)+(g.n>1?' <b>x'+g.n+'</b>':'')+'<span class="gx" aria-label="−1">✕</span></button>'
-  ).join("");
+  const sc = scoreForKey(key);
   const inj = state.inj || {};
   const avail = SQUAD_AZ.filter(p=> !(p[0] in inj));
-  const scOpts = avail.map(p=>'<option value="'+esc(p[0])+'">'+esc(p[0])+' · '+p[2]+'</option>').join("");
-  const mvp = fichaVal(key,"mvp");
-  const mvpOpts = '<option value="">'+l.mvpNone+'</option>' +
-    avail.map(p=>'<option value="'+esc(p[0])+'"'+(mvp===p[0]?" selected":"")+'>'+esc(p[0])+' · '+p[2]+'</option>').join("") +
-    (mvp && !avail.some(p=>p[0]===mvp) ? '<option value="'+esc(mvp)+'" selected>'+esc(mvp)+'</option>' : '');
-  const stars = [1,2,3,4,5].map(n=>
-    '<button class="star-btn'+((fichaVal(key,"st")||0)>=n?" on":"")+'" data-star="'+key+'" data-n="'+n+'" aria-label="'+n+'★">★</button>').join("");
-  return '<div class="ficha">' +
-    '<div class="fteam">'+esc(tname("ARG"))+' — '+l.fGoles+'</div>' +
-    (gchips ? '<div class="gchips">'+gchips+'</div>' : '') +
-    '<select class="sq sc-add" data-gk="'+key+'" data-gf="'+field+'" aria-label="'+l.fGoles+'">' +
-      '<option value="">'+l.scAdd+'</option>'+scOpts+'</select>' +
-    '<div class="fwide">' +
+  let html = '<div class="ficha">';
+  [homeCode, awayCode].forEach((code, i)=>{
+    if(!code) return;
+    const field = "sc"+i;
+    const rows = parseScorers(fichaVal(key, field));
+    const entered = rows.reduce((s,r)=>s+r.n, 0);
+    /* contador ⚽ anotados/goles: verde si cierra, dorado si falta o sobra */
+    const cnt = (sc[i]!==null)
+      ? ' <span class="gcount'+(entered===sc[i]?' ok':' warn')+'" title="⚽ '+entered+' / '+sc[i]+'">'+entered+'/'+sc[i]+'</span>'
+      : '';
+    const gchips = rows.map(g=>
+      '<button class="gchip" data-gk="'+key+'" data-gf="'+field+'" data-name="'+esc(g.name)+'" title="'+l.chipHint+'">⚽ '+esc(g.name)+(g.n>1?' <b>x'+g.n+'</b>':'')+'<span class="gx" aria-label="−1">✕</span></button>'
+    ).join("");
+    html += '<div class="fteam">'+T[code][2]+' '+esc(tshort(code))+' — '+l.fGoles+cnt+'</div>';
+    if(gchips) html += '<div class="gchips">'+gchips+'</div>';
+    if(code==="ARG"){
+      const scOpts = avail.map(p=>'<option value="'+esc(p[0])+'">'+esc(p[0])+' · '+p[2]+'</option>').join("");
+      html += '<select class="sq sc-add" data-gk="'+key+'" data-gf="'+field+'" aria-label="'+l.fGoles+'">' +
+        '<option value="">'+l.scAdd+'</option>'+scOpts+'</select>';
+    } else {
+      html += '<div class="scrow">' +
+        '<input class="sc-txt" type="text" maxlength="48" data-gk="'+key+'" data-gf="'+field+'" placeholder="'+l.scAddTxt+'" aria-label="'+l.fGoles+' '+esc(tshort(code))+'">' +
+        '<button type="button" data-scaddbtn aria-label="'+l.scAddBtn+'">＋</button></div>';
+    }
+  });
+  const autoName = matchTopScorer(key, homeCode, awayCode);
+  if(homeCode==="ARG" || awayCode==="ARG"){
+    const mvp = fichaVal(key,"mvp");
+    const mvpOpts = '<option value="">'+(autoName ? l.mvpAuto+esc(autoName) : l.mvpNone)+'</option>' +
+      avail.map(p=>'<option value="'+esc(p[0])+'"'+(mvp===p[0]?" selected":"")+'>'+esc(p[0])+' · '+p[2]+'</option>').join("") +
+      (mvp && !avail.some(p=>p[0]===mvp) ? '<option value="'+esc(mvp)+'" selected>'+esc(mvp)+'</option>' : '');
+    const stars = [1,2,3,4,5].map(n=>
+      '<button class="star-btn'+((fichaVal(key,"st")||0)>=n?" on":"")+'" data-star="'+key+'" data-n="'+n+'" aria-label="'+n+'★">★</button>').join("");
+    html += '<div class="fwide">' +
       '<select class="sq" data-fk="'+key+'" data-ff="mvp" aria-label="'+l.fFig+'" style="margin-bottom:0">'+mvpOpts+'</select>' +
       '<span class="stars" title="'+l.fStars+'">'+stars+'</span>' +
-    '</div>' +
-  '</div>';
+    '</div>';
+  } else {
+    html += '<div class="fwide"><input class="sq" type="text" maxlength="48" data-fk="'+key+'" data-ff="mvp" value="'+esc(fichaVal(key,"mvp"))+'" placeholder="'+(autoName ? l.mvpAuto+esc(autoName) : l.fFigPh)+'" aria-label="'+l.fFig+'"></div>';
+  }
+  const eff = mvpFor(key, homeCode, awayCode);
+  if(eff) html += '<div class="mvpline">'+l.fFig+': <b>'+esc(eff.name)+'</b>'+(eff.auto ? ' <span class="autotag">auto</span>' : '')+'</div>';
+  html += '</div>';
+  return html;
 }
 
 function groupTableHTML(g){
@@ -1712,7 +1889,7 @@ function renderGroups(){
         '<span class="scorebox">'+scoreInput("g",i,0,val(s[0]))+'<span class="dash">–</span>'+scoreInput("g",i,1,val(s[1]))+'</span>' +
         '<span class="mteam away">'+tlabel(m[5])+'</span>' +
         '<span class="mcards">'+chips(key,0,m[4])+chips(key,1,m[5])+'</span>' +
-        '<span class="mmeta"><span>'+(lp=>lp.d+' · '+lp.h+l.hs)(locParts(m[1],m[2]))+' · '+esc(ven(m[3]))+'</span><span>'+ft+(isArgMatch?fichaBtn(key):"")+'</span></span>' +
+        '<span class="mmeta"><span>'+(lp=>lp.d+' · '+lp.h+l.hs)(locParts(m[1],m[2]))+' · '+esc(ven(m[3]))+'</span><span>'+ft+fichaBtn(key)+'</span></span>' +
         fichaPanel(key, m[4], m[5]) +
       '</div>';
     });
@@ -1764,7 +1941,7 @@ function koCard(m, opts){
   const drawNeedsPen = t.a.code && t.b.code && val(s[0])!==null && val(s[1])!==null && val(s[0])===val(s[1]);
   const isArgMatch = t.a.code==="ARG" || t.b.code==="ARG";
   let html = '<div class="kcard'+(opts&&opts.final?" final-card":"")+(w?" live-gold":"")+'" data-mid="'+m.id+'">' +
-    '<div class="knum"><span><b>'+m.id+'</b> · '+(lp=>lp.wd+' '+lp.d+' · '+lp.h+l.hs)(locParts(m.d,m.h))+'</span><span>'+(isArgMatch?ftChip(key,m.d,m.h,val(s[0])!==null&&val(s[1])!==null):"")+(isArgMatch?fichaBtn(key):"")+'</span></div>' +
+    '<div class="knum"><span><b>'+m.id+'</b> · '+(lp=>lp.wd+' '+lp.d+' · '+lp.h+l.hs)(locParts(m.d,m.h))+'</span><span>'+(isArgMatch?ftChip(key,m.d,m.h,val(s[0])!==null&&val(s[1])!==null):"")+fichaBtn(key)+'</span></div>' +
     '<div class="kvenue">'+esc(ven(m.v))+'</div>';
   [["a",0],["b",1]].forEach(([side,idx])=>{
     const slot = t[side];
@@ -1775,7 +1952,7 @@ function koCard(m, opts){
       scoreInput("k", m.id, idx, val(s[idx])) + '</div>';
   });
   if(t.a.code || t.b.code){
-    html += '<div class="kcards">'+chips(key,0,t.a.code)+chips(key,1,t.b.code)+'</div>';
+    html += '<div class="kcards stack">'+chips(key,0,t.a.code)+chips(key,1,t.b.code)+'</div>';
   }
   if(m.b.t==="third") html += thirdOptions(m);
   if(drawNeedsPen){
@@ -2183,6 +2360,18 @@ function renderArg(){
 }
 
 /* ----- panel de equipo (clic en bandera) ----- */
+function teamCardTotals(code){
+  const out = {y:0, r:0};
+  allMatches().forEach(m=>{
+    if(m.hs===null || m.as===null) return;
+    const f = fichaOf(m.key);
+    if(!f) return;
+    if(m.home===code){ out.y += val(f.y0)||0; out.r += val(f.r0)||0; }
+    if(m.away===code){ out.y += val(f.y1)||0; out.r += val(f.r1)||0; }
+  });
+  return out;
+}
+
 function teamSummary(code){
   const out = {pj:0, w:0, d:0, l:0, gf:0, gc:0, rows:[]};
   allMatches().forEach(m=>{
@@ -2215,6 +2404,10 @@ function openTeamPop(code){
     '<div class="pop-name" id="pop-name">'+esc(tshort(code))+(code==="ARG"?" ⭐⭐⭐":"")+'</div>' +
     '<div class="pop-tot">'+l.sTh.pj+' <b>'+s.pj+'</b> · '+w[0]+' <b>'+s.w+'</b> '+w[1]+' <b>'+s.d+'</b> '+w[2]+' <b>'+s.l+'</b> · '+l.sTh.gf+' <b>'+s.gf+'</b> '+l.sTh.gc+' <b>'+s.gc+'</b></div>' +
   '</div></div>';
+  const tc = teamCardTotals(code);
+  const tg = scorersTally().filter(t=>t.team===code);
+  html += '<div class="pop-tot extra">🟨 <b>'+tc.y+'</b> · 🟥 <b>'+tc.r+'</b>' +
+    (tg.length ? ' · ⚽ '+tg.slice(0,10).map(g=>esc(g.name)+(g.n>1?" x"+g.n:"")).join(", ") : '') + '</div>';
   html += '<div class="pop-sub">'+l.popRes+'</div>';
   if(!s.rows.length){
     html += '<div class="pop-empty">'+l.popEmpty+'</div>';
@@ -2397,7 +2590,8 @@ function renderHeader(){
 /* ----- fuegos artificiales albicelestes: cada victoria argentina ----- */
 const FX_COLORS = ["#75aadb","#ffffff","#f4c848","#e4b54a","#a8d2f0","#ffffff"];
 let fxRunning = false;
-function fireworks(duration){
+function fireworks(duration, colors){
+  const PAL = (colors && colors.length) ? colors : FX_COLORS;
   window.__fx = (window.__fx||0) + 1;
   const cv = $("#fx");
   let ctx = null;
@@ -2413,7 +2607,7 @@ function fireworks(duration){
   function launch(){
     const x = cv.width*0.1 + Math.random()*cv.width*0.8;
     const y = cv.height*0.12 + Math.random()*cv.height*0.45;
-    const col = FX_COLORS[Math.floor(Math.random()*FX_COLORS.length)];
+    const col = PAL[Math.floor(Math.random()*PAL.length)];
     const n = 42 + Math.random()*30;
     for(let i=0;i<n;i++){
       const a = Math.PI*2*i/n + Math.random()*.25;
@@ -2463,35 +2657,33 @@ function ftChip(key, d, h, scored){
   return '<button class="ft-chip'+(on?' on':'')+'" data-ft="'+key+'" title="'+l.ftTip+'">🏁 '+l.ft+'</button>';
 }
 
-let prevArgWins = null;
-function argWinKeys(){
-  const s = new Set();
+let prevWins = null;
+function finishedWins(){
+  const map = {};
   allMatches().forEach(m=>{
-    const isH = m.home==="ARG", isA = m.away==="ARG";
-    if(!isH && !isA) return;
     if(m.hs===null || m.as===null) return;
     if(!matchEnded(m.key, m.d, m.h)) return;  /* nada de festejar antes del pitazo */
-    if(m.ko){
-      const w = koWinner(m.ko);
-      if(w && w.win==="ARG") s.add(m.key);
-    } else {
-      const gf = isH?m.hs:m.as, gc = isH?m.as:m.hs;
-      if(gf>gc) s.add(m.key);
-    }
+    let win = null;
+    if(m.ko){ const w = koWinner(m.ko); win = w ? w.win : null; }
+    else if(m.hs>m.as) win = m.home;
+    else if(m.as>m.hs) win = m.away;
+    if(win) map[m.key] = { win, t: artDate(m.d, m.h).getTime() };
   });
-  return s;
+  return map;
 }
 function checkFireworks(){
-  const now = argWinKeys();
-  if(prevArgWins){
-    let newWin = false, finalWin = false;
-    now.forEach(k=>{
-      if(!prevArgWins.has(k)){ newWin = true; if(k==="k:104") finalWin = true; }
-    });
-    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if(newWin && !reduce) fireworks(finalWin ? 9000 : 3800);
+  const now = finishedWins();
+  if(prevWins){
+    const news = Object.keys(now).filter(k=> !prevWins[k] || prevWins[k].win !== now[k].win);
+    if(news.length){
+      /* si entran varios juntos (⟳ Resultados), festejamos sólo el más importante */
+      const pick = news.includes("k:104") ? "k:104" : news.sort((a,b)=> now[b].t - now[a].t)[0];
+      const code = now[pick].win;
+      const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if(!reduce) fireworks(pick==="k:104" ? 9000 : 3600, TEAM_COLORS[code] || FX_COLORS);
+    }
   }
-  prevArgWins = now;
+  prevWins = now;
 }
 
 function renderAll(){
@@ -2575,6 +2767,12 @@ document.body.addEventListener("change", e=>{
 });
 
 document.body.addEventListener("click", e=>{
+  const ab = e.target.closest("[data-scaddbtn]");
+  if(ab){
+    const inp = ab.parentElement.querySelector(".sc-txt");
+    if(inp && inp.value.trim()) addScorer(inp.dataset.gk, inp.dataset.gf, inp.value);
+    return;
+  }
   const ch = e.target.closest(".card-chip,.gchip");
   if(ch){
     if(chipLong){ chipLong = false; return; }
@@ -2810,7 +3008,260 @@ setInterval(()=>{
   el.textContent = diff>0 ? fmtCount(diff) : L().argPlaying;
 }, 30000);
 
+
+/* ================= SYNC EN LA NUBE (Supabase, sin librerías) ================= */
+
+const KEY_CFG = "mundial2026-cfg";
+function loadCfg(){
+  const d = {url:"", anon:"", fd:"", name:"", last:"", auto:false};
+  try{ return Object.assign(d, JSON.parse(localStorage.getItem(KEY_CFG)||"{}")); }
+  catch(e){ return d; }
+}
+let cfg = loadCfg();
+function saveCfg(){ try{ localStorage.setItem(KEY_CFG, JSON.stringify(cfg)); }catch(e){} }
+function sbUrl(){ return (cfg.url || CONFIG.SUPABASE_URL || "").replace(/\/+$/,""); }
+function sbAnon(){ return cfg.anon || CONFIG.SUPABASE_ANON_KEY || ""; }
+function fdKey(){ return cfg.fd || CONFIG.FOOTBALL_DATA_KEY || ""; }
+function syncOn(){ return !!(sbUrl() && sbAnon() && cfg.name); }
+function sbHeaders(json){
+  const h = { "apikey": sbAnon(), "Authorization": "Bearer "+sbAnon() };
+  if(json){ h["Content-Type"] = "application/json"; h["Prefer"] = "resolution=merge-duplicates,return=minimal"; }
+  return h;
+}
+
+let syncTimer = null, syncUiState = "off";
+function setSyncUi(st){
+  syncUiState = st;
+  const b = $("#btn-sync"); if(!b) return;
+  const ic = st==="ok" ? "☁✓" : st==="saving" ? "☁…" : st==="err" ? "☁⚠" : "☁";
+  b.textContent = ic + " " + (syncOn() ? cfg.name : L().syncBtn);
+}
+/* push con debounce: 1.2s después del último cambio */
+function schedulePush(){
+  if(!syncOn()) return;
+  clearTimeout(syncTimer);
+  setSyncUi("saving");
+  syncTimer = setTimeout(pushState, 1200);
+}
+async function pushState(){
+  syncTimer = null;
+  if(!syncOn()) return;
+  const now = new Date().toISOString();
+  try{
+    const r = await fetch(sbUrl()+"/rest/v1/brackets", {
+      method: "POST", headers: sbHeaders(true),
+      body: JSON.stringify({ name: cfg.name, state: state, updated_at: now })
+    });
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    cfg.last = now; saveCfg();
+    setSyncUi("ok");
+  }catch(e){ setSyncUi("err"); }
+}
+async function pullState(){
+  if(!syncOn()) return;
+  if(syncTimer) return;  /* hay cambios locales por subir: local manda */
+  try{
+    const r = await fetch(sbUrl()+"/rest/v1/brackets?name=eq."+encodeURIComponent(cfg.name)+"&select=state,updated_at",
+      { headers: sbHeaders(false) });
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const rows = await r.json();
+    if(rows.length){
+      const row = rows[0];
+      if(row.updated_at !== cfg.last && row.state){
+        state = Object.assign(defaultState(), row.state);
+        LANG = (state.lang==="en") ? "en" : "es";
+        memState = state;
+        try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+        cfg.last = row.updated_at; saveCfg();
+        renderAll();
+      }
+      setSyncUi("ok");
+    } else {
+      pushState();  /* primera vez con este nombre: sembrar la nube */
+    }
+  }catch(e){ setSyncUi("err"); }
+}
+
+function openSyncPop(){
+  const l = L();
+  let html = '<div class="pop-head"><span class="pop-flag">☁️</span><div>' +
+    '<div class="pop-name" id="pop-name">'+l.syncT+'</div>' +
+    '<div class="pop-tot">'+l.syncSub+'</div></div></div>';
+  html += '<div class="syncform">' +
+    '<label>'+l.syncName+'<input id="sy-name" type="text" maxlength="40" autocomplete="off" value="'+esc(cfg.name)+'" placeholder="'+l.syncNamePh+'"></label>' +
+    '<label>Supabase URL<input id="sy-url" type="text" autocomplete="off" value="'+esc(cfg.url)+'" placeholder="'+esc(CONFIG.SUPABASE_URL||"https://xxxx.supabase.co")+'"></label>' +
+    '<label>Supabase anon key<input id="sy-anon" type="text" autocomplete="off" value="'+esc(cfg.anon)+'" placeholder="'+(CONFIG.SUPABASE_ANON_KEY?"(configurada)":"eyJ…")+'"></label>' +
+    '<label>football-data.org <span class="opt">('+l.syncOpt+')</span><input id="sy-fd" type="text" autocomplete="off" value="'+esc(cfg.fd)+'" placeholder="'+(CONFIG.FOOTBALL_DATA_KEY?"(configurada)":l.syncFdPh)+'"></label>' +
+    '<label class="syncchk"><input type="checkbox" id="sy-auto"'+(cfg.auto?" checked":"")+'> '+l.syncAuto+'</label>' +
+    '<div class="syncbtns"><button class="btn" id="sy-save">'+l.syncSave+'</button>' +
+    (syncOn() ? '<button class="btn danger" id="sy-off">'+l.syncOff+'</button>' : '') +
+    '</div><p class="syncnote">'+l.syncNote+'</p></div>';
+  $("#pop-body").innerHTML = html;
+  $("#pop-back").hidden = false;
+  $("#sy-save").addEventListener("click", ()=>{
+    cfg.name = $("#sy-name").value.trim().toLowerCase();
+    cfg.url  = $("#sy-url").value.trim();
+    cfg.anon = $("#sy-anon").value.trim();
+    cfg.fd   = $("#sy-fd").value.trim();
+    cfg.auto = $("#sy-auto").checked;
+    cfg.last = "";
+    saveCfg(); closeTeamPop();
+    if(syncOn()){ setSyncUi("saving"); pullState(); } else setSyncUi("off");
+  });
+  const off = $("#sy-off");
+  if(off) off.addEventListener("click", ()=>{
+    cfg.name = ""; cfg.last = ""; saveCfg(); setSyncUi("off"); closeTeamPop();
+  });
+}
+
+/* ================= RESULTADOS OFICIALES (football-data.org) ================= */
+
+/* nombres de la API que no coinciden con los códigos FIFA de T */
+const FD_ALIAS = {
+  "korea republic":"KOR", "south korea":"KOR", "czech republic":"CZE", "czechia":"CZE",
+  "turkiye":"TUR", "turkey":"TUR", "cote divoire":"CIV", "ivory coast":"CIV",
+  "ir iran":"IRN", "iran":"IRN", "congo dr":"COD", "dr congo":"COD",
+  "cabo verde":"CPV", "cape verde":"CPV", "cape verde islands":"CPV",
+  "bosnia and herzegovina":"BIH", "bosniaherzegovina":"BIH", "curacao":"CUW",
+  "saudi arabia":"KSA", "united states":"USA", "usa":"USA", "netherlands":"NED",
+  "new zealand":"NZL", "south africa":"RSA"
+};
+function normName(s){
+  return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z ]/g," ").replace(/\s+/g," ").trim();
+}
+function codeFromApi(team){
+  if(!team || (!team.name && !team.tla)) return null;
+  if(team.tla && T[team.tla]) return team.tla;
+  const n = normName(team.name);
+  if(!n) return null;
+  if(FD_ALIAS[n]) return FD_ALIAS[n];
+  for(const c in T){ if(normName(T[c][1])===n || normName(T[c][0])===n) return c; }
+  for(const c in T){ const en = normName(T[c][1]); if(en && (n.includes(en) || en.includes(n))) return c; }
+  return null;
+}
+
+let toastTimer = null;
+function toast(msg){
+  let el = $("#toast");
+  if(!el){ el = document.createElement("div"); el.id = "toast"; document.body.appendChild(el); }
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove("show"), 4000);
+}
+
+async function autoUpdate(silent){
+  const l = L();
+  if(!fdKey()){ if(silent) return; toast(l.updNoKey); openSyncPop(); return; }
+  const b = $("#btn-update");
+  if(b){ b.disabled = true; b.textContent = "⟳ …"; }
+  try{
+    const r = await fetch("https://api.football-data.org/v4/competitions/WC/matches",
+      { headers: { "X-Auth-Token": fdKey() } });
+    if(r.status===400 || r.status===401 || r.status===403) throw {msg:l.updBadKey};
+    if(r.status===429) throw {msg:l.updRate};
+    if(!r.ok) throw {msg:"HTTP "+r.status};
+    const data = await r.json();
+
+    /* índices por hora de inicio (instante UTC) */
+    const gByT = {}, kByT = {};
+    GM.forEach((m,i)=>{ const t = artDate(m[1],m[2]).getTime(); (gByT[t] = gByT[t]||[]).push(i); });
+    KO.forEach(m=>{ const t = artDate(m.d,m.h).getTime(); (kByT[t] = kByT[t]||[]).push(m.id); });
+
+    let nScores = 0, nThirds = 0;
+    /* en orden cronológico: los grupos oficiales resuelven solos los cruces */
+    const ms = (data.matches||[]).slice().sort((a,b)=> Date.parse(a.utcDate)-Date.parse(b.utcDate));
+    ms.forEach(am=>{
+      const t = Date.parse(am.utcDate);
+      const hc = codeFromApi(am.homeTeam), ac = codeFromApi(am.awayTeam);
+      const done = am.status==="FINISHED" && am.score && am.score.fullTime &&
+        am.score.fullTime.home!==null && am.score.fullTime.away!==null;
+
+      if(am.stage==="GROUP_STAGE"){
+        const cand = gByT[t]||[];
+        let idx = -1;
+        if(cand.length===1) idx = cand[0];
+        else {
+          const f = cand.find(i=> (GM[i][4]===hc && GM[i][5]===ac) || (GM[i][4]===ac && GM[i][5]===hc));
+          if(f!==undefined) idx = f;
+        }
+        if(idx<0 || !done) return;
+        const flip = (ac && GM[idx][4]===ac);   /* la API tiene local/visitante al revés que nuestro fixture */
+        const H = String(flip ? am.score.fullTime.away : am.score.fullTime.home);
+        const A = String(flip ? am.score.fullTime.home : am.score.fullTime.away);
+        const cur = state.g[idx];
+        if(!cur || cur[0]!==H || cur[1]!==A){ state.g[idx] = [H, A]; nScores++; }
+        state.ft["g:"+idx] = true;
+        return;
+      }
+
+      /* eliminatorias */
+      const cand = kByT[t]||[];
+      let id = -1;
+      if(cand.length===1) id = cand[0];
+      else {
+        const f = cand.find(cid=>{
+          const tt = koTeams(KO_BY_ID[cid]);
+          return (tt.a.code===hc && tt.b.code===ac) || (tt.a.code===ac && tt.b.code===hc);
+        });
+        if(f!==undefined) id = f;
+      }
+      if(id<0) return;
+      const m = KO_BY_ID[id];
+      /* la FIFA ya definió el cruce: asignar el tercero automáticamente */
+      if(m.b.t==="third" && ac && T[ac] && state.third[id]!==ac){ state.third[id] = ac; nThirds++; }
+      if(!done) return;
+      /* ¿la API tiene el local/visitante al revés que nuestro fixture?
+         Si no podemos resolver los equipos todavía, confiamos en el orden oficial. */
+      const tt = koTeams(m);
+      let flip = false;
+      if(ac && tt.a.code===ac) flip = true;
+      else if(hc && tt.b.code===hc) flip = true;
+      let H = am.score.fullTime.home, A = am.score.fullTime.away;
+      if(flip){ const x = H; H = A; A = x; }
+      const cur = state.k[id];
+      if(!cur || cur[0]!==String(H) || cur[1]!==String(A)){ state.k[id] = [String(H), String(A)]; nScores++; }
+      if(H===A && am.score.winner && am.score.winner!=="DRAW"){
+        const homeWins = am.score.winner==="HOME_TEAM";
+        state.pen[id] = homeWins ? (flip ? "b" : "a") : (flip ? "a" : "b");
+      }
+      state.ft["k:"+id] = true;
+    });
+
+    save(); renderAll();
+    if(nScores || nThirds) toast(l.updDone(nScores, nThirds));
+    else if(!silent) toast(l.updNone);
+  }catch(e){
+    if(!silent) toast(l.updErr + (e && e.msg ? e.msg : (navigator.onLine===false ? "offline" : "network")));
+  }finally{
+    if(b){ b.disabled = false; b.textContent = L().updBtn; }
+  }
+}
+
+/* Enter agrega goleador en el campo de texto */
+document.body.addEventListener("keydown", e=>{
+  if(e.key==="Enter" && e.target.classList && e.target.classList.contains("sc-txt")){
+    e.preventDefault();
+    if(e.target.value.trim()) addScorer(e.target.dataset.gk, e.target.dataset.gf, e.target.value);
+  }
+});
+
+$("#btn-sync").addEventListener("click", openSyncPop);
+$("#btn-update").addEventListener("click", autoUpdate);
+let lastAuto = 0;
+function maybeAutoUpdate(){
+  if(!cfg.auto || !fdKey()) return;
+  if(Date.now() - lastAuto < 10*60000) return;  /* como mucho una vez cada 10 min */
+  lastAuto = Date.now();
+  autoUpdate(true);
+}
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible"){ pullState(); maybeAutoUpdate(); } });
+setInterval(()=>{ if(document.visibilityState==="visible") pullState(); }, 90000);
+
 renderAll();
+setSyncUi(syncOn() ? "ok" : "off");
+if(syncOn()) pullState();
+maybeAutoUpdate();
 </script>
 </body>
 </html>
