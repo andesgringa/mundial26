@@ -837,6 +837,10 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
 .autotag{font-size:.58rem;border:1px solid var(--line);border-radius:6px;padding:1px 5px;letter-spacing:.08em;text-transform:uppercase;opacity:.8;vertical-align:1px}
 .syncchk{flex-direction:row !important;align-items:center;gap:8px}
 .syncchk input{width:auto;accent-color:var(--celeste)}
+.fcards{margin:8px 0 2px}
+.ftbd{font-size:.74rem;color:var(--muted);line-height:1.5;padding:2px 0}
+.synclogged{font-size:.82rem;color:var(--chalk,#eef4f9);padding:2px 0}
+.synclogged b{color:var(--celeste)}
 </style>
 </head>
 <body>
@@ -1130,7 +1134,19 @@ Object.assign(I18N.es, {
   scAddTxt:"Goleador… (ej: Mbappé x2)",
   scAddBtn:"agregar goleador",
   mvpAuto:"auto: ",
-  syncAuto:"Actualizar resultados oficiales automáticamente al abrir la app"
+  syncAuto:"Actualizar resultados oficiales automáticamente al abrir la app",
+  fichaTbd:"⏳ Los goleadores y las tarjetas se habilitan cuando se conozcan los dos equipos: completá los grupos, elegí el tercero, o tocá ⟳ Resultados para traer los cruces oficiales.",
+  syncSub2:"Iniciá sesión con tu correo: te llega un link mágico y tu torneo queda guardado en tu cuenta, en todos tus dispositivos.",
+  syncEmail:"Tu correo electrónico",
+  syncSend:"Enviarme el link de acceso",
+  syncSent:"📬 Revisá tu correo y tocá el link para entrar (mirá spam si no aparece).",
+  syncNeedMail:"Escribí un correo válido.",
+  syncNeedCfg:"Faltan la URL y la anon key de Supabase.",
+  syncLogged:"Sesión iniciada como",
+  syncLogout:"Cerrar sesión",
+  syncSave2:"Guardar",
+  syncWelcome:"✅ Sesión iniciada:",
+  syncNote2:"🔒 Con cuentas, tus datos sólo los ve y edita tu correo: la anon key puede ser pública tranquilamente (así funciona Supabase). Cada dispositivo inicia sesión una vez con su propio link. Todo se guarda también en este dispositivo, así que sin conexión seguís igual."
 });
 Object.assign(I18N.en, {
   syncBtn:"Sync",
@@ -1152,7 +1168,19 @@ Object.assign(I18N.en, {
   scAddTxt:"Scorer… (e.g. Mbappé x2)",
   scAddBtn:"add scorer",
   mvpAuto:"auto: ",
-  syncAuto:"Fetch official results automatically when the app opens"
+  syncAuto:"Fetch official results automatically when the app opens",
+  fichaTbd:"⏳ Scorers and cards unlock once both teams are known: finish the groups, pick the third-place team, or tap ⟳ Results to pull the official matchups.",
+  syncSub2:"Sign in with your email: you get a magic link and your tournament is saved to your account, on every device.",
+  syncEmail:"Your email",
+  syncSend:"Send me the sign-in link",
+  syncSent:"📬 Check your email and tap the link to sign in (check spam if it's missing).",
+  syncNeedMail:"Enter a valid email.",
+  syncNeedCfg:"Supabase URL and anon key are missing.",
+  syncLogged:"Signed in as",
+  syncLogout:"Sign out",
+  syncSave2:"Save",
+  syncWelcome:"✅ Signed in:",
+  syncNote2:"🔒 With accounts, only your email can see and edit your data — the anon key can safely be public (that's how Supabase works). Each device signs in once with its own link. Everything is also saved on this device, so offline keeps working."
 });
 
 const CAPY_ICON = "data:image/jpeg;base64,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";
@@ -1811,7 +1839,13 @@ function fichaPanel(key, homeCode, awayCode){
         '<input class="sc-txt" type="text" maxlength="48" data-gk="'+key+'" data-gf="'+field+'" placeholder="'+l.scAddTxt+'" aria-label="'+l.fGoles+' '+esc(tshort(code))+'">' +
         '<button type="button" data-scaddbtn aria-label="'+l.scAddBtn+'">＋</button></div>';
     }
+    /* tarjetas del equipo, acá mismo en la ficha */
+    html += '<div class="fcards">'+chips(key, i, code)+'</div>';
   });
+  if(!homeCode && !awayCode){
+    html += '<div class="ftbd">'+l.fichaTbd+'</div></div>';
+    return html;
+  }
   const autoName = matchTopScorer(key, homeCode, awayCode);
   if(homeCode==="ARG" || awayCode==="ARG"){
     const mvp = fichaVal(key,"mvp");
@@ -3013,7 +3047,7 @@ setInterval(()=>{
 
 const KEY_CFG = "mundial2026-cfg";
 function loadCfg(){
-  const d = {url:"", anon:"", fd:"", name:"", last:"", auto:false};
+  const d = {url:"", anon:"", fd:"", last:"", auto:false, sess:null};
   try{ return Object.assign(d, JSON.parse(localStorage.getItem(KEY_CFG)||"{}")); }
   catch(e){ return d; }
 }
@@ -3022,7 +3056,80 @@ function saveCfg(){ try{ localStorage.setItem(KEY_CFG, JSON.stringify(cfg)); }ca
 function sbUrl(){ return (cfg.url || CONFIG.SUPABASE_URL || "").replace(/\/+$/,""); }
 function sbAnon(){ return cfg.anon || CONFIG.SUPABASE_ANON_KEY || ""; }
 function fdKey(){ return cfg.fd || CONFIG.FOOTBALL_DATA_KEY || ""; }
-function syncOn(){ return !!(sbUrl() && sbAnon() && cfg.name); }
+function syncOn(){ return !!(sbUrl() && sbAnon() && cfg.sess && cfg.sess.rt); }
+
+/* ---------- cuentas: magic link de Supabase, sin librerías ---------- */
+function b64urlJson(s){
+  try{ return JSON.parse(atob(s.replace(/-/g,"+").replace(/_/g,"/"))); }catch(e){ return null; }
+}
+function setSession(d){
+  const claims = d.access_token ? b64urlJson(d.access_token.split(".")[1]) : null;
+  cfg.sess = {
+    at: d.access_token || "",
+    rt: d.refresh_token || (cfg.sess && cfg.sess.rt) || "",
+    exp: Date.now() + (Number(d.expires_in)||3600)*1000,
+    email: (d.user && d.user.email) || (claims && claims.email) || (cfg.sess && cfg.sess.email) || "",
+    uid: (d.user && d.user.id) || (claims && claims.sub) || (cfg.sess && cfg.sess.uid) || ""
+  };
+  saveCfg();
+}
+function clearSession(){ cfg.sess = null; cfg.last = ""; saveCfg(); }
+function sessFresh(){ return cfg.sess && cfg.sess.at && Date.now() < (cfg.sess.exp||0) - 30000; }
+let refreshing = null;
+async function ensureSession(){
+  if(!cfg.sess || !cfg.sess.rt) return false;
+  if(sessFresh()) return true;
+  if(!refreshing){
+    refreshing = (async ()=>{
+      try{
+        const r = await fetch(sbUrl()+"/auth/v1/token?grant_type=refresh_token", {
+          method:"POST",
+          headers:{ apikey: sbAnon(), "Content-Type":"application/json" },
+          body: JSON.stringify({ refresh_token: cfg.sess.rt })
+        });
+        if(!r.ok) throw 0;
+        setSession(await r.json());
+        return true;
+      }catch(e){
+        clearSession(); setSyncUi("off");
+        return false;
+      }finally{ refreshing = null; }
+    })();
+  }
+  return refreshing;
+}
+async function sendMagicLink(email){
+  const redirect = encodeURIComponent(location.origin + location.pathname);
+  const r = await fetch(sbUrl()+"/auth/v1/otp?redirect_to="+redirect, {
+    method:"POST",
+    headers:{ apikey: sbAnon(), "Content-Type":"application/json" },
+    body: JSON.stringify({ email: email, create_user: true })
+  });
+  if(!r.ok){
+    let msg = "HTTP "+r.status;
+    try{ const d = await r.json(); msg = d.msg || d.error_description || d.message || msg; }catch(e){}
+    throw new Error(msg);
+  }
+}
+/* al volver del mail, el token llega en el hash de la URL */
+function handleAuthHash(){
+  if(!location.hash || location.hash.indexOf("access_token=") < 0){
+    if(location.hash && location.hash.indexOf("error_description=") >= 0){
+      const q = new URLSearchParams(location.hash.slice(1));
+      toast("⚠ " + decodeURIComponent(q.get("error_description")||"").replace(/\+/g," "));
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+    return false;
+  }
+  const q = new URLSearchParams(location.hash.slice(1));
+  setSession({
+    access_token: q.get("access_token"),
+    refresh_token: q.get("refresh_token"),
+    expires_in: q.get("expires_in")
+  });
+  history.replaceState(null, "", location.pathname + location.search);
+  return true;
+}
 function sbHeaders(json){
   const h = { "apikey": sbAnon(), "Authorization": "Bearer "+sbAnon() };
   if(json){ h["Content-Type"] = "application/json"; h["Prefer"] = "resolution=merge-duplicates,return=minimal"; }
@@ -3034,7 +3141,8 @@ function setSyncUi(st){
   syncUiState = st;
   const b = $("#btn-sync"); if(!b) return;
   const ic = st==="ok" ? "☁✓" : st==="saving" ? "☁…" : st==="err" ? "☁⚠" : "☁";
-  b.textContent = ic + " " + (syncOn() ? cfg.name : L().syncBtn);
+  const who = syncOn() && cfg.sess.email ? cfg.sess.email.split("@")[0] : L().syncBtn;
+  b.textContent = ic + " " + who;
 }
 /* push con debounce: 1.2s después del último cambio */
 function schedulePush(){
@@ -3046,11 +3154,14 @@ function schedulePush(){
 async function pushState(){
   syncTimer = null;
   if(!syncOn()) return;
+  if(!(await ensureSession())) return;
   const now = new Date().toISOString();
   try{
+    const h = sbHeaders(true);
+    h["Authorization"] = "Bearer " + cfg.sess.at;
     const r = await fetch(sbUrl()+"/rest/v1/brackets", {
-      method: "POST", headers: sbHeaders(true),
-      body: JSON.stringify({ name: cfg.name, state: state, updated_at: now })
+      method: "POST", headers: h,
+      body: JSON.stringify({ user_id: cfg.sess.uid, state: state, updated_at: now })
     });
     if(!r.ok) throw new Error("HTTP "+r.status);
     cfg.last = now; saveCfg();
@@ -3060,9 +3171,12 @@ async function pushState(){
 async function pullState(){
   if(!syncOn()) return;
   if(syncTimer) return;  /* hay cambios locales por subir: local manda */
+  if(!(await ensureSession())) return;
   try{
-    const r = await fetch(sbUrl()+"/rest/v1/brackets?name=eq."+encodeURIComponent(cfg.name)+"&select=state,updated_at",
-      { headers: sbHeaders(false) });
+    const h = sbHeaders(false);
+    h["Authorization"] = "Bearer " + cfg.sess.at;
+    const r = await fetch(sbUrl()+"/rest/v1/brackets?user_id=eq."+encodeURIComponent(cfg.sess.uid)+"&select=state,updated_at",
+      { headers: h });
     if(!r.ok) throw new Error("HTTP "+r.status);
     const rows = await r.json();
     if(rows.length){
@@ -3086,32 +3200,51 @@ function openSyncPop(){
   const l = L();
   let html = '<div class="pop-head"><span class="pop-flag">☁️</span><div>' +
     '<div class="pop-name" id="pop-name">'+l.syncT+'</div>' +
-    '<div class="pop-tot">'+l.syncSub+'</div></div></div>';
-  html += '<div class="syncform">' +
-    '<label>'+l.syncName+'<input id="sy-name" type="text" maxlength="40" autocomplete="off" value="'+esc(cfg.name)+'" placeholder="'+l.syncNamePh+'"></label>' +
-    '<label>Supabase URL<input id="sy-url" type="text" autocomplete="off" value="'+esc(cfg.url)+'" placeholder="'+esc(CONFIG.SUPABASE_URL||"https://xxxx.supabase.co")+'"></label>' +
+    '<div class="pop-tot">'+l.syncSub2+'</div></div></div>';
+  html += '<div class="syncform">';
+  if(syncOn()){
+    html += '<div class="synclogged">✅ '+l.syncLogged+' <b>'+esc(cfg.sess.email)+'</b></div>';
+  } else {
+    html += '<label>'+l.syncEmail+'<input id="sy-email" type="email" autocomplete="email" placeholder="tu@email.com"></label>';
+  }
+  html += '<label>Supabase URL<input id="sy-url" type="text" autocomplete="off" value="'+esc(cfg.url)+'" placeholder="'+esc(CONFIG.SUPABASE_URL||"https://xxxx.supabase.co")+'"></label>' +
     '<label>Supabase anon key<input id="sy-anon" type="text" autocomplete="off" value="'+esc(cfg.anon)+'" placeholder="'+(CONFIG.SUPABASE_ANON_KEY?"(configurada)":"eyJ…")+'"></label>' +
     '<label>football-data.org <span class="opt">('+l.syncOpt+')</span><input id="sy-fd" type="text" autocomplete="off" value="'+esc(cfg.fd)+'" placeholder="'+(CONFIG.FOOTBALL_DATA_KEY?"(configurada)":l.syncFdPh)+'"></label>' +
     '<label class="syncchk"><input type="checkbox" id="sy-auto"'+(cfg.auto?" checked":"")+'> '+l.syncAuto+'</label>' +
-    '<div class="syncbtns"><button class="btn" id="sy-save">'+l.syncSave+'</button>' +
-    (syncOn() ? '<button class="btn danger" id="sy-off">'+l.syncOff+'</button>' : '') +
-    '</div><p class="syncnote">'+l.syncNote+'</p></div>';
+    '<div class="syncbtns">' +
+    (syncOn()
+      ? '<button class="btn" id="sy-save">'+l.syncSave2+'</button><button class="btn danger" id="sy-out">'+l.syncLogout+'</button>'
+      : '<button class="btn" id="sy-send">'+l.syncSend+'</button>') +
+    '</div><p class="syncnote">'+l.syncNote2+'</p></div>';
   $("#pop-body").innerHTML = html;
   $("#pop-back").hidden = false;
-  $("#sy-save").addEventListener("click", ()=>{
-    cfg.name = $("#sy-name").value.trim().toLowerCase();
+
+  function grabFields(){
     cfg.url  = $("#sy-url").value.trim();
     cfg.anon = $("#sy-anon").value.trim();
     cfg.fd   = $("#sy-fd").value.trim();
     cfg.auto = $("#sy-auto").checked;
-    cfg.last = "";
-    saveCfg(); closeTeamPop();
-    if(syncOn()){ setSyncUi("saving"); pullState(); } else setSyncUi("off");
+    saveCfg();
+  }
+  const send = $("#sy-send");
+  if(send) send.addEventListener("click", async ()=>{
+    grabFields();
+    const email = ($("#sy-email").value||"").trim();
+    if(!email || email.indexOf("@")<0){ toast(l.syncNeedMail); return; }
+    if(!sbUrl() || !sbAnon()){ toast(l.syncNeedCfg); return; }
+    send.disabled = true; send.textContent = "…";
+    try{
+      await sendMagicLink(email);
+      closeTeamPop();
+      toast(l.syncSent);
+    }catch(e){
+      toast("⚠ " + (e && e.message ? e.message : "error"));
+    }finally{ send.disabled = false; send.textContent = l.syncSend; }
   });
-  const off = $("#sy-off");
-  if(off) off.addEventListener("click", ()=>{
-    cfg.name = ""; cfg.last = ""; saveCfg(); setSyncUi("off"); closeTeamPop();
-  });
+  const sv = $("#sy-save");
+  if(sv) sv.addEventListener("click", ()=>{ grabFields(); closeTeamPop(); setSyncUi(syncUiState); });
+  const out = $("#sy-out");
+  if(out) out.addEventListener("click", ()=>{ clearSession(); setSyncUi("off"); closeTeamPop(); });
 }
 
 /* ================= RESULTADOS OFICIALES (football-data.org) ================= */
@@ -3258,8 +3391,10 @@ function maybeAutoUpdate(){
 document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible"){ pullState(); maybeAutoUpdate(); } });
 setInterval(()=>{ if(document.visibilityState==="visible") pullState(); }, 90000);
 
+const justLoggedIn = handleAuthHash();
 renderAll();
 setSyncUi(syncOn() ? "ok" : "off");
+if(justLoggedIn) toast(L().syncWelcome + (cfg.sess && cfg.sess.email ? " " + cfg.sess.email : ""));
 if(syncOn()) pullState();
 maybeAutoUpdate();
 </script>
