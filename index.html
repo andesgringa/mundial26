@@ -488,12 +488,52 @@ html[data-theme="light"] .ko-toggle button.on{color:#fff}
 }
 .ko-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
 .ko-cards .kcard{margin:0}
+/* ---- lista por ronda: plegado por cruce ---- */
+.ktoggle{
+  background:none;border:none;cursor:pointer;font:inherit;color:inherit;
+  display:inline-flex;align-items:center;gap:6px;padding:2px 4px 2px 0;
+  letter-spacing:inherit;text-transform:inherit;font-size:inherit;
+}
+.ktoggle b{color:var(--gold);font-weight:700}
+.ktoggle .kcaret{color:var(--muted);font-size:.8rem}
+.ktoggle:hover .kcaret{color:var(--chalk)}
+#ko-list .kcard{cursor:pointer}
+#ko-list .kcard input,#ko-list .kcard select,#ko-list .kcard button,#ko-list .kcard .ficha{cursor:auto}
+#ko-list .kcard button{cursor:pointer}
+#ko-list .kcard.kcompact .kcards,
+#ko-list .kcard.kcompact .ficha,
+#ko-list .kcard.kcompact .ficha-btn,
+#ko-list .kcard.kcompact select.third,
+#ko-list .kcard.kcompact .pen{display:none}
+#ko-list .kcard.kcompact .kteam{padding:2px 0}
+.bracket .ktoggle{cursor:default;pointer-events:none}
+.bracket .ktoggle .kcaret{display:none}
 .champion.list-ch{max-width:460px}
+
+/* ---- cuadro compacto: la vista de cuadro es para escanear el torneo ----
+   Regla de los brackets profesionales (ESPN/FIFA): cada cruce muestra
+   equipos + goles; tarjetas y ficha viven en la vista "Por ronda". */
+.bracket .kcards,
+.bracket .ficha,
+.bracket .ficha-btn,
+.bracket .ft-chip{display:none}
+.bracket .kcard{padding:8px 10px;border-radius:10px;margin:4px 0}
+.bracket .knum{font-size:.62rem;margin-bottom:1px}
+.bracket .kvenue{font-size:.6rem;margin:0 0 4px}
+.bracket .kteam{grid-template-columns:1fr 38px;padding:2px 0;gap:6px}
+.bracket .kteam .tname{font-size:.84rem}
+.bracket .kteam .tname.tbd{font-size:.74rem}
+.bracket .kteam input.score{height:27px;font-size:.9rem;border-radius:6px}
+.bracket .slotb{font-size:.5rem;padding:1px 4px}
+.bracket select.third{font-size:.72rem;padding:5px 6px;margin-top:4px}
+.bracket .pen{font-size:.68rem;margin-top:5px}
+.bracket .pen-btn{font-size:.7rem;padding:5px 8px;min-height:0}
 
 /* modo ajustar: el cuadro entero escalado para verlo de un vistazo */
 .bracket.fitted{cursor:zoom-in}
 .bracket.fitted *{pointer-events:none}
 
+#t-kohelp{display:none}   /* la ayuda vive ahora dentro del panel de terceros */
 .ko-help{font-size:.85rem;color:var(--muted);max-width:780px;margin:0 0 14px}
 .ko-help b{color:var(--chalk)}
 .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.75rem;color:var(--muted);margin-bottom:18px}
@@ -503,6 +543,17 @@ html[data-theme="light"] .ko-toggle button.on{color:#fff}
 .legend .l-celeste{background:var(--celeste)}
 .legend .l-path{background:var(--gold);box-shadow:0 0 6px rgba(228,181,74,.8)}
 
+.thirds-panel .tp-toggle{
+  background:none;border:none;cursor:pointer;font:inherit;color:inherit;
+  display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:0;
+}
+.thirds-panel .tp-toggle h3{margin:0}
+.thirds-panel .tp-toggle .gcaret{color:var(--muted);font-size:.85rem}
+.thirds-panel .tp-toggle:hover .gcaret{color:var(--chalk)}
+.thirds-panel .tp-toggle .gmini{margin-left:auto;font-size:.95rem;white-space:nowrap}
+.thirds-panel.closed{padding-top:10px;padding-bottom:10px}
+.thirds-panel .tp-help{font-size:.82rem;color:var(--muted);max-width:780px;margin:10px 0 8px}
+.thirds-panel .tp-help b{color:var(--chalk)}
 .thirds-panel{
   background:var(--panel);border:1px solid var(--line);border-radius:12px;
   padding:12px 14px;margin:0 0 22px;max-width:560px;
@@ -531,7 +582,7 @@ html[data-theme="light"] .ko-toggle button.on{color:#fff}
 
 .bracket-head, .bracket-grid{
   display:grid;
-  grid-template-columns:236px 236px 236px 236px 268px;
+  grid-template-columns:196px 196px 196px 196px 224px;
   column-gap:34px;
   position:relative;z-index:1;
 }
@@ -739,7 +790,7 @@ footer .credit img{width:38px;height:38px;border-radius:50%;object-fit:cover;bor
   #upd-bar button{min-height:44px}
 }
 @media (max-width:540px){
-  .bracket-head,.bracket-grid{grid-template-columns:212px 212px 212px 212px 244px}
+  .bracket-head,.bracket-grid{grid-template-columns:184px 184px 184px 184px 212px}
   input.score{width:40px}
   .ficha .fgrid{grid-template-columns:1fr}
 }
@@ -2523,8 +2574,10 @@ function koCard(m, opts){
   const key = "k:"+m.id;
   const drawNeedsPen = t.a.code && t.b.code && val(s[0])!==null && val(s[1])!==null && val(s[0])===val(s[1]);
   const isArgMatch = t.a.code==="ARG" || t.b.code==="ARG";
-  let html = '<div class="kcard'+(opts&&opts.final?" final-card":"")+(w?" live-gold":"")+'" data-mid="'+m.id+'">' +
-    '<div class="knum"><span><b>'+m.id+'</b> · '+(lp=>lp.wd+' '+lp.d+' · '+lp.h+l.hs)(locParts(m.d,m.h))+'</span><span>'+(isArgMatch?ftChip(key,m.d,m.h,val(s[0])!==null&&val(s[1])!==null):"")+fichaBtn(key)+'</span></div>' +
+  /* en la lista: abierto mientras el cruce no esté definido; definido → compacto */
+  const listExp = koCardOpen.has(m.id) ? koCardOpen.get(m.id) : !w;
+  let html = '<div class="kcard'+(opts&&opts.final?" final-card":"")+(w?" live-gold":"")+(listExp?"":" kcompact")+'" data-mid="'+m.id+'">' +
+    '<div class="knum"><button type="button" class="ktoggle" data-ktog="'+m.id+'" aria-expanded="'+listExp+'"><span class="kcaret" aria-hidden="true">'+(listExp?'▾':'▸')+'</span><b>'+m.id+'</b> · '+(lp=>lp.wd+' '+lp.d+' · '+lp.h+l.hs)(locParts(m.d,m.h))+'</button><span>'+(isArgMatch?ftChip(key,m.d,m.h,val(s[0])!==null&&val(s[1])!==null):"")+fichaBtn(key)+'</span></div>' +
     '<div class="kvenue">'+esc(ven(m.v))+'</div>';
   const noScore = val(s[0])===null && val(s[1])===null;
   [["a",0],["b",1]].forEach(([side,idx])=>{
@@ -2572,6 +2625,9 @@ function koCard(m, opts){
 }
 
 const collapsedRounds = new Set();
+/* vista por ronda: cada cruce abierto mientras falte definirlo; terminado, se pliega solo.
+   Tocar la tarjeta lo vuelve a abrir para editar. Sólo memoria de esta sesión. */
+const koCardOpen = new Map();
 
 function renderBracket(){
   const l = L();
@@ -2692,20 +2748,34 @@ function applyFit(){
   scroll.style.overflowX = "hidden";
 }
 
+let thirdsOpen = null;   /* null = automático; true/false = elección manual de esta sesión */
 function renderThirdsPanel(){
   const l = L();
   const th = thirdsTable();
-  let tp = '<h3>'+l.thirdsT+'</h3><p>'+l.thirdsP+'</p>';
-  if(!th.length){
-    tp += '<p style="margin:0">'+l.thirdsEmpty+'</p>';
-  } else {
-    tp += '<table><thead><tr><th>#</th><th class="team">'+l.teamCol+'</th><th>'+l.th[3]+'</th><th>'+l.th[1]+'</th><th>'+l.th[2]+'</th></tr></thead><tbody>';
-    th.forEach((r,i)=>{
-      tp += '<tr class="'+(i<8?"in":"")+'"><td>'+(i+1)+'</td><td class="team">'+tlabel(r.c)+' <span style="color:var(--muted)">('+r.grp+')</span></td><td class="pts">'+r.pts+'</td><td>'+(r.dg>0?"+":"")+r.dg+'</td><td>'+r.gf+'</td></tr>';
-    });
-    tp += '</tbody></table>';
+  let allDone = true;
+  for(const g in GROUPS){ if(!groupStandings(g).complete){ allDone = false; break; } }
+  /* abierto mientras sirva de guía (grupos en juego); cerrado cuando ya está definido */
+  const exp = thirdsOpen!==null ? thirdsOpen : !allDone;
+  const mini = !exp && th.length
+    ? '<span class="gmini">'+th.slice(0,8).map(r=>'<span class="gflag" title="'+esc(tshort(r.c))+' ('+r.grp+')">'+T[r.c][2]+'</span>').join('')+'</span>'
+    : '';
+  let tp = '<button type="button" class="tp-toggle" data-thirds-toggle aria-expanded="'+exp+'">' +
+    '<span class="gcaret" aria-hidden="true">'+(exp?'▾':'▸')+'</span><h3>'+l.thirdsT+'</h3>'+mini+'</button>';
+  if(exp){
+    tp += '<p class="tp-help">'+l.kohelp+'</p>';
+    tp += '<p>'+l.thirdsP+'</p>';
+    if(!th.length){
+      tp += '<p style="margin:0">'+l.thirdsEmpty+'</p>';
+    } else {
+      tp += '<table><thead><tr><th>#</th><th class="team">'+l.teamCol+'</th><th>'+l.th[3]+'</th><th>'+l.th[1]+'</th><th>'+l.th[2]+'</th></tr></thead><tbody>';
+      th.forEach((r,i)=>{
+        tp += '<tr class="'+(i<8?"in":"")+'"><td>'+(i+1)+'</td><td class="team">'+tlabel(r.c)+' <span style="color:var(--muted)">('+r.grp+')</span></td><td class="pts">'+r.pts+'</td><td>'+(r.dg>0?"+":"")+r.dg+'</td><td>'+r.gf+'</td></tr>';
+      });
+      tp += '</tbody></table>';
+    }
   }
   $("#thirds-panel").innerHTML = tp;
+  $("#thirds-panel").classList.toggle("closed", !exp);
 }
 
 /* ----- estadísticas ----- */
@@ -3504,6 +3574,24 @@ document.body.addEventListener("click", e=>{
     const g = gh.dataset.group;
     if(collapsedGroups.has(g)) collapsedGroups.delete(g); else collapsedGroups.add(g);
     renderGroups();
+    return;
+  }
+  const tt = e.target.closest("[data-thirds-toggle]");
+  if(tt){
+    thirdsOpen = tt.getAttribute("aria-expanded")!=="true";
+    renderThirdsPanel();
+    const b = document.querySelector("[data-thirds-toggle]");
+    if(b) b.focus({preventScroll:true});
+    return;
+  }
+  const kt = e.target.closest("#ko-list .kcard");
+  if(kt && !e.target.closest("input,select,.ficha,a,label,.flag-btn") &&
+     (e.target.closest(".ktoggle") || !e.target.closest("button"))){
+    const id = Number(kt.dataset.mid);
+    koCardOpen.set(id, kt.classList.contains("kcompact"));
+    renderKoList();
+    const tg = document.querySelector('.ktoggle[data-ktog="'+id+'"]');
+    if(tg) tg.focus({preventScroll:true});
     return;
   }
   const kv = e.target.closest("[data-koview]");
