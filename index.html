@@ -1176,7 +1176,9 @@ Object.assign(I18N.es, {
   roundsS:{r32:"16avos", r16:"Octavos", qf:"Cuartos", sf:"Semis", tp:"3° puesto", f:"FINAL"},
   confB:"confirmado", confT:"Clasificación confirmada", pendB:"⏳ tentativo",
   updNet:"el navegador no pudo conectarse con football-data.org (red o bloqueo del navegador). Probá desde otra red o avisale a Capymura 😉",
-  updProxy:"falta el relay: creá la función fd-proxy en Supabase (Edge Functions → Deploy a new function → Via Editor) con el código de fd-proxy.ts."
+  updProxy:"falta el relay: creá la función fd-proxy en Supabase (Edge Functions → Deploy a new function → Via Editor) con el código de fd-proxy.ts.",
+  updJwt:"Supabase bloqueó el relay: en la función, apagá \"Verify JWT with legacy secret\" y tocá Save changes.",
+  updProxyCode:"el relay respondió algo inesperado: el código de la función no es el de fd-proxy.ts — reemplazalo y volvé a deployar."
 });
 Object.assign(I18N.en, {
   syncBtn:"Sync",
@@ -1214,7 +1216,9 @@ Object.assign(I18N.en, {
   roundsS:{r32:"R32", r16:"R16", qf:"QF", sf:"SF", tp:"3rd place", f:"FINAL"},
   confB:"confirmed", confT:"Qualification confirmed", pendB:"⏳ pending",
   updNet:"the browser could not reach football-data.org (network or browser blocking). Try another network or tell Capymura 😉",
-  updProxy:"relay missing: create the fd-proxy function in Supabase (Edge Functions → Deploy a new function → Via Editor) with the fd-proxy.ts code."
+  updProxy:"relay missing: create the fd-proxy function in Supabase (Edge Functions → Deploy a new function → Via Editor) with the fd-proxy.ts code.",
+  updJwt:"Supabase blocked the relay: in the function, turn OFF \"Verify JWT with legacy secret\" and hit Save changes.",
+  updProxyCode:"the relay returned something unexpected: the function\u2019s code isn\u2019t fd-proxy.ts — replace it and redeploy."
 });
 
 I18N.fr = Object.assign({}, I18N.en, {
@@ -1319,7 +1323,9 @@ I18N.fr = Object.assign({}, I18N.en, {
   fichaTbd:"⏳ Les buteurs et les cartons se débloquent quand les deux équipes sont connues : terminez les groupes, choisissez le troisième, ou touchez ⟳ Résultats pour récupérer les affiches officielles.",
   confB:"confirmé", confT:"Qualification confirmée", pendB:"⏳ provisoire",
   updNet:"le navigateur n’a pas pu joindre football-data.org (réseau ou blocage du navigateur).",
-  updProxy:"relais manquant : créez la fonction fd-proxy dans Supabase (Edge Functions → Via Editor) avec le code de fd-proxy.ts."
+  updProxy:"relais manquant : créez la fonction fd-proxy dans Supabase (Edge Functions → Via Editor) avec le code de fd-proxy.ts.",
+  updJwt:"Supabase a bloqué le relais : désactivez \"Verify JWT with legacy secret\" dans la fonction puis enregistrez.",
+  updProxyCode:"réponse inattendue du relais : le code de la fonction n\u2019est pas fd-proxy.ts — remplacez-le et redéployez."
 });
 I18N.ja = Object.assign({}, I18N.en, {
   kicker:"アメリカ · メキシコ · カナダ — 6月11日〜7月19日",
@@ -1423,7 +1429,9 @@ I18N.ja = Object.assign({}, I18N.en, {
   fichaTbd:"⏳ 両チームが確定すると得点者とカードを入力できます：グループを完了する、3位を選ぶ、または ⟳ 結果 で公式の対戦カードを取得してください。",
   confB:"確定", confT:"進出確定", pendB:"⏳ 暫定",
   updNet:"ブラウザがfootball-data.orgに接続できませんでした（ネットワークまたはブラウザのブロック）。",
-  updProxy:"リレー未作成：Supabaseで fd-proxy 関数を作成してください（Edge Functions → Via Editor、fd-proxy.ts のコードを使用）。"
+  updProxy:"リレー未作成：Supabaseで fd-proxy 関数を作成してください（Edge Functions → Via Editor、fd-proxy.ts のコードを使用）。",
+  updJwt:"Supabaseがリレーをブロックしました：関数の \"Verify JWT with legacy secret\" をオフにして保存してください。",
+  updProxyCode:"リレーの応答が想定外です：関数のコードが fd-proxy.ts ではありません — 置き換えて再デプロイしてください。"
 });
 
 const CAPY_ICON = "data:image/jpeg;base64,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";
@@ -3597,8 +3605,12 @@ async function fetchFixtures(){
     if(!(sbUrl() && sbAnon())) throw e;
     const h = { "apikey": sbAnon(), "x-fd-key": fdKey() };
     if(cfg.sess && cfg.sess.rt && (await ensureSession())) h["Authorization"] = "Bearer " + cfg.sess.at;
-    const r2 = await fetch(sbUrl()+"/functions/v1/fd-proxy", { headers: h });
+    /* probamos los dos nombres posibles del relay */
+    let r2 = await fetch(sbUrl()+"/functions/v1/fd-proxy", { headers: h });
+    if(r2.status===404) r2 = await fetch(sbUrl()+"/functions/v1/smart-processor", { headers: h });
     if(r2.status===404) throw { msg: L().updProxy };
+    if(r2.status===401) throw { msg: L().updJwt };
+    r2.viaRelay = true;
     return r2;
   }
 }
@@ -3614,6 +3626,10 @@ async function autoUpdate(silent){
     if(r.status===429) throw {msg:l.updRate};
     if(!r.ok) throw {msg:"HTTP "+r.status};
     const data = await r.json();
+    if(!data || !Array.isArray(data.matches)){
+      if(r.viaRelay) throw { msg: l.updProxyCode };
+      throw { msg: "HTTP " + r.status };
+    }
 
     /* índices por hora de inicio (instante UTC) */
     const gByT = {}, kByT = {};
