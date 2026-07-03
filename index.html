@@ -3690,7 +3690,7 @@ document.body.addEventListener("keydown", e=>{
 });
 
 $("#btn-sync").addEventListener("click", openSyncPop);
-$("#btn-update").addEventListener("click", autoUpdate);
+$("#btn-update").addEventListener("click", ()=>autoUpdate(false));
 let lastAuto = 0;
 function maybeAutoUpdate(){
   if(!cfg.auto || !fdKey()) return;
