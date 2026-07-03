@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" id="meta-theme" content="#0a1420">
 <meta name="color-scheme" content="dark light">
+<meta name="description" content="Mundial 2026 — seguí los 104 partidos: resultados, posiciones, cuadro de eliminatorias y la Scaloneta. World Cup 2026 results tracker.">
+<meta property="og:title" content="Mundial 2026 · World Cup 2026">
+<meta property="og:description" content="Registro de resultados del Mundial — grupos, cuadro y stats. Track all 104 matches.">
+<meta property="og:type" content="website">
 <title>Mundial 2026 · World Cup 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@600;700;800&family=Saira:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -440,6 +444,7 @@ input.score::placeholder{color:var(--muted);opacity:.45;font-weight:400}
 .ficha-btn:hover{color:var(--celeste);border-color:var(--celeste)}
 .ficha-btn.has{color:var(--celeste);border-color:var(--celeste)}
 .ficha{grid-column:1/-1;background:var(--panel-2);border:1px solid var(--line-soft);border-radius:10px;padding:10px;margin-top:6px;font-size:.78rem}
+.ficha .chip-hint{font-size:.68rem;color:var(--muted);letter-spacing:.03em;margin:0 0 6px}
 .ficha .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ficha .fside{min-width:0}
 .ficha .fteam{font-size:.72rem;font-weight:700;color:var(--celeste);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -936,23 +941,23 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
       </div>
     </div>
     <nav class="tabs" role="tablist">
-      <button class="tab arg" data-tab="arg" role="tab" id="t-tab4"></button>
-      <button class="tab active" data-tab="grupos" role="tab" id="t-tab1"></button>
-      <button class="tab" data-tab="elim" role="tab" id="t-tab2"></button>
-      <button class="tab" data-tab="stats" role="tab" id="t-tab3"></button>
-      <button class="tab" data-tab="rules" role="tab" id="t-tab5"></button>
+      <button class="tab arg" data-tab="arg" role="tab" id="t-tab4" aria-controls="view-arg" aria-selected="false"></button>
+      <button class="tab active" data-tab="grupos" role="tab" id="t-tab1" aria-controls="view-grupos" aria-selected="true"></button>
+      <button class="tab" data-tab="elim" role="tab" id="t-tab2" aria-controls="view-elim" aria-selected="false"></button>
+      <button class="tab" data-tab="stats" role="tab" id="t-tab3" aria-controls="view-stats" aria-selected="false"></button>
+      <button class="tab" data-tab="rules" role="tab" id="t-tab5" aria-controls="view-rules" aria-selected="false"></button>
     </nav>
     <div class="today" id="today-strip" hidden></div>
   </div>
 </header>
 
 <main id="main">
-  <section id="view-grupos">
+  <section id="view-grupos" role="tabpanel" aria-labelledby="t-tab1">
     <div class="groups-bar"><button class="btn" id="btn-groups-all"></button></div>
     <div class="groups-grid" id="groups-grid"></div>
   </section>
 
-  <section id="view-elim" hidden>
+  <section id="view-elim" role="tabpanel" aria-labelledby="t-tab2" hidden>
     <div class="elim-top">
       <div class="ko-bar">
         <div class="ko-toggle" role="group">
@@ -981,11 +986,11 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
     </div>
   </section>
 
-  <section id="view-stats" hidden>
+  <section id="view-stats" role="tabpanel" aria-labelledby="t-tab3" hidden>
     <div class="stats-wrap" id="stats-wrap"></div>
   </section>
 
-  <section id="view-rules" hidden>
+  <section id="view-rules" role="tabpanel" aria-labelledby="t-tab5" hidden>
     <div class="card rules-card">
       <h2 id="rules-title"></h2>
       <p class="rules-sub" id="rules-sub"></p>
@@ -993,7 +998,7 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
     </div>
   </section>
 
-  <section id="view-arg" hidden>
+  <section id="view-arg" role="tabpanel" aria-labelledby="t-tab4" hidden>
     <div class="arg-wrap" id="arg-wrap"></div>
   </section>
 </main>
@@ -1883,7 +1888,10 @@ const LAYOUT = {
 
 const KEY = "mundial2026-resultados";
 let memState = null;
-function defaultState(){ return {g:{}, k:{}, pen:{}, third:{}, f:{}, awards:{}, inj:{}, ft:{}, fdIds:{}, fdDet:{}, lang:"es", theme:"dark", koview:"list"}; }
+function defaultState(){
+  const prefLight = (typeof matchMedia==="function") && matchMedia("(prefers-color-scheme: light)").matches;
+  return {g:{}, k:{}, pen:{}, third:{}, f:{}, awards:{}, inj:{}, ft:{}, fdIds:{}, fdDet:{}, lang:"es", theme: prefLight ? "light" : "dark", koview:"list"};
+}
 function load(){
   try{
     const raw = localStorage.getItem(KEY);
@@ -2197,8 +2205,10 @@ function argMatchList(){
 
 const $ = s => document.querySelector(s);
 function esc(x){ return String(x).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[ch])); }
-function scoreInput(kind, key, side, v){
+function scoreInput(kind, key, side, v, team){
+  const lbl = (team && T[team]) ? '⚽ '+esc(tshort(team)) : '⚽';
   return '<input class="score" type="number" min="0" max="30" inputmode="numeric" placeholder="·" ' +
+    'aria-label="'+lbl+'" ' +
     'data-kind="'+kind+'" data-key="'+key+'" data-side="'+side+'" value="'+(v===null?"":v)+'">';
 }
 
@@ -2227,6 +2237,15 @@ function renderChrome(){
   $("#kv-board").textContent = l.koBoard;
   $("#t-footer").innerHTML = '<div>'+l.footer+'</div>' +
     '<div class="credit"><img src="'+CAPY_ICON+'" alt="Capymura" width="22" height="22"> '+esc(l.credit)+'</div>';
+/* favicon + apple-touch-icon desde el ícono incrustado: el archivo sigue siendo uno solo */
+(function(){
+  if(document.querySelector('link[rel="icon"]')) return;
+  [["icon"],["apple-touch-icon"]].forEach(([rel])=>{
+    const ln = document.createElement("link");
+    ln.rel = rel; ln.href = CAPY_ICON;
+    document.head.appendChild(ln);
+  });
+})();
   document.documentElement.lang = LANG;
   document.documentElement.dataset.theme = state.theme==="light" ? "light" : "dark";
   const mt = document.querySelector("#meta-theme");
@@ -2308,6 +2327,7 @@ function fichaPanel(key, homeCode, awayCode){
   const inj = state.inj || {};
   const avail = SQUAD_AZ.filter(p=> !(p[0] in inj));
   let html = '<div class="ficha">';
+  html += '<div class="chip-hint">'+l.chipHint+'</div>';
   if(state.fdIds && state.fdIds[key] && fdOn()){
     html += '<div class="fdrow"><button type="button" class="fdbtn" data-fdmatch="'+key+'">'+l.fdBtn+'</button></div>';
   }
@@ -2402,7 +2422,7 @@ function renderGroups(){
       '</span>';
     }
     html += '<div class="gcard'+(coll?' closed':'')+(GROUPS[g].includes("ARG")?' arg-g':'')+'">' +
-      '<h2 data-group="'+g+'" role="button" aria-expanded="'+(!coll)+'">' +
+      '<h2 data-group="'+g+'" role="button" tabindex="0" aria-expanded="'+(!coll)+'">' +
         '<span><span class="gcaret">'+(coll?'▸':'▾')+'</span>'+l.group+' '+g+'</span>' +
         (mini || (st.complete ? '<span class="gdone">'+l.complete+'</span>' : '')) +
       '</h2>';
@@ -2416,7 +2436,7 @@ function renderGroups(){
       const ft = isArgMatch ? ftChip(key, m[1], m[2], val(s[0])!==null && val(s[1])!==null) : "";
       html += '<div class="mrow" data-mkey="'+key+'">' +
         '<span class="mteam">'+tlabel(m[4])+'</span>' +
-        '<span class="scorebox">'+scoreInput("g",i,0,val(s[0]))+'<span class="dash">–</span>'+scoreInput("g",i,1,val(s[1]))+'</span>' +
+        '<span class="scorebox">'+scoreInput("g",i,0,val(s[0]),m[4])+'<span class="dash">–</span>'+scoreInput("g",i,1,val(s[1]),m[5])+'</span>' +
         '<span class="mteam away">'+tlabel(m[5])+'</span>' +
         '<span class="mcards">'+chips(key,0,m[4])+chips(key,1,m[5])+'</span>' +
         '<span class="mmeta"><span>'+(lp=>lp.d+' · '+lp.h+l.hs)(locParts(m[1],m[2]))+' · '+esc(ven(m[3]))+'</span><span>'+ft+fichaBtn(key)+'</span></span>' +
@@ -2490,7 +2510,7 @@ function koCard(m, opts){
     }
     html += '<div class="kteam'+cls+'">' +
       '<span class="tname'+(slot.code?"":" tbd")+'">'+inner+badge+'</span>' +
-      scoreInput("k", m.id, idx, val(s[idx])) + '</div>';
+      scoreInput("k", m.id, idx, val(s[idx]), slot.code || slot.proj || "") + '</div>';
   });
   if(t.a.code || t.b.code){
     html += '<div class="kcards stack">'+chips(key,0,t.a.code)+chips(key,1,t.b.code)+'</div>';
@@ -2962,9 +2982,20 @@ function openTeamPop(code){
     });
   }
   $("#pop-body").innerHTML = html;
-  $("#pop-back").hidden = false;
+  showPop();
 }
-function closeTeamPop(){ $("#pop-back").hidden = true; }
+let popOpener = null;
+function showPop(){
+  popOpener = document.activeElement;
+  $("#pop-back").hidden = false;
+  const x = $("#pop-x"); if(x) x.focus();
+}
+function closeTeamPop(){
+  const wasOpen = !$("#pop-back").hidden;
+  $("#pop-back").hidden = true;
+  if(wasOpen && popOpener && document.contains(popOpener) && popOpener.focus){ popOpener.focus({preventScroll:true}); }
+  popOpener = null;
+}
 
 /* ----- conectores SVG ----- */
 function drawConnectors(){
@@ -3000,7 +3031,11 @@ function drawConnectors(){
 }
 
 function setTab(which){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active", t.dataset.tab===which));
+  document.querySelectorAll(".tab").forEach(t=>{
+    const on = t.dataset.tab===which;
+    t.classList.toggle("active", on);
+    t.setAttribute("aria-selected", on ? "true" : "false");
+  });
   $("#view-grupos").hidden = which!=="grupos";
   $("#view-elim").hidden = which!=="elim";
   $("#view-stats").hidden = which!=="stats";
@@ -3228,6 +3263,34 @@ function checkFireworks(){
   prevWins = now;
 }
 
+/* re-render diferido de un frame: el foco ya se movió al próximo campo,
+   lo capturamos y lo devolvemos a su gemelo recién construido */
+let renderQueued = false;
+function scheduleRender(){
+  if(renderQueued) return;
+  renderQueued = true;
+  requestAnimationFrame(()=>{
+    renderQueued = false;
+    const ae = document.activeElement;
+    let sel = null;
+    if(ae && ae.classList){
+      if(ae.classList.contains("score"))
+        sel = 'input.score[data-kind="'+ae.dataset.kind+'"][data-key="'+ae.dataset.key+'"][data-side="'+ae.dataset.side+'"]';
+      else if(ae.dataset && ae.dataset.fk !== undefined)
+        sel = '[data-fk="'+ae.dataset.fk+'"][data-ff="'+ae.dataset.ff+'"]';
+      else if(ae.dataset && ae.dataset.ficha)
+        sel = '[data-ficha="'+ae.dataset.ficha+'"]';
+      else if(ae.matches && ae.matches('.gcard h2[data-group]'))
+        sel = '.gcard h2[data-group="'+ae.dataset.group+'"]';
+    }
+    renderAll();
+    if(sel){
+      const el = document.querySelector(sel);
+      if(el){ el.focus({preventScroll:true}); if(el.select) el.select(); }
+    }
+  });
+}
+
 function renderAll(){
   renderChrome();
   renderGroups();
@@ -3281,7 +3344,7 @@ document.body.addEventListener("change", e=>{
     let v = el.value === "" ? "" : Math.max(0, Math.min(30, Math.round(Number(el.value))));
     bag[key][side] = v === "" ? "" : String(v);
     if(bag[key][0]==="" && bag[key][1]==="") delete bag[key];
-    save(); renderAll();
+    save(); scheduleRender();
     return;
   }
   if(el.dataset.fk){
@@ -3291,7 +3354,7 @@ document.body.addEventListener("change", e=>{
       v = v==="" ? "" : Math.max(0, Math.min(9, Math.round(Number(v))));
     }
     setFicha(key, field, v===0?0:(v||""));
-    save(); renderAll();
+    save(); scheduleRender();
     return;
   }
   if(el.dataset.award !== undefined){
@@ -3518,6 +3581,25 @@ document.addEventListener("keydown", e=>{
   if((e.key==="Enter"||e.key===" ") && e.target.classList && e.target.classList.contains("flag-btn")){
     e.preventDefault();
     openTeamPop(e.target.dataset.team);
+  }
+  /* Enter en gol local → salta al visitante; en el visitante → confirma */
+  if(e.key==="Enter" && e.target.classList && e.target.classList.contains("score")){
+    if(e.target.dataset.side==="0"){
+      const next = document.querySelector(
+        'input.score[data-kind="'+e.target.dataset.kind+'"][data-key="'+e.target.dataset.key+'"][data-side="1"]');
+      if(next){ e.preventDefault(); next.focus(); next.select(); }
+    } else {
+      e.target.blur();
+    }
+  }
+  /* Enter/Espacio abre y cierra los grupos con teclado */
+  if((e.key==="Enter"||e.key===" ") && e.target.matches && e.target.matches('.gcard h2[data-group]')){
+    e.preventDefault();
+    const g = e.target.dataset.group;
+    if(collapsedGroups.has(g)) collapsedGroups.delete(g); else collapsedGroups.add(g);
+    renderGroups();
+    const el = document.querySelector('.gcard h2[data-group="'+g+'"]');
+    if(el) el.focus({preventScroll:true});
   }
 });
 
@@ -3789,7 +3871,7 @@ function openSyncPop(){
       : '<button class="btn" id="sy-send">'+l.syncSend+'</button>') +
     '</div><p class="syncnote">'+l.syncNote2+'</p></div>';
   $("#pop-body").innerHTML = html;
-  $("#pop-back").hidden = false;
+  showPop();
 
   function grabFields(){
     cfg.url  = $("#sy-url").value.trim();
