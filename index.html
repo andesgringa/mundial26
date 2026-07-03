@@ -838,6 +838,10 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
 .syncchk{flex-direction:row !important;align-items:center;gap:8px}
 .syncchk input{width:auto;accent-color:var(--celeste)}
 .fcards{margin:8px 0 2px}
+.fdrow{margin-bottom:10px}
+.fdbtn{background:var(--inp);border:1px solid var(--gold);color:var(--gold);border-radius:9px;
+  padding:7px 12px;font:inherit;font-size:.72rem;font-weight:700;letter-spacing:.04em;cursor:pointer}
+.fdbtn:hover{background:rgba(228,181,74,.12)}
 .ftbd{font-size:.74rem;color:var(--muted);line-height:1.5;padding:2px 0}
 .synclogged{font-size:.82rem;color:var(--chalk,#eef4f9);padding:2px 0}
 .synclogged b{color:var(--celeste)}
@@ -1178,7 +1182,13 @@ Object.assign(I18N.es, {
   updNet:"el navegador no pudo conectarse con football-data.org (red o bloqueo del navegador). Probá desde otra red o avisale a Capymura 😉",
   updProxy:"falta el relay: creá la función fd-proxy en Supabase (Edge Functions → Deploy a new function → Via Editor) con el código de fd-proxy.ts.",
   updJwt:"Supabase bloqueó el relay: en la función, apagá \"Verify JWT with legacy secret\" y tocá Save changes.",
-  updProxyCode:"el relay respondió algo inesperado: el código de la función no es el de fd-proxy.ts — reemplazalo y volvé a deployar."
+  updProxyCode:"el relay respondió algo inesperado: el código de la función no es el de fd-proxy.ts — reemplazalo y volvé a deployar.",
+  fdBtn:"⟳ Cargar datos oficiales (goles y tarjetas)",
+  fdDone:"✅ Ficha oficial cargada",
+  fdNoId:"Primero tocá ⟳ Resultados para vincular este partido con los datos oficiales.",
+  fdOld:"el relay tiene el código viejo: pegá el nuevo fd-proxy.ts en la función y tocá Deploy updates.",
+  fdSweepStart:n=>"⏳ Cargando fichas oficiales de "+n+" partido"+(n===1?"":"s")+" (goles y tarjetas, ~7 s c/u, Argentina primero)…",
+  fdSweepDone:(d,t)=> d===t ? "✅ "+d+" ficha"+(d===1?"":"s")+" oficial"+(d===1?"":"es")+" cargada"+(d===1?"":"s") : "✅ "+d+"/"+t+" fichas oficiales — sigue solo la próxima vez"
 });
 Object.assign(I18N.en, {
   syncBtn:"Sync",
@@ -1218,7 +1228,13 @@ Object.assign(I18N.en, {
   updNet:"the browser could not reach football-data.org (network or browser blocking). Try another network or tell Capymura 😉",
   updProxy:"relay missing: create the fd-proxy function in Supabase (Edge Functions → Deploy a new function → Via Editor) with the fd-proxy.ts code.",
   updJwt:"Supabase blocked the relay: in the function, turn OFF \"Verify JWT with legacy secret\" and hit Save changes.",
-  updProxyCode:"the relay returned something unexpected: the function\u2019s code isn\u2019t fd-proxy.ts — replace it and redeploy."
+  updProxyCode:"the relay returned something unexpected: the function\u2019s code isn\u2019t fd-proxy.ts — replace it and redeploy.",
+  fdBtn:"⟳ Load official data (goals & cards)",
+  fdDone:"✅ Official match data loaded",
+  fdNoId:"Tap ⟳ Results first so this match gets linked to the official data.",
+  fdOld:"the relay is running the old code: paste the new fd-proxy.ts into the function and hit Deploy updates.",
+  fdSweepStart:n=>"⏳ Loading official data for "+n+" match"+(n===1?"":"es")+" (goals & cards, ~7 s each, Argentina first)…",
+  fdSweepDone:(d,t)=> d===t ? "✅ Official data loaded for "+d+" match"+(d===1?"":"es") : "✅ "+d+"/"+t+" matches — continues next time"
 });
 
 I18N.fr = Object.assign({}, I18N.en, {
@@ -1325,7 +1341,13 @@ I18N.fr = Object.assign({}, I18N.en, {
   updNet:"le navigateur n’a pas pu joindre football-data.org (réseau ou blocage du navigateur).",
   updProxy:"relais manquant : créez la fonction fd-proxy dans Supabase (Edge Functions → Via Editor) avec le code de fd-proxy.ts.",
   updJwt:"Supabase a bloqué le relais : désactivez \"Verify JWT with legacy secret\" dans la fonction puis enregistrez.",
-  updProxyCode:"réponse inattendue du relais : le code de la fonction n\u2019est pas fd-proxy.ts — remplacez-le et redéployez."
+  updProxyCode:"réponse inattendue du relais : le code de la fonction n\u2019est pas fd-proxy.ts — remplacez-le et redéployez.",
+  fdBtn:"⟳ Charger les données officielles (buts et cartons)",
+  fdDone:"✅ Données officielles chargées",
+  fdNoId:"Touchez d\u2019abord ⟳ Résultats pour relier ce match aux données officielles.",
+  fdOld:"le relais exécute l\u2019ancien code : collez le nouveau fd-proxy.ts et redéployez.",
+  fdSweepStart:n=>"⏳ Chargement des données officielles de "+n+" match"+(n===1?"":"s")+" (~7 s chacun)…",
+  fdSweepDone:(d,t)=> d===t ? "✅ Données officielles chargées ("+d+")" : "✅ "+d+"/"+t+" — reprendra la prochaine fois"
 });
 I18N.ja = Object.assign({}, I18N.en, {
   kicker:"アメリカ · メキシコ · カナダ — 6月11日〜7月19日",
@@ -1431,7 +1453,13 @@ I18N.ja = Object.assign({}, I18N.en, {
   updNet:"ブラウザがfootball-data.orgに接続できませんでした（ネットワークまたはブラウザのブロック）。",
   updProxy:"リレー未作成：Supabaseで fd-proxy 関数を作成してください（Edge Functions → Via Editor、fd-proxy.ts のコードを使用）。",
   updJwt:"Supabaseがリレーをブロックしました：関数の \"Verify JWT with legacy secret\" をオフにして保存してください。",
-  updProxyCode:"リレーの応答が想定外です：関数のコードが fd-proxy.ts ではありません — 置き換えて再デプロイしてください。"
+  updProxyCode:"リレーの応答が想定外です：関数のコードが fd-proxy.ts ではありません — 置き換えて再デプロイしてください。",
+  fdBtn:"⟳ 公式データを取得（得点・カード）",
+  fdDone:"✅ 公式データを取得しました",
+  fdNoId:"先に ⟳ 結果 をタップして、この試合を公式データに関連付けてください。",
+  fdOld:"リレーが古いコードです：新しい fd-proxy.ts を貼り付けて再デプロイしてください。",
+  fdSweepStart:n=>"⏳ "+n+"試合の公式データを取得中（得点・カード、各約7秒）…",
+  fdSweepDone:(d,t)=> d===t ? "✅ "+d+"試合の公式データを取得しました" : "✅ "+d+"/"+t+"試合 — 次回続行します"
 });
 
 const CAPY_ICON = "data:image/jpeg;base64,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";
@@ -1680,7 +1708,7 @@ const LAYOUT = {
 
 const KEY = "mundial2026-resultados";
 let memState = null;
-function defaultState(){ return {g:{}, k:{}, pen:{}, third:{}, f:{}, awards:{}, inj:{}, ft:{}, lang:"es", theme:"dark", koview:"list"}; }
+function defaultState(){ return {g:{}, k:{}, pen:{}, third:{}, f:{}, awards:{}, inj:{}, ft:{}, fdIds:{}, fdDet:{}, lang:"es", theme:"dark", koview:"list"}; }
 function load(){
   try{
     const raw = localStorage.getItem(KEY);
@@ -2103,6 +2131,9 @@ function fichaPanel(key, homeCode, awayCode){
   const inj = state.inj || {};
   const avail = SQUAD_AZ.filter(p=> !(p[0] in inj));
   let html = '<div class="ficha">';
+  if(state.fdIds && state.fdIds[key] && fdKey()){
+    html += '<div class="fdrow"><button type="button" class="fdbtn" data-fdmatch="'+key+'">'+l.fdBtn+'</button></div>';
+  }
   [homeCode, awayCode].forEach((code, i)=>{
     if(!code) return;
     const field = "sc"+i;
@@ -2168,7 +2199,7 @@ function groupTableHTML(g){
     const dots = r.form.map(f=>'<span class="fdot '+f.r+'" title="'+esc(f.s+" vs "+tshort(f.o))+'"></span>').join("");
     html += '<tr class="'+cls+'">' +
       '<td class="num">'+(idx+1)+'</td>' +
-      '<td class="team">'+(st.complete && idx===0 ? '👑 ' : '')+tlabel(r.c)+(r.c==="ARG"?" ⭐⭐⭐":"")+(qual?' <span class="qbadge" title="'+l.qualTip+'">✔</span>':'')+'</td>' +
+      '<td class="team">'+tlabel(r.c)+(r.c==="ARG"?" ⭐⭐⭐":"")+(qual?' <span class="qbadge" title="'+l.qualTip+'">✔</span>':'')+'</td>' +
       '<td>'+r.pj+'</td><td>'+r.pg+'</td><td>'+r.pe+'</td><td>'+r.pp+'</td>' +
       '<td>'+r.gf+'</td><td>'+r.gc+'</td><td>'+(r.dg>0?"+":"")+r.dg+'</td>' +
       '<td class="pts">'+r.pts+'</td><td class="form">'+dots+'</td></tr>';
@@ -2189,7 +2220,7 @@ function renderGroups(){
     if(coll){
       const anyPlayed = st.list.some(r=>r.pj>0);
       mini = '<span class="gmini">' +
-        st.list.map((r,i)=>'<span class="gflag'+(i===0 && anyPlayed ?' lead':'')+'" title="'+esc(tshort(r.c))+(i===0&&anyPlayed?' · '+r.pts+' pts':'')+'">'+(i===0&&st.complete?'👑':'')+T[r.c][2]+'</span>').join("") +
+        st.list.map((r,i)=>'<span class="gflag'+(i===0 && anyPlayed ?' lead':'')+'" title="'+esc(tshort(r.c))+(i===0&&anyPlayed?' · '+r.pts+' pts':'')+'">'+T[r.c][2]+'</span>').join("") +
         (st.complete ? ' <span class="gdone">✓</span>' : '') +
       '</span>';
     }
@@ -3100,6 +3131,8 @@ document.body.addEventListener("change", e=>{
 });
 
 document.body.addEventListener("click", e=>{
+  const fdb = e.target.closest("[data-fdmatch]");
+  if(fdb){ officialDetail(fdb.dataset.fdmatch); return; }
   const ab = e.target.closest("[data-scaddbtn]");
   if(ab){
     const inp = ab.parentElement.querySelector(".sc-txt");
@@ -3597,19 +3630,22 @@ function toast(msg){
 }
 
 /* pedir los partidos: directo, y si el navegador lo bloquea (CORS), por el relay en Supabase */
-async function fetchFixtures(){
+async function fetchFD(matchId){
+  const direct = matchId
+    ? "https://api.football-data.org/v4/matches/" + matchId
+    : "https://api.football-data.org/v4/competitions/WC/matches";
   try{
-    return await fetch("https://api.football-data.org/v4/competitions/WC/matches",
-      { headers: { "X-Auth-Token": fdKey() } });
+    return await fetch(direct, { headers: { "X-Auth-Token": fdKey() } });
   }catch(e){
     if(!(sbUrl() && sbAnon())) throw e;
     const h = { "apikey": sbAnon(), "x-fd-key": fdKey() };
     if(cfg.sess && cfg.sess.rt && (await ensureSession())) h["Authorization"] = "Bearer " + cfg.sess.at;
     /* probamos los nombres posibles del relay — cada intento aislado,
        porque un slug inexistente hace que el navegador tire error en vez de 404 */
+    const qs = matchId ? "?match=" + encodeURIComponent(matchId) : "";
     async function tryRelay(name){
       try{
-        const r = await fetch(sbUrl()+"/functions/v1/"+name, { headers: h });
+        const r = await fetch(sbUrl()+"/functions/v1/"+name+qs, { headers: h });
         return (r && r.status !== 404) ? r : null;
       }catch(err){ return null; }
     }
@@ -3620,6 +3656,24 @@ async function fetchFixtures(){
     r2.viaRelay = true;
     return r2;
   }
+}
+function fetchFixtures(){ return fetchFD(null); }
+
+/* resultado real de un partido según la API:
+   en tandas de penales, fullTime INCLUYE los penales — el marcador de los 120'
+   está en regularTime + extraTime (o fullTime − penalties como respaldo) */
+function officialScore(s){
+  let h = s.fullTime ? s.fullTime.home : null, a = s.fullTime ? s.fullTime.away : null;
+  if(s.duration === "PENALTY_SHOOTOUT"){
+    if(s.regularTime && s.regularTime.home !== null && s.regularTime.home !== undefined){
+      h = (s.regularTime.home||0) + ((s.extraTime && s.extraTime.home) || 0);
+      a = (s.regularTime.away||0) + ((s.extraTime && s.extraTime.away) || 0);
+    } else if(s.penalties && s.penalties.home !== null && s.penalties.home !== undefined){
+      h = h - (s.penalties.home||0);
+      a = a - (s.penalties.away||0);
+    }
+  }
+  return { h, a };
 }
 
 async function autoUpdate(silent){
@@ -3660,6 +3714,12 @@ async function autoUpdate(silent){
           const f = cand.find(i=> (GM[i][4]===hc && GM[i][5]===ac) || (GM[i][4]===ac && GM[i][5]===hc));
           if(f!==undefined) idx = f;
         }
+        if(idx<0 && hc && ac){
+          /* la hora no coincidió con nuestro fixture: buscamos por los equipos (cada par juega una sola vez) */
+          const f2 = GM.findIndex(mm=> (mm[4]===hc && mm[5]===ac) || (mm[4]===ac && mm[5]===hc));
+          if(f2>=0) idx = f2;
+        }
+        if(idx>=0){ if(!state.fdIds) state.fdIds = {}; state.fdIds["g:"+idx] = am.id; }
         if(idx<0 || !done) return;
         const flip = (ac && GM[idx][4]===ac);   /* la API tiene local/visitante al revés que nuestro fixture */
         const H = String(flip ? am.score.fullTime.away : am.score.fullTime.home);
@@ -3681,6 +3741,14 @@ async function autoUpdate(silent){
         });
         if(f!==undefined) id = f;
       }
+      if(id<0 && hc && ac){
+        const f2 = KO.find(mm=>{
+          const t2 = koTeams(mm);
+          return (t2.a.code===hc && t2.b.code===ac) || (t2.a.code===ac && t2.b.code===hc);
+        });
+        if(f2) id = f2.id;
+      }
+      if(id>=0){ if(!state.fdIds) state.fdIds = {}; state.fdIds["k:"+id] = am.id; }
       if(id<0) return;
       const m = KO_BY_ID[id];
       /* la FIFA ya definió el cruce: asignar el tercero automáticamente */
@@ -3692,7 +3760,8 @@ async function autoUpdate(silent){
       let flip = false;
       if(ac && tt.a.code===ac) flip = true;
       else if(hc && tt.b.code===hc) flip = true;
-      let H = am.score.fullTime.home, A = am.score.fullTime.away;
+      const osc = officialScore(am.score);
+      let H = osc.h, A = osc.a;
       if(flip){ const x = H; H = A; A = x; }
       const cur = state.k[id];
       if(!cur || cur[0]!==String(H) || cur[1]!==String(A)){ state.k[id] = [String(H), String(A)]; nScores++; }
@@ -3706,6 +3775,7 @@ async function autoUpdate(silent){
     save(); renderAll();
     if(nScores || nThirds) toast(l.updDone(nScores, nThirds));
     else if(!silent) alert(l.updNone);
+    setTimeout(()=>sweepDetails(!silent), 1500);  /* fichas oficiales en segundo plano */
   }catch(e){
     console.error("autoUpdate:", e);
     if(!silent){
@@ -3719,6 +3789,150 @@ async function autoUpdate(silent){
     }
   }finally{
     if(b){ b.disabled = false; b.textContent = L().updBtn; }
+  }
+}
+
+/* ---- ficha oficial de UN partido: goles, goleadores y tarjetas ---- */
+function applyDetail(key, am){
+  const isG = key[0]==="g";
+  const n = Number(key.slice(2));
+  let homeCode, awayCode;
+  if(isG){ homeCode = GM[n][4]; awayCode = GM[n][5]; }
+  else { const tt = koTeams(KO_BY_ID[n]); homeCode = tt.a.code; awayCode = tt.b.code; }
+  const acx = codeFromApi(am.awayTeam);
+  const flip = !!(acx && homeCode === acx);
+  const ourSide = team => {
+    const apiHome = team && am.homeTeam && team.id === am.homeTeam.id;
+    return apiHome ? (flip?1:0) : (flip?0:1);
+  };
+  /* marcador (con la regla de penales) */
+  if(am.score && am.score.fullTime && am.score.fullTime.home !== null){
+    const osc = officialScore(am.score);
+    let H = osc.h, A = osc.a;
+    if(flip){ const x=H; H=A; A=x; }
+    if(isG) state.g[n] = [String(H), String(A)];
+    else {
+      state.k[n] = [String(H), String(A)];
+      if(H===A && am.score.winner && am.score.winner!=="DRAW"){
+        const homeWins = am.score.winner==="HOME_TEAM";
+        state.pen[n] = homeWins ? (flip?"b":"a") : (flip?"a":"b");
+      }
+    }
+    if(am.status==="FINISHED") state.ft[key] = true;
+  }
+  /* goleadores oficiales */
+  if(Array.isArray(am.goals) && am.goals.length){
+    const tal = [ {}, {} ];
+    am.goals.forEach(g=>{
+      if(!g.scorer || !g.scorer.name) return;
+      const s = ourSide(g.team);
+      const nm = g.scorer.name + (g.type==="OWN" ? " (og)" : "");
+      tal[s][nm] = (tal[s][nm]||0) + 1;
+    });
+    [0,1].forEach(i=>{
+      const rows = Object.keys(tal[i]).map(nm=>({name:nm, n:tal[i][nm]}));
+      if(rows.length) setFicha(key, "sc"+i, scSerialize(rows));
+    });
+  }
+  /* tarjetas oficiales */
+  if(Array.isArray(am.bookings)){
+    const c = [{y:0,r:0},{y:0,r:0}];
+    am.bookings.forEach(bk=>{
+      const s = ourSide(bk.team);
+      if(bk.card==="YELLOW") c[s].y++;
+      else c[s].r++;   /* roja directa o doble amarilla */
+    });
+    [0,1].forEach(i=>{ setFicha(key, "y"+i, c[i].y); setFicha(key, "r"+i, c[i].r); });
+  }
+}
+
+/* ---- barrido en segundo plano: fichas oficiales de todos los terminados ----
+   Respeta el límite gratuito (10/min) con ~7 s entre partidos.
+   Argentina va primero para que La Scaloneta esté siempre al día. */
+let FD_SWEEP_MS = 6800;
+let sweepRunning = false;
+function keyTeams(k){
+  if(k[0]==="g"){ const mm = GM[Number(k.slice(2))]; return [mm[4], mm[5]]; }
+  const tt = koTeams(KO_BY_ID[Number(k.slice(2))]); return [tt.a.code, tt.b.code];
+}
+function keyDate(k){
+  if(k[0]==="g"){ const mm = GM[Number(k.slice(2))]; return artDate(mm[1], mm[2]).getTime(); }
+  const mm = KO_BY_ID[Number(k.slice(2))]; return artDate(mm.d, mm.h).getTime();
+}
+function pendingDetails(){
+  if(!state.fdIds) return [];
+  const out = [];
+  Object.keys(state.fdIds).forEach(k=>{
+    if(state.fdDet && state.fdDet[k]) return;
+    if(!state.ft[k]) return;                      /* sólo partidos terminados */
+    const bag = k[0]==="g" ? state.g : state.k;
+    const s = bag[k.slice(2)];
+    if(!s || val(s[0])===null || val(s[1])===null) return;
+    out.push(k);
+  });
+  out.sort((a,b)=>{
+    const aArg = keyTeams(a).includes("ARG") ? 0 : 1;
+    const bArg = keyTeams(b).includes("ARG") ? 0 : 1;
+    if(aArg !== bArg) return aArg - bArg;         /* Argentina primero */
+    const aKo = a[0]==="k" ? 0 : 1, bKo = b[0]==="k" ? 0 : 1;
+    if(aKo !== bKo) return aKo - bKo;             /* después, eliminatorias */
+    return keyDate(b) - keyDate(a);               /* después, lo más reciente */
+  });
+  return out;
+}
+async function fetchDetailApply(key){
+  const fid = state.fdIds && state.fdIds[key];
+  if(!fid) return false;
+  try{
+    let r = await fetchFD(fid);
+    if(r.status===429){ await new Promise(x=>setTimeout(x, 65000)); r = await fetchFD(fid); }
+    if(!r.ok) return false;
+    const am = await r.json();
+    if(!am || am.matches || !am.score) return false;
+    applyDetail(key, am);
+    if(!state.fdDet) state.fdDet = {};
+    if(am.status==="FINISHED") state.fdDet[key] = true;
+    save(); renderAll();
+    return true;
+  }catch(e){ console.error("detail sweep:", e); return false; }
+}
+async function sweepDetails(manual){
+  if(sweepRunning || !fdKey()) return;
+  const pend = pendingDetails();
+  if(!pend.length) return;
+  sweepRunning = true;
+  if(manual) toast(L().fdSweepStart(pend.length));
+  let done = 0;
+  for(const k of pend){
+    if(!(await fetchDetailApply(k))) break;
+    done++;
+    if(done < pend.length) await new Promise(r=>setTimeout(r, FD_SWEEP_MS));
+  }
+  sweepRunning = false;
+  if(done && (manual || done === pend.length)) toast(L().fdSweepDone(done, pend.length));
+}
+
+async function officialDetail(key){
+  const l = L();
+  if(!fdKey()){ toast(l.updNoKey); openSyncPop(); return; }
+  const fid = state.fdIds && state.fdIds[key];
+  if(!fid){ alert(l.fdNoId); return; }
+  try{
+    const r = await fetchFD(fid);
+    if(r.status===400 || r.status===401 || r.status===403) throw { msg: l.updBadKey };
+    if(r.status===429) throw { msg: l.updRate };
+    if(!r.ok) throw { msg: "HTTP " + r.status };
+    const am = await r.json();
+    if(!am || am.matches) throw { msg: l.fdOld };  /* el relay viejo devolvió la lista completa */
+    if(!am.score) throw { msg: "HTTP ?" };
+    applyDetail(key, am);
+    if(!state.fdDet) state.fdDet = {};
+    if(am.status==="FINISHED") state.fdDet[key] = true;
+    save(); renderAll();
+    toast(l.fdDone);
+  }catch(e){
+    console.error("officialDetail:", e);
+    alert(l.updErr + (e && e.msg ? e.msg : l.updNet));
   }
 }
 
