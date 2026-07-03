@@ -970,7 +970,7 @@ button,input,select,.tab,.btn,.gchip,.ft-chip,.flag-btn{touch-action:manipulatio
 const CONFIG = {
   SUPABASE_URL: "https://wknlxvqfnacmdlguklrx.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_hfYxAJnlt2HHXs3aRbwY-Q_z7JZK7rA",
-  FOOTBALL_DATA_KEY: "c7523e22d9bd4c7ab869191dc3885b15"
+  FOOTBALL_DATA_KEY: ""
 };
 
 /* ================= IDIOMAS ================= */
@@ -1188,7 +1188,8 @@ Object.assign(I18N.es, {
   fdNoId:"Primero tocá ⟳ Resultados para vincular este partido con los datos oficiales.",
   fdOld:"el relay tiene el código viejo: pegá el nuevo fd-proxy.ts en la función y tocá Deploy updates.",
   fdSweepStart:n=>"⏳ Cargando fichas oficiales de "+n+" partido"+(n===1?"":"s")+" (goles y tarjetas, ~7 s c/u, Argentina primero)…",
-  fdSweepDone:(d,t)=> d===t ? "✅ "+d+" ficha"+(d===1?"":"s")+" oficial"+(d===1?"":"es")+" cargada"+(d===1?"":"s") : "✅ "+d+"/"+t+" fichas oficiales — sigue solo la próxima vez"
+  fdSweepDone:(d,t)=> d===t ? "✅ "+d+" ficha"+(d===1?"":"s")+" oficial"+(d===1?"":"es")+" cargada"+(d===1?"":"s") : "✅ "+d+"/"+t+" fichas oficiales — sigue solo la próxima vez",
+  updSecret:"al relay le falta el secreto FD_KEY: en Supabase → Edge Functions → Secrets, agregá FD_KEY con tu clave de football-data."
 });
 Object.assign(I18N.en, {
   syncBtn:"Sync",
@@ -1234,7 +1235,8 @@ Object.assign(I18N.en, {
   fdNoId:"Tap ⟳ Results first so this match gets linked to the official data.",
   fdOld:"the relay is running the old code: paste the new fd-proxy.ts into the function and hit Deploy updates.",
   fdSweepStart:n=>"⏳ Loading official data for "+n+" match"+(n===1?"":"es")+" (goals & cards, ~7 s each, Argentina first)…",
-  fdSweepDone:(d,t)=> d===t ? "✅ Official data loaded for "+d+" match"+(d===1?"":"es") : "✅ "+d+"/"+t+" matches — continues next time"
+  fdSweepDone:(d,t)=> d===t ? "✅ Official data loaded for "+d+" match"+(d===1?"":"es") : "✅ "+d+"/"+t+" matches — continues next time",
+  updSecret:"the relay is missing the FD_KEY secret: in Supabase → Edge Functions → Secrets, add FD_KEY with your football-data key."
 });
 
 I18N.fr = Object.assign({}, I18N.en, {
@@ -1347,7 +1349,8 @@ I18N.fr = Object.assign({}, I18N.en, {
   fdNoId:"Touchez d\u2019abord ⟳ Résultats pour relier ce match aux données officielles.",
   fdOld:"le relais exécute l\u2019ancien code : collez le nouveau fd-proxy.ts et redéployez.",
   fdSweepStart:n=>"⏳ Chargement des données officielles de "+n+" match"+(n===1?"":"s")+" (~7 s chacun)…",
-  fdSweepDone:(d,t)=> d===t ? "✅ Données officielles chargées ("+d+")" : "✅ "+d+"/"+t+" — reprendra la prochaine fois"
+  fdSweepDone:(d,t)=> d===t ? "✅ Données officielles chargées ("+d+")" : "✅ "+d+"/"+t+" — reprendra la prochaine fois",
+  updSecret:"il manque le secret FD_KEY au relais : Supabase → Edge Functions → Secrets, ajoutez FD_KEY."
 });
 I18N.ja = Object.assign({}, I18N.en, {
   kicker:"アメリカ · メキシコ · カナダ — 6月11日〜7月19日",
@@ -1459,7 +1462,8 @@ I18N.ja = Object.assign({}, I18N.en, {
   fdNoId:"先に ⟳ 結果 をタップして、この試合を公式データに関連付けてください。",
   fdOld:"リレーが古いコードです：新しい fd-proxy.ts を貼り付けて再デプロイしてください。",
   fdSweepStart:n=>"⏳ "+n+"試合の公式データを取得中（得点・カード、各約7秒）…",
-  fdSweepDone:(d,t)=> d===t ? "✅ "+d+"試合の公式データを取得しました" : "✅ "+d+"/"+t+"試合 — 次回続行します"
+  fdSweepDone:(d,t)=> d===t ? "✅ "+d+"試合の公式データを取得しました" : "✅ "+d+"/"+t+"試合 — 次回続行します",
+  updSecret:"リレーに FD_KEY シークレットがありません：Supabase → Edge Functions → Secrets で FD_KEY を追加してください。"
 });
 
 const CAPY_ICON = "data:image/jpeg;base64,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";
@@ -2131,7 +2135,7 @@ function fichaPanel(key, homeCode, awayCode){
   const inj = state.inj || {};
   const avail = SQUAD_AZ.filter(p=> !(p[0] in inj));
   let html = '<div class="ficha">';
-  if(state.fdIds && state.fdIds[key] && fdKey()){
+  if(state.fdIds && state.fdIds[key] && fdOn()){
     html += '<div class="fdrow"><button type="button" class="fdbtn" data-fdmatch="'+key+'">'+l.fdBtn+'</button></div>';
   }
   [homeCode, awayCode].forEach((code, i)=>{
@@ -3402,6 +3406,8 @@ function saveCfg(){ try{ localStorage.setItem(KEY_CFG, JSON.stringify(cfg)); }ca
 function sbUrl(){ return (cfg.url || CONFIG.SUPABASE_URL || "").replace(/\/+$/,""); }
 function sbAnon(){ return cfg.anon || CONFIG.SUPABASE_ANON_KEY || ""; }
 function fdKey(){ return cfg.fd || CONFIG.FOOTBALL_DATA_KEY || ""; }
+function relayReady(){ return !!(sbUrl() && sbAnon()); }
+function fdOn(){ return !!(fdKey() || relayReady()); }
 function syncOn(){ return !!(sbUrl() && sbAnon() && cfg.sess && cfg.sess.rt); }
 
 /* ---------- cuentas: magic link de Supabase, sin librerías ---------- */
@@ -3635,10 +3641,12 @@ async function fetchFD(matchId){
     ? "https://api.football-data.org/v4/matches/" + matchId
     : "https://api.football-data.org/v4/competitions/WC/matches";
   try{
+    if(!fdKey()) throw new TypeError("sin clave local: vamos directo al relay");
     return await fetch(direct, { headers: { "X-Auth-Token": fdKey() } });
   }catch(e){
-    if(!(sbUrl() && sbAnon())) throw e;
-    const h = { "apikey": sbAnon(), "x-fd-key": fdKey() };
+    if(!relayReady()) throw e;
+    const h = { "apikey": sbAnon() };
+    if(fdKey()) h["x-fd-key"] = fdKey();  /* si no hay clave local, el relay usa su secreto FD_KEY */
     if(cfg.sess && cfg.sess.rt && (await ensureSession())) h["Authorization"] = "Bearer " + cfg.sess.at;
     /* probamos los nombres posibles del relay — cada intento aislado,
        porque un slug inexistente hace que el navegador tire error en vez de 404 */
@@ -3678,11 +3686,12 @@ function officialScore(s){
 
 async function autoUpdate(silent){
   const l = L();
-  if(!fdKey()){ if(silent) return; toast(l.updNoKey); openSyncPop(); return; }
+  if(!fdOn()){ if(silent) return; toast(l.updNoKey); openSyncPop(); return; }
   const b = $("#btn-update");
   if(b){ b.disabled = true; b.textContent = "⟳ …"; }
   try{
     const r = await fetchFixtures();
+    if(r.status===400 && !fdKey()) throw {msg:l.updSecret};
     if(r.status===400 || r.status===401 || r.status===403) throw {msg:l.updBadKey};
     if(r.status===429) throw {msg:l.updRate};
     if(!r.ok) throw {msg:"HTTP "+r.status};
@@ -3886,6 +3895,7 @@ async function fetchDetailApply(key){
   try{
     let r = await fetchFD(fid);
     if(r.status===429){ await new Promise(x=>setTimeout(x, 65000)); r = await fetchFD(fid); }
+    if(r.status===400 && !fdKey()) return { ok:false, msg:L().updSecret };
     if(r.status===400 || r.status===401 || r.status===403) return { ok:false, msg:L().updBadKey };
     if(!r.ok) return { ok:false, msg:"HTTP "+r.status };
     const am = await r.json();
@@ -3899,7 +3909,7 @@ async function fetchDetailApply(key){
   }catch(e){ console.error("detail sweep:", e); return { ok:false, msg:L().updNet }; }
 }
 async function sweepDetails(manual){
-  if(sweepRunning || !fdKey()) return;
+  if(sweepRunning || !fdOn()) return;
   const pend = pendingDetails();
   if(!pend.length) return;
   sweepRunning = true;
@@ -3921,11 +3931,12 @@ async function sweepDetails(manual){
 
 async function officialDetail(key){
   const l = L();
-  if(!fdKey()){ toast(l.updNoKey); openSyncPop(); return; }
+  if(!fdOn()){ toast(l.updNoKey); openSyncPop(); return; }
   const fid = state.fdIds && state.fdIds[key];
   if(!fid){ alert(l.fdNoId); return; }
   try{
     const r = await fetchFD(fid);
+    if(r.status===400 && !fdKey()) throw { msg: l.updSecret };
     if(r.status===400 || r.status===401 || r.status===403) throw { msg: l.updBadKey };
     if(r.status===429) throw { msg: l.updRate };
     if(!r.ok) throw { msg: "HTTP " + r.status };
@@ -3955,7 +3966,7 @@ $("#btn-sync").addEventListener("click", openSyncPop);
 $("#btn-update").addEventListener("click", ()=>autoUpdate(false));
 let lastAuto = 0;
 function maybeAutoUpdate(){
-  if(!cfg.auto || !fdKey()) return;
+  if(!cfg.auto || !fdOn()) return;
   if(Date.now() - lastAuto < 10*60000) return;  /* como mucho una vez cada 10 min */
   lastAuto = Date.now();
   autoUpdate(true);
