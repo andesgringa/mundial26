@@ -566,18 +566,53 @@ html[data-theme="light"] .ko-toggle button.on{color:#fff}
 .pl-grid{align-items:start}
 .jrow{padding:7px 0;border-bottom:1px solid var(--line-soft)}
 .jrow:last-child{border-bottom:none}
-.jtop{display:grid;grid-template-columns:52px 1fr 86px;gap:10px;align-items:center}
+.jtop{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;padding-right:10px}
 .jnum{font-family:"Saira";font-weight:700;font-size:.95rem;color:var(--gold);letter-spacing:.03em}
 .jnum i{color:var(--muted);font-weight:400;font-size:.68rem;font-style:normal}
 .jbar{height:6px;border-radius:4px;background:var(--inp);overflow:hidden}
 .jbar i{display:block;height:100%;background:linear-gradient(90deg,var(--celeste),#a8d2f0);border-radius:4px}
-.jval{text-align:right;font-family:"Saira";font-weight:700;font-size:.92rem;color:var(--chalk);white-space:nowrap}
+.jval{text-align:right;font-family:"Saira";font-weight:700;font-size:.92rem;color:var(--chalk);white-space:nowrap;min-width:74px}
 .jval em{font-style:normal;font-weight:600;font-size:.72rem;color:var(--muted)}
 .jwho{color:var(--muted);font-size:.7rem;margin:3px 0 0 62px;line-height:1.5}
+.pltog{
+  background:none;border:none;cursor:pointer;font:inherit;color:inherit;
+  display:inline-flex;align-items:center;gap:8px;padding:0;
+  letter-spacing:inherit;text-transform:inherit;
+}
+.pltog .gcaret{color:var(--muted);font-size:.82rem}
+.pltog:hover .gcaret{color:var(--chalk)}
+.pl-grid .scard.closed{padding-bottom:10px}
+.pl-more{
+  display:block;margin:8px auto 0;font-family:"Saira";font-weight:700;font-size:.72rem;
+  color:var(--muted);background:var(--inp);border:1px solid var(--line);border-radius:14px;
+  padding:4px 14px;cursor:pointer;letter-spacing:.05em;
+}
+.pl-more:hover{color:var(--celeste);border-color:var(--celeste)}
+.gb-row td{background:rgba(228,181,74,.1)}
+.gb-row td.team{color:var(--gold)}
+.gboot{
+  width:26px;height:26px;font-size:.85rem;line-height:1;background:none;
+  border:1px solid var(--line);border-radius:7px;cursor:pointer;opacity:.55;
+}
+.gboot:hover{opacity:1;border-color:var(--gold)}
+.gboot.on{opacity:1;border-color:var(--gold);background:rgba(228,181,74,.18)}
+.jnumer{color:var(--gold-deep);font-size:.68rem;margin:3px 0 0 62px;font-style:italic}
+[data-theme="dark"] .jnumer{color:var(--gold)}
+@media screen and (max-width:720px){ .gboot{width:38px;height:38px} }
+.bootcard{position:relative}
+.bootcard h2{padding-right:86px}   /* lugar para el botón editar */
+.pltbl{table-layout:fixed;width:100%}
+.pltbl th:first-child,.pltbl td:first-child{width:34px}
+.pltbl .jc{width:48px;text-align:center}
+.pltbl th:nth-child(4),.pltbl td:nth-child(4){width:96px}
+table.stats.pltbl td.gc,table.stats.pltbl th.gc{width:64px;text-align:right;padding-right:14px}
+.pltbl td.team,.pltbl th.team{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pltbl .gadj-td{width:78px;text-align:right;padding-right:10px}
 .gedit{
+  position:absolute;top:16px;right:16px;
   font-family:inherit;font-size:.66rem;font-weight:700;letter-spacing:.05em;
   color:var(--celeste);background:none;border:1px solid var(--line);border-radius:7px;
-  padding:3px 9px;margin-left:10px;cursor:pointer;vertical-align:2px;
+  padding:5px 11px;cursor:pointer;
 }
 .gedit:hover,.gedit.on{border-color:var(--celeste)}
 .gedit.on{background:var(--celeste);color:#0a1420}
@@ -589,6 +624,21 @@ html[data-theme="light"] .ko-toggle button.on{color:#fff}
 }
 .gadj:hover{border-color:var(--celeste);color:var(--celeste)}
 @media screen and (max-width:720px){ .gadj{width:38px;height:38px} }
+.junk{font-size:.72rem;color:var(--muted);margin-top:9px;padding-top:8px;border-top:1px dashed var(--line-soft)}
+.totcard{margin-bottom:14px}
+.totrow{display:flex;gap:26px;flex-wrap:wrap;align-items:baseline;padding:4px 2px 2px}
+.tstat{font-size:.85rem;color:var(--muted)}
+.tstat b{font-family:"Saira";font-weight:700;font-size:1.5rem;color:var(--gold);margin-right:6px}
+.gktbl .gk-n{width:52px;text-align:center}
+input.gkin{
+  width:44px;height:30px;text-align:center;font-family:"Saira";font-weight:700;font-size:.88rem;
+  color:var(--celeste);background:var(--inp);border:1px solid var(--line);border-radius:7px;
+  -moz-appearance:textfield;appearance:textfield;
+}
+input.gkin::-webkit-outer-spin-button,input.gkin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input.gkin:focus{border-color:var(--celeste)}
+.argtag{font-size:.58rem;font-weight:700;letter-spacing:.06em;color:#0a1420;background:var(--celeste);border-radius:5px;padding:1px 5px;vertical-align:1px}
+@media screen and (max-width:720px){ input.gkin{width:48px;height:40px} }
 .thirds-panel .tp-toggle{
   background:none;border:none;cursor:pointer;font:inherit;color:inherit;
   display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:0;
@@ -750,6 +800,8 @@ table.stats th.sorted{color:var(--gold)}
 table.stats td{padding:5px 6px;text-align:right;border-bottom:1px solid var(--line-soft)}
 table.stats td.team{text-align:left;padding-left:16px;white-space:nowrap}
 table.stats td.fp{color:var(--ok);font-weight:600}
+table.stats td.gc,table.stats th.gc{text-align:right;padding-right:14px}
+table.stats td.jc,table.stats th.jc{text-align:center}
 table.stats tr:last-child td{border-bottom:none}
 .awards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding:12px 16px}
 .award{display:flex;flex-direction:column;gap:4px}
@@ -1165,8 +1217,9 @@ const I18N = {
     pickThird:"Elegí el tercero…", sug:"Sugeridos (grupos ", oth:"Otros terceros",
     pen:"Empate — ¿quién pasa por penales?",
     updNewV:"🔄 Hay una versión nueva de la app", updNewBtn:"Actualizar",
-    jersT:"Goles por dorsal", jersSub:"Qué camiseta grita más goles. Dorsales conocidos de la base del torneo y del plantel argentino.",
-    jersUnk:"sin dorsal", playersCol:"Jugador", editG:"✎ editar", editGDone:"✓ listo",
+    jersT:"Goles por camiseta", jersSub:"Qué camiseta grita más goles. Números conocidos de la base del torneo y del plantel argentino.",
+    jersUnk:"sin número", playersCol:"Jugador", editG:"✎ editar", editGDone:"✓ listo", gloveT:"Guante de Oro — Arqueros", gloveSub:"Top 10 del torneo + los arqueros argentinos. Con ✎ actualizás vallas, goles y atajadas.", gkCS:"vallas invictas", gkGC:"goles recibidos", gkSV:"atajadas", argTag:"plantel ARG", totalsT:"Totales del torneo", totalsSub:"Base oficial al 1/7 · más lo que cargás vos.", totGl:"goles", numerolPre:"numerología",
+    nums:{1:"el líder que arranca todo",2:"equilibrio y pared justa",3:"creatividad que desborda",4:"orden, marca y sacrificio",5:"libertad por toda la cancha",6:"armonía que ordena al equipo",7:"magia y gambeta mística",8:"motor de poder y ambición",9:"el cierre: nació para el gol",11:"intuición maestra, número místico",22:"el gran arquitecto del juego"},
     pos:(p,g)=>p+"° Grupo "+g, third:gs=>"3° de "+gs.join("/"), win:m=>"Ganador "+m, lose:m=>"Perdedor "+m,
     wd:{sun:"Dom",mon:"Lun",tue:"Mar",wed:"Mié",thu:"Jue",fri:"Vie",sat:"Sáb"},
     ficha:"📋 ficha",
@@ -1181,7 +1234,7 @@ const I18N = {
     sTh:{team:"Equipo",pj:"PJ",gf:"GF",gc:"GC",dg:"DG",y:"🟨",r:"🟥",fp:"FP"},
     noStats:"Todavía no hay datos: cargá resultados y fichas.",
     boot:"Botín de Oro — Goleadores",
-    bootSub:"Base oficial hasta dieciseisavos · desde octavos suma lo que anotás en las fichas.",
+    bootSub:"Base oficial al 1/7 · los partidos posteriores suman desde tus fichas.",
     bTh:{p:"Jugador",t:"Equipo",g:"Goles"},
     awardsT:"Premios del torneo",
     awardsSub:"Anotá los ganadores cuando termine el Mundial.",
@@ -1250,7 +1303,8 @@ const I18N = {
     pen:"Draw — who wins on penalties?",
     updNewV:"🔄 A new version of the app is available", updNewBtn:"Refresh",
     jersT:"Goals by jersey number", jersSub:"Which shirt scores the most. Known numbers from the tournament base and the Argentine squad.",
-    jersUnk:"no number", playersCol:"Player", editG:"✎ edit", editGDone:"✓ done",
+    jersUnk:"no number", playersCol:"Player", editG:"✎ edit", editGDone:"✓ done", gloveT:"Golden Glove — Goalkeepers", gloveSub:"Tournament top 10 + the Argentine keepers. Use ✎ to update clean sheets, conceded and saves.", gkCS:"clean sheets", gkGC:"goals conceded", gkSV:"saves", argTag:"ARG squad", totalsT:"Tournament totals", totalsSub:"Official base as of Jul 1 · plus what you record.", totGl:"goals", numerolPre:"numerology",
+    nums:{1:"the leader who starts it all",2:"balance and the perfect one-two",3:"overflowing creativity",4:"order, grit and sacrifice",5:"freedom across the whole pitch",6:"harmony that organizes the team",7:"mystic dribbles and magic",8:"engine of power and ambition",9:"the closer: born to score",11:"master intuition, mystic number",22:"the grand architect of the game"},
     pos:(p,g)=>(p===1?"1st":"2nd")+" Group "+g, third:gs=>"3rd of "+gs.join("/"), win:m=>"Winner of "+m, lose:m=>"Loser of "+m,
     wd:{sun:"Sun",mon:"Mon",tue:"Tue",wed:"Wed",thu:"Thu",fri:"Fri",sat:"Sat"},
     ficha:"📋 details",
@@ -1265,7 +1319,7 @@ const I18N = {
     sTh:{team:"Team",pj:"P",gf:"GF",gc:"GA",dg:"GD",y:"🟨",r:"🟥",fp:"FP"},
     noStats:"No data yet — enter results and match details.",
     boot:"Golden Boot — Top scorers",
-    bootSub:"Official base through the round of 32 · from the R16 on, your match details add to it.",
+    bootSub:"Official base as of Jul 1 · later matches add from your match details.",
     bTh:{p:"Player",t:"Team",g:"Goals"},
     awardsT:"Tournament awards",
     awardsSub:"Write down the winners when the World Cup ends.",
@@ -1450,7 +1504,8 @@ I18N.fr = Object.assign({}, I18N.en, {
   pen:"Égalité — qui passe aux tirs au but ?",
   updNewV:"🔄 Nouvelle version de l’app disponible", updNewBtn:"Mettre à jour",
   jersT:"Buts par numéro de maillot", jersSub:"Quel maillot marque le plus.",
-  jersUnk:"sans numéro", playersCol:"Joueur", editG:"✎ modifier", editGDone:"✓ ok",
+  jersUnk:"sans numéro", playersCol:"Joueur", editG:"✎ modifier", editGDone:"✓ ok", gloveT:"Gant d’Or — Gardiens", gloveSub:"Top 10 du tournoi + les gardiens argentins.", gkCS:"clean sheets", gkGC:"buts encaissés", gkSV:"arrêts", argTag:"sélection ARG", totalsT:"Totaux du tournoi", totalsSub:"Base officielle au 1/7 · plus vos saisies.", totGl:"buts", numerolPre:"numérologie",
+  nums:{1:"le leader qui lance tout",2:"équilibre et une-deux parfait",3:"créativité débordante",4:"ordre et sacrifice",5:"liberté sur tout le terrain",6:"harmonie qui organise l’équipe",7:"magie et dribbles mystiques",8:"moteur de puissance et d’ambition",9:"le finisseur né pour marquer",11:"intuition maîtresse, nombre mystique",22:"le grand architecte du jeu"},
   pos:(p,g)=>(p===1?"1er":"2e")+" Groupe "+g, third:gs=>"3e de "+gs.join("/"), win:m=>"Vainqueur du "+m, lose:m=>"Perdant du "+m,
   wd:{sun:"Dim",mon:"Lun",tue:"Mar",wed:"Mer",thu:"Jeu",fri:"Ven",sat:"Sam"},
   ficha:"📋 détails",
@@ -1573,7 +1628,8 @@ I18N.ja = Object.assign({}, I18N.en, {
   pen:"引き分け — PK戦の勝者は？",
   updNewV:"🔄 新しいバージョンがあります", updNewBtn:"更新",
   jersT:"背番号別ゴール", jersSub:"どの背番号が一番決めているか。",
-  jersUnk:"番号不明", playersCol:"選手", editG:"✎ 編集", editGDone:"✓ 完了",
+  jersUnk:"番号不明", playersCol:"選手", editG:"✎ 編集", editGDone:"✓ 完了", gloveT:"ゴールデングローブ — GK", gloveSub:"大会トップ10＋アルゼンチンのGK。", gkCS:"クリーンシート", gkGC:"失点", gkSV:"セーブ", argTag:"アルゼンチン代表", totalsT:"大会トータル", totalsSub:"7/1時点の公式ベース＋あなたの入力。", totGl:"ゴール", numerolPre:"数秘術",
+  nums:{1:"すべてを始めるリーダー",2:"調和と完璧なワンツー",3:"あふれる創造力",4:"秩序と献身",5:"ピッチ全体を駆ける自由",6:"チームを整える調和",7:"魔法と神秘のドリブル",8:"力と野心のエンジン",9:"ゴールのために生まれた番号",11:"マスターの直感、神秘の数",22:"偉大な建築家"},
   pos:(p,g)=>"グループ"+g+" "+p+"位", third:gs=>gs.join("/")+" の3位", win:m=>"試合"+m+"の勝者", lose:m=>"試合"+m+"の敗者",
   wd:{sun:"日",mon:"月",tue:"火",wed:"水",thu:"木",fri:"金",sat:"土"},
   ficha:"📋 詳細",
@@ -1841,14 +1897,24 @@ Object.keys(JERSEY_BASE).forEach(k=>{
 /* ---- base de goleadores: totales oficiales hasta dieciseisavos (partido 88) incluido.
    Desde octavos (89+), lo que cargues en las fichas SUMA sobre esta base.
    Para jugadores fuera de la base, todo sale de tus fichas como siempre. ---- */
-const SCORER_BASE = [{"name": "Lionel Messi", "norm": "lionel messi", "team": "ARG", "g": 7}, {"name": "Kylian Mbappe", "norm": "kylian mbappe", "team": "FRA", "g": 6}, {"name": "Erling Haaland", "norm": "erling haaland", "team": "NOR", "g": 5}, {"name": "Harry Kane", "norm": "harry kane", "team": "ENG", "g": 5}, {"name": "Ismaila Sarr", "norm": "ismaila sarr", "team": "SEN", "g": 4}, {"name": "Mikel Oyarzabal", "norm": "mikel oyarzabal", "team": "ESP", "g": 4}, {"name": "Vinicius Junior", "norm": "vinicius junior", "team": "BRA", "g": 4}, {"name": "Ousmane Dembele", "norm": "ousmane dembele", "team": "FRA", "g": 4}, {"name": "Matheus Cunha", "norm": "matheus cunha", "team": "BRA", "g": 3}, {"name": "Kai Havertz", "norm": "kai havertz", "team": "GER", "g": 3}, {"name": "Cody Gakpo", "norm": "cody gakpo", "team": "NED", "g": 3}, {"name": "Yoane Wissa", "norm": "yoane wissa", "team": "COD", "g": 3}, {"name": "Johan Manzambi", "norm": "johan manzambi", "team": "SUI", "g": 3}, {"name": "Cristiano Ronaldo", "norm": "cristiano ronaldo", "team": "POR", "g": 3}, {"name": "Folarin Balogun", "norm": "folarin balogun", "team": "USA", "g": 3}, {"name": "Jonathan David", "norm": "jonathan david", "team": "CAN", "g": 3}, {"name": "Ismael Saibari", "norm": "ismael saibari", "team": "MAR", "g": 3}, {"name": "Elijah Just", "norm": "elijah just", "team": "NZL", "g": 3}, {"name": "Brian Brobbey", "norm": "brian brobbey", "team": "NED", "g": 3}, {"name": "Julian Quinones", "norm": "julian quinones", "team": "MEX", "g": 3}, {"name": "Deniz Undav", "norm": "deniz undav", "team": "GER", "g": 3}, {"name": "Daichi Kamada", "norm": "daichi kamada", "team": "JPN", "g": 2}, {"name": "Daniel Munoz", "norm": "daniel munoz", "team": "COL", "g": 2}, {"name": "Anthony Elanga", "norm": "anthony elanga", "team": "SWE", "g": 2}, {"name": "Yasin Ayari", "norm": "yasin ayari", "team": "SWE", "g": 2}];
-const SCORER_BASE_CUTOFF = 88;
+const SCORER_BASE = [{"name": "Luis Francisco Romo", "norm": "luis francisco romo", "team": "MEX", "g": 1}, {"name": "Álvaro Fidalgo", "norm": "alvaro fidalgo", "team": "MEX", "g": 1}, {"name": "Raúl Alonso Jimenez", "norm": "raul alonso jimenez", "team": "MEX", "g": 2}, {"name": "Julián Andrés Quinones", "norm": "julian andres quinones", "team": "MEX", "g": 3}, {"name": "Mateo Chavez", "norm": "mateo chavez", "team": "MEX", "g": 1}, {"name": "Teboho Mokoena", "norm": "teboho mokoena", "team": "RSA", "g": 1}, {"name": "Thapelo Maseko", "norm": "thapelo maseko", "team": "RSA", "g": 1}, {"name": "Inbeom Hwang", "norm": "inbeom hwang", "team": "KOR", "g": 1}, {"name": "Hyeongyu Oh", "norm": "hyeongyu oh", "team": "KOR", "g": 1}, {"name": "Ladislav Krejci", "norm": "ladislav krejci", "team": "CZE", "g": 1}, {"name": "Michal Sadilek", "norm": "michal sadilek", "team": "CZE", "g": 1}, {"name": "Stephen Eustaquio", "norm": "stephen eustaquio", "team": "CAN", "g": 1}, {"name": "Cyle Christopher Larin", "norm": "cyle christopher larin", "team": "CAN", "g": 2}, {"name": "Jonathan Christian David", "norm": "jonathan christian david", "team": "CAN", "g": 3}, {"name": "Promise Oluwatobi Emmanuel David", "norm": "promise oluwatobi emmanuel david", "team": "CAN", "g": 1}, {"name": "Nathan-Dylan Saliba", "norm": "nathan-dylan saliba", "team": "CAN", "g": 1}, {"name": "Kerim Alajbegovic", "norm": "kerim alajbegovic", "team": "BIH", "g": 1}, {"name": "Jovo Lukic", "norm": "jovo lukic", "team": "BIH", "g": 1}, {"name": "Ermin Mahmic", "norm": "ermin mahmic", "team": "BIH", "g": 2}, {"name": "Khalid Hassan Alhaydos", "norm": "khalid hassan alhaydos", "team": "QAT", "g": 1}, {"name": "Breel Donald Embolo", "norm": "breel donald embolo", "team": "SUI", "g": 2}, {"name": "Johan Kula Manzambi", "norm": "johan kula manzambi", "team": "SUI", "g": 3}, {"name": "Granit Xhaka", "norm": "granit xhaka", "team": "SUI", "g": 1}, {"name": "Dan Ndoye", "norm": "dan ndoye", "team": "SUI", "g": 1}, {"name": "Ruben Estephan Vargas", "norm": "ruben estephan vargas", "team": "SUI", "g": 2}, {"name": "Henrique", "norm": "henrique", "team": "BRA", "g": 1}, {"name": "José Vinicius", "norm": "jose vinicius", "team": "BRA", "g": 4}, {"name": "Matheus Matheus Cunha", "norm": "matheus matheus cunha", "team": "BRA", "g": 3}, {"name": "MARTINELLIGabriel Gabriel", "norm": "martinelligabriel gabriel", "team": "BRA", "g": 1}, {"name": "Achraf Hakimi", "norm": "achraf hakimi", "team": "MAR", "g": 1}, {"name": "Soufiane Rahimi", "norm": "soufiane rahimi", "team": "MAR", "g": 1}, {"name": "Ismael Saibari", "norm": "ismael saibari", "team": "MAR", "g": 3}, {"name": "Issa Laye Lucas Jean Diop", "norm": "issa laye lucas jean diop", "team": "MAR", "g": 1}, {"name": "Gessime Ben Youssef Mustapha Yassine", "norm": "gessime ben youssef mustapha yassine", "team": "MAR", "g": 1}, {"name": "Wilson Isidor", "norm": "wilson isidor", "team": "HAI", "g": 1}, {"name": "Mc", "norm": "mc", "team": "SCO", "g": 1}, {"name": "Auston Levi-Jesaiah Trusty", "norm": "auston levi-jesaiah trusty", "team": "USA", "g": 1}, {"name": "Giovanni Alejandro Reyna", "norm": "giovanni alejandro reyna", "team": "USA", "g": 1}, {"name": "Sebastian Matthew Berhalter", "norm": "sebastian matthew berhalter", "team": "USA", "g": 1}, {"name": "Alexander Michael Freeman", "norm": "alexander michael freeman", "team": "USA", "g": 1}, {"name": "Malik Leon Tillman", "norm": "malik leon tillman", "team": "USA", "g": 1}, {"name": "Folarin Jolaoluwa Balogun", "norm": "folarin jolaoluwa balogun", "team": "USA", "g": 3}, {"name": "Mauricio Mauricio", "norm": "mauricio mauricio", "team": "PAR", "g": 1}, {"name": "Damián Josue Bobadilla", "norm": "damian josue bobadilla", "team": "PAR", "g": 1}, {"name": "Julio Cesar Enciso", "norm": "julio cesar enciso", "team": "PAR", "g": 1}, {"name": "Matias Galarza", "norm": "matias galarza", "team": "PAR", "g": 1}, {"name": "Connor Isaac Metcalfe", "norm": "connor isaac metcalfe", "team": "AUS", "g": 1}, {"name": "Nestory Irankunda", "norm": "nestory irankunda", "team": "AUS", "g": 1}, {"name": "Cameron Robert Burgess", "norm": "cameron robert burgess", "team": "AUS", "g": 1}, {"name": "Orkun Kokcu", "norm": "orkun kokcu", "team": "TUR", "g": 1}, {"name": "Arda Guler", "norm": "arda guler", "team": "TUR", "g": 1}, {"name": "Kaan Ayhan", "norm": "kaan ayhan", "team": "TUR", "g": 1}, {"name": "Kai Lukas Havertz", "norm": "kai lukas havertz", "team": "GER", "g": 3}, {"name": "Jamal Musiala", "norm": "jamal musiala", "team": "GER", "g": 1}, {"name": "Nico Cédric Schlotterbeck", "norm": "nico cedric schlotterbeck", "team": "GER", "g": 1}, {"name": "Nathaniel Christopher Brown", "norm": "nathaniel christopher brown", "team": "GER", "g": 1}, {"name": "Leroy Aziz Sane", "norm": "leroy aziz sane", "team": "GER", "g": 1}, {"name": "Felix Kalu Nmecha", "norm": "felix kalu nmecha", "team": "GER", "g": 1}, {"name": "Deniz Undav", "norm": "deniz undav", "team": "GER", "g": 3}, {"name": "Livano Shyron Liomar Comenencia", "norm": "livano shyron liomar comenencia", "team": "CUW", "g": 1}, {"name": "Franck Yannick Kessie", "norm": "franck yannick kessie", "team": "CIV", "g": 1}, {"name": "Amad Diallo", "norm": "amad diallo", "team": "CIV", "g": 2}, {"name": "Nicolas Pepe", "norm": "nicolas pepe", "team": "CIV", "g": 2}, {"name": "Gonzalo Jordy Plata", "norm": "gonzalo jordy plata", "team": "ECU", "g": 1}, {"name": "Nilson David Angulo", "norm": "nilson david angulo", "team": "ECU", "g": 1}, {"name": "Virgil Van Dijk", "norm": "virgil van dijk", "team": "NED", "g": 1}, {"name": "Paul Jan-Paul Van Hecke", "norm": "paul jan-paul van hecke", "team": "NED", "g": 1}, {"name": "Cody Mathès Gakpo", "norm": "cody mathes gakpo", "team": "NED", "g": 3}, {"name": "Brian Ebenezer Adjei Brobbey", "norm": "brian ebenezer adjei brobbey", "team": "NED", "g": 3}, {"name": "Crysencio Jilbert Sylverio Cir Summerville", "norm": "crysencio jilbert sylverio cir summerville", "team": "NED", "g": 2}, {"name": "Daizen Maeda", "norm": "daizen maeda", "team": "JPN", "g": 1}, {"name": "Keito Nakamura", "norm": "keito nakamura", "team": "JPN", "g": 1}, {"name": "Junya Ito", "norm": "junya ito", "team": "JPN", "g": 1}, {"name": "Daichi Kamada", "norm": "daichi kamada", "team": "JPN", "g": 2}, {"name": "Ayase Ueda", "norm": "ayase ueda", "team": "JPN", "g": 2}, {"name": "Kaishu Sano", "norm": "kaishu sano", "team": "JPN", "g": 1}, {"name": "Alexander Isak", "norm": "alexander isak", "team": "SWE", "g": 1}, {"name": "Anthony David Junior Elanga", "norm": "anthony david junior elanga", "team": "SWE", "g": 2}, {"name": "Viktor Einar Gyokeres", "norm": "viktor einar gyokeres", "team": "SWE", "g": 1}, {"name": "Yasin Ayari", "norm": "yasin ayari", "team": "SWE", "g": 2}, {"name": "Mattias Olof Svanberg", "norm": "mattias olof svanberg", "team": "SWE", "g": 1}, {"name": "Omar Rekik", "norm": "omar rekik", "team": "TUN", "g": 1}, {"name": "Hazem Mastouri", "norm": "hazem mastouri", "team": "TUN", "g": 1}, {"name": "Kevin De Bruyne", "norm": "kevin de bruyne", "team": "BEL", "g": 1}, {"name": "Youri Marion Tielemans", "norm": "youri marion tielemans", "team": "BEL", "g": 2}, {"name": "Romelu Lukaku", "norm": "romelu lukaku", "team": "BEL", "g": 2}, {"name": "Leandro Trossard", "norm": "leandro trossard", "team": "BEL", "g": 2}, {"name": "Alexis Jesse Saelemaekers", "norm": "alexis jesse saelemaekers", "team": "BEL", "g": 1}, {"name": "Hany Gamal Mohamed Hany", "norm": "hany gamal mohamed hany", "team": "EGY", "g": 1}, {"name": "Ahmed Ibrahim Trezeguet", "norm": "ahmed ibrahim trezeguet", "team": "EGY", "g": 1}, {"name": "Ashour Metwaly Emam", "norm": "ashour metwaly emam", "team": "EGY", "g": 2}, {"name": "Hamed Mahrous Mohamed Salah", "norm": "hamed mahrous mohamed salah", "team": "EGY", "g": 1}, {"name": "Mohamed Zaky Mostafa Zico", "norm": "mohamed zaky mostafa zico", "team": "EGY", "g": 1}, {"name": "Saber Abdelmohsen Mahmoud", "norm": "saber abdelmohsen mahmoud", "team": "EGY", "g": 1}, {"name": "Mohammad Mohebbi", "norm": "mohammad mohebbi", "team": "IRN", "g": 1}, {"name": "Ramin Rezaeian", "norm": "ramin rezaeian", "team": "IRN", "g": 2}, {"name": "Elijah Henry Just", "norm": "elijah henry just", "team": "NZL", "g": 3}, {"name": "Finn Surman", "norm": "finn surman", "team": "NZL", "g": 1}, {"name": "Pedro Antonio Porro", "norm": "pedro antonio porro", "team": "ESP", "g": 1}, {"name": "Alejandro Baena", "norm": "alejandro baena", "team": "ESP", "g": 1}, {"name": "Lamine Yamal Yamal", "norm": "lamine yamal yamal", "team": "ESP", "g": 1}, {"name": "Mikel Oyarzabal", "norm": "mikel oyarzabal", "team": "ESP", "g": 4}, {"name": "Alberto Diney", "norm": "alberto diney", "team": "CPV", "g": 1}, {"name": "Lenini Kevin Pina", "norm": "lenini kevin pina", "team": "CPV", "g": 1}, {"name": "CABRALSidny Sidny Lopes", "norm": "cabralsidny sidny lopes", "team": "CPV", "g": 1}, {"name": "Deroy Deroy Duarte", "norm": "deroy deroy duarte", "team": "CPV", "g": 1}, {"name": "Sandro Helio Varela", "norm": "sandro helio varela", "team": "CPV", "g": 1}, {"name": "Ali Abdulelah Alamri", "norm": "ali abdulelah alamri", "team": "KSA", "g": 1}, {"name": "Agustin Canobbio", "norm": "agustin canobbio", "team": "URU", "g": 1}, {"name": "Maximiliano Javier Araujo", "norm": "maximiliano javier araujo", "team": "URU", "g": 2}, {"name": "Masour Ousmane Dembele", "norm": "masour ousmane dembele", "team": "FRA", "g": 4}, {"name": "Kylian Mbappe", "norm": "kylian mbappe", "team": "FRA", "g": 6}, {"name": "Bradley Jean-Manuel Essolisa Barcola", "norm": "bradley jean-manuel essolisa barcola", "team": "FRA", "g": 2}, {"name": "Désiré Nonka-Maho Doue", "norm": "desire nonka-maho doue", "team": "FRA", "g": 1}, {"name": "Iliman Cheikh Baroy Ndiaye", "norm": "iliman cheikh baroy ndiaye", "team": "SEN", "g": 1}, {"name": "Ismaila Sarr", "norm": "ismaila sarr", "team": "SEN", "g": 4}, {"name": "Ibrahim Mbaye", "norm": "ibrahim mbaye", "team": "SEN", "g": 1}, {"name": "Habib Mbacke Diarra", "norm": "habib mbacke diarra", "team": "SEN", "g": 2}, {"name": "Pape Alassane Gueye", "norm": "pape alassane gueye", "team": "SEN", "g": 2}, {"name": "Hussein Ghadhban Aymen", "norm": "hussein ghadhban aymen", "team": "IRQ", "g": 2}, {"name": "Leo Skiri Ostigard", "norm": "leo skiri ostigard", "team": "NOR", "g": 1}, {"name": "Erling Braut Haaland", "norm": "erling braut haaland", "team": "NOR", "g": 5}, {"name": "Marcus Holmgren Holmgren Pedersen", "norm": "marcus holmgren holmgren pedersen", "team": "NOR", "g": 1}, {"name": "Thelonious Gerard Aasgaard", "norm": "thelonious gerard aasgaard", "team": "NOR", "g": 1}, {"name": "Antonio Eromonsele Nordby Nusa", "norm": "antonio eromonsele nordby nusa", "team": "NOR", "g": 1}, {"name": "Lisandro Martinez", "norm": "lisandro martinez", "team": "ARG", "g": 1}, {"name": "Lionel Andrés Messi", "norm": "lionel andres messi", "team": "ARG", "g": 7}, {"name": "Giovani Lo Celso", "norm": "giovani lo celso", "team": "ARG", "g": 1}, {"name": "Lautaro Javier Martinez", "norm": "lautaro javier martinez", "team": "ARG", "g": 1}, {"name": "Riyad Karim Mahrez", "norm": "riyad karim mahrez", "team": "ALG", "g": 2}, {"name": "Amine Ferid Gouiri", "norm": "amine ferid gouiri", "team": "ALG", "g": 1}, {"name": "Ahmed Nadhir Benbouali", "norm": "ahmed nadhir benbouali", "team": "ALG", "g": 1}, {"name": "Rafik Belghali", "norm": "rafik belghali", "team": "ALG", "g": 1}, {"name": "Marko Arnautovic", "norm": "marko arnautovic", "team": "AUT", "g": 2}, {"name": "Marcel Sabitzer", "norm": "marcel sabitzer", "team": "AUT", "g": 1}, {"name": "Saša Kalajdzic", "norm": "sasa kalajdzic", "team": "AUT", "g": 1}, {"name": "Romano Schmid", "norm": "romano schmid", "team": "AUT", "g": 1}, {"name": "Iyad Ali Ali Olwan", "norm": "iyad ali ali olwan", "team": "JOR", "g": 1}, {"name": "Mohammad Mousa Mousa Altamari", "norm": "mohammad mousa mousa altamari", "team": "JOR", "g": 1}, {"name": "Mahmoud Ahmed Nizar Alrashdan", "norm": "mahmoud ahmed nizar alrashdan", "team": "JOR", "g": 1}, {"name": "Ronaldo Cristiano Ronaldo", "norm": "ronaldo cristiano ronaldo", "team": "POR", "g": 3}, {"name": "RAMOSGonçalo Goncalo", "norm": "ramosgoncalo goncalo", "team": "POR", "g": 1}, {"name": "Pedro Joao Neves", "norm": "pedro joao neves", "team": "POR", "g": 1}, {"name": "Alexandre Rafael Leao", "norm": "alexandre rafael leao", "team": "POR", "g": 1}, {"name": "Alexandre Nuno", "norm": "alexandre nuno", "team": "POR", "g": 1}, {"name": "Kibambe Brian Cipenga", "norm": "kibambe brian cipenga", "team": "COD", "g": 1}, {"name": "Mayele Fiston Mayele", "norm": "mayele fiston mayele", "team": "COD", "g": 1}, {"name": "Yoane Wissa", "norm": "yoane wissa", "team": "COD", "g": 3}, {"name": "Eldor Shomurodov", "norm": "eldor shomurodov", "team": "UZB", "g": 1}, {"name": "Abbosbek Fayzullaev", "norm": "abbosbek fayzullaev", "team": "UZB", "g": 1}, {"name": "Daniel Munoz", "norm": "daniel munoz", "team": "COL", "g": 2}, {"name": "Luis Fernando Diaz", "norm": "luis fernando diaz", "team": "COL", "g": 1}, {"name": "Jhon Adolfo Arias", "norm": "jhon adolfo arias", "team": "COL", "g": 1}, {"name": "Jaminton Leandro Campaz", "norm": "jaminton leandro campaz", "team": "COL", "g": 1}, {"name": "Harry Edward Kane", "norm": "harry edward kane", "team": "ENG", "g": 5}, {"name": "Jude Victor William Bellingham", "norm": "jude victor william bellingham", "team": "ENG", "g": 2}, {"name": "Marcus Rashford", "norm": "marcus rashford", "team": "ENG", "g": 1}, {"name": "Ante Budimir", "norm": "ante budimir", "team": "CRO", "g": 1}, {"name": "Nikola Vlasic", "norm": "nikola vlasic", "team": "CRO", "g": 1}, {"name": "Ivan Perisic", "norm": "ivan perisic", "team": "CRO", "g": 1}, {"name": "Martin Baturina", "norm": "martin baturina", "team": "CRO", "g": 1}, {"name": "Petar Sucic", "norm": "petar sucic", "team": "CRO", "g": 1}, {"name": "Petar Musa", "norm": "petar musa", "team": "CRO", "g": 1}, {"name": "Caleb Marfo Yirenkyi", "norm": "caleb marfo yirenkyi", "team": "GHA", "g": 1}, {"name": "Derrick Luckassen", "norm": "derrick luckassen", "team": "GHA", "g": 1}];
+/* base verificada al 2026-07-01: sólo suman las fichas de partidos posteriores */
+const SCORER_BASE_TS = Date.UTC(2026, 6, 2);
 const BASE_BY_NORM = {}, BASE_BY_LAST = {};
 SCORER_BASE.forEach(b=>{
   BASE_BY_NORM[b.norm] = b;
   const last = b.norm.split(" ").pop();
   BASE_BY_LAST[last] = (last in BASE_BY_LAST && BASE_BY_LAST[last]!==b) ? null : b;
 });
+/* ---- plantel maestro: los 47 equipos (ARG usa su propio plantel).
+   Mismos nombres que la base oficial → los goles siempre matchean sin errores de tipeo. ---- */
+const ROSTER = {"ALG": ["Riyad Karim Mahrez", "Rafik Belghali", "Amine Ferid Gouiri", "Ahmed Nadhir Benbouali", "Aissa Mandi", "Fares Chaibi", "Ibrahim Maza", "Selmane Rami Bensebaini", "Nabil Bentaleb", "Rayan Ait-Nouri", "Luca Zinedine Zidane", "Houssem-Eddine Chaabane Aouar", "Hicham Boudaoui", "Ramiz Larbi Zerrouki", "Jaouen Djimmy Hadjam", "Anis Hadj Moussa", "Oussama Benbot", "Mohammed Elamine Amoura", "Zineddine Belaid", "Samir Sophian Chergui", "Adil Boulbina", "Fares Ghedjemis", "Achref Abada", "Melvin Feycal Mastil", "Mohamed Amine Tougai", "Yassine Titraoui"], "AUS": ["Connor Isaac Metcalfe", "Nestory Irankunda", "Cameron Robert Burgess", "Alessandro Circati", "Harry James Souttar", "Patrick Thomas Beach", "Aiden Connor Oneill", "Jordan Jacob Bos", "Jackson Alexander Irvine", "Aziz Behich", "Lucas Herrington", "Paul Michael Junior Okon-Engstler", "Mohamed Toure", "Jacob Michael Italiano", "Cristian Volpato", "Ajdin Hrustic", "Nishan Matthew Velupillay", "Kai Clifton Trewin", "Mathew Allan Leckie", "Jason Kato Geria", "Awer Bul Mabil", "Tete Owen Yengi", "Mathew David Ryan", "Cameron Peter Devlin", "Milos Degenek", "Paul David Izzo"], "AUT": ["Marko Arnautovic", "Marcel Sabitzer", "Romano Schmid", "Saša Kalajdzic", "Alexander Schlager", "Konrad Laimer", "Stefan Posch", "Nicolas Seiwald", "David Alaba", "Xaver Schlager", "Kevin Danso", "Paul Wanner", "Michael Gregoritsch", "Philipp Lienhart", "Phillip Mwene", "Florian Grillitsch", "Carney Chibueze Chukwuemeka", "Alexander Prass", "Marco Friedl", "Patrick Wimmer", "Alessandro Andre Schoepf", "David Leopold Affengruber", "Dejan Ljubicic", "Florian Wiegele", "Michael Svoboda", "Patrick Pentz"], "BEL": ["Youri Marion Tielemans", "Leandro Trossard", "Romelu Lukaku", "Kevin De Bruyne", "Alexis Jesse Saelemaekers", "Brandon Erik Mechele", "Thibaut Nicolas Courtois", "Timothy Castagne", "Maxim Peter De Cuyper", "Arthur Nicolas Theate", "Jeremy Baffour Doku", "Charles Marc De Ketelaere", "Thomas Andre Meunier", "Hans Vanaken", "Nathan Ngoy", "Nicolas Thierry Raskin", "Dodi Lukebakio", "Amadou Ba Onana", "Diego Manuel Moreira", "Matias Fernandez-Pardo", "Axel Laurent Witsel", "Joaquin Ronny Seys", "Koni De Winter", "Mike Louis Penders", "Senne Lammens", "Zeno Koen Debast"], "BIH": ["Ermin Mahmic", "Kerim Alajbegovic", "Jovo Lukic", "Nikola Vasilj", "Ermedin Demirovic", "Sead Kolasinac", "Nikola Katic", "Amar Dedic", "Tarik Muharemovic", "Benjamin Tahirovic", "Esmir Bajraktarevic", "Amar Memic", "Ivan Sunjic", "Stjepan Radeljic", "Ivan Basic", "Edin Dzeko", "Armin Gigovic", "Arjan Malic", "Samed Bazdar", "Dennis Hadzikadunic", "Dzenis Burnic", "Haris Tabakovic", "Amir Hadziahmetovic", "Martin Zlomislic", "Mladen Jurkas", "Nihad Mujakic"], "BRA": ["José Vinicius", "Matheus Matheus Cunha", "Henrique", "MARTINELLIGabriel Gabriel", "Gabriel Gabriel Magalhaes", "MARQUINHOSMarcos", "Ramsés Alisson", "Douglas Douglas Santos", "GUIMARAESBruno Bruno", "Luiz Danilo", "Lucas Lucas Paqueta", "Vitor Rayan", "Raphael Raphinha", "Felipe Endrick", "Henrique Fabinho", "Thiago Igor Thiago", "IBANEZRoger Roger", "Henrique André Luiz", "Danilo Danilo Santos", "Neymar Neymar Jr", "José Ederson Silva", "Sandro Alex", "Bremer Bremer", "Ederson Ederson", "PEREIRALeonardo Leo", "Weverton Weverton"], "CAN": ["Jonathan Christian David", "Cyle Christopher Larin", "Stephen Eustaquio", "Nathan-Dylan Saliba", "Promise Oluwatobi Emmanuel David", "Alistair William Johnston", "Maxime Crepeau", "Richmond Mamah Laryea", "Derek Austin Cornelius", "Tajon Trevor Buchanan", "Luc De Fougerolles", "Tanitoluwa Oluwatimilehin Oluwaseyi", "Liam Alan Millar", "Ali Ahmed", "Ismaël Kenneth Jordan Kone", "Moïse Bombito Bombito", "Jacob Everett Shaffelburg", "Mathieu Choiniere", "Niko Kristian Sigur", "Alphonso Boyle Davies", "Jonathan Osorio", "Alfie Charles Jones", "Dayne Tristan St. Clair", "Jayden Nelson", "Joel Robert Waterman", "Owen Olamidayo Goodman"], "CIV": ["Nicolas Pepe", "Amad Diallo", "Franck Yannick Kessie", "Yahia Fofana", "Yan Diomande", "Guela Maho-Lewis Doue", "Odilon Dorgeless Kossounou", "Emmanuel Elysee Djedje Agbadou", "N'clomande Ghislain Konan", "Ibrahim Sangare", "Ange-Yoan Laurent Bonny", "Christ Ravynel Inao Oulai", "Wilfried Stephane Singo", "Elye Delmas Wahi", "Seko Mohamed Fofana", "Christopher Tea Domoraud Operi", "Ousmane Diomande", "Bazoumana Toure", "Oumar Diakite", "Evann Ludovic Vidjannagni Guessand", "Simon Adingra", "Jean Michael Seri", "Alban-Marc Lafont", "Mohamed Kone", "Obite Evan Ndicka", "Parfait Guiagon"], "COD": ["Yoane Wissa", "Kibambe Brian Cipenga", "Mayele Fiston Mayele", "Axel Tuanzebe", "Lionel Nzau Mpasi", "Mangulu Chancel Mbemba", "Wan Wan-Bissaka", "Samuel Alain Moutoussamy", "Arthur Fuka Masuaku", "Noah Junior Sadiki", "Ngal’ayel Mukau", "Cedric Bakambu", "Steve Nkanu Kapuadi", "Edo Kayembe Kayembe", "Nathanaël Mbuku", "Meschack Lina Elia", "Joris Kayembe", "Simon Bokote Banza", "Charles Monginda Pickel", "Theo Mbulofeko Batombo Bongonda", "Gédéon Tchingoma Kyatengwa Kalulu", "Dylan Buduka Batubinsika", "Gaël Roméo Kakuta", "Matthieu Luka Epolo", "Timothy Bruce Munzoko Fayulu", "Tshibola Tshibola"], "COL": ["Daniel Munoz", "Luis Fernando Diaz", "Jhon Adolfo Arias", "Jaminton Leandro Campaz", "Camilo Andres Vargas", "Davinson Sanchez", "Jhon Janer Lucumi", "Gustavo Adolfo Puerta", "Jefferson Andrés Lerma", "Johan Andrés Mojica", "James David Rodriguez", "Luis Javier Suarez", "Jhon Andrés Cordoba", "Richard Rios", "Deiver Machado", "Santiago Arias", "Juan Fernando Quintero", "Kevin Duvan Castano", "Juan Camilo Hernandez", "Carlos Andrés Gomez", "David Ospina", "Jorge Andres Carrascal", "Juan Camilo Portilla", "Willer Emilio Ditta", "Yerry Fernando Mina", "Álvaro David Montero"], "CPV": ["Alberto Diney", "Lenini Kevin Pina", "CABRALSidny Sidny Lopes", "Deroy Deroy Duarte", "Sandro Helio Varela", "Carlos Pico Lopes", "José Vozinha", "Isaac Ryan", "MOREIRASteven Steven", "Gregory Jamiro Monteiro", "Dailon Dailon Livramento", "Michael Laros Duarte", "Miguel Nuno Da Costa", "Eduardo Jovane", "Johnson Willy", "Paulo Joao Paulo", "Fabricio Wagner Pina", "BENCHIMOLGilson Gilson", "RODRIGUESGarry Garry", "Emanuel Telmo", "SEMEDOJair Yannick", "Evans Logan Costa", "Ianique Stopira", "Joaquim Cj Dos Santos", "PIRESKelvin Kelvin", "Salomão Marcio"], "CRO": ["Ivan Perisic", "Martin Baturina", "Petar Sucic", "Nikola Vlasic", "Ante Budimir", "Petar Musa", "Dominik Livakovic", "Josip Stanisic", "Josip Sutalo", "Luka Modric", "Mateo Kovacic", "Marin Pongracic", "Joško Gvardiol", "Mario Pasalic", "Marco Pasalic", "Igor Matanovic", "Luka Vuskovic", "Andrej Kramaric", "Luka Sucic", "Dominik Kotarski", "Duje Caleta-Car", "Ivor Pandur", "Kristijan Jakic", "Martin Erlic", "Nikola Moro", "Toni Fruk"], "CUW": ["Livano Shyron Liomar Comenencia", "Armando Maria Obispo", "Eloy Victor Room", "Leandro Jones Johan Bacuna", "Sherel Constancio Floranus", "Juninho Gracielo Bacuna", "Tahith Jose Girigorio Djorkaef Chong", "Deveron Lenny Fonville", "Jürgen Leonardo Locadia", "Joshua Benjamin Brenet", "Juriën Godfried Juan Gaari", "Riechedly Guillermo Bazoer", "Jeremy Cornelis Jacobus Antonisse", "Juniffer Naigelino Hansen", "Jearl Erwin Margaritha", "Gervane Zjandric Adonnis Kastaneer", "Kenji Joël Gorre", "Róshón Felix Romar Jordan Van Eijma", "Tyrese Yurvencey Noslin", "Godfried Roemeratoe", "Brandley Mack-Olien Kuwas", "Shurandy Ruggerio Sambo", "Jainel Archenir Martha", "Kevin Antonio Felida", "Trevor Irving Doornbusch", "Tyrick Jeremy Bodak"], "CZE": ["Ladislav Krejci", "Michal Sadilek", "Mat ě j Kovar", "Robin Hranac", "Vladimír Coufal", "Pavel Sulc", "Patrik Schick", "Lukáš Cerv", "Adam Hlozek", "Tomáš Holes", "Alexandr Sojka", "Tomáš Soucek", "Jaroslav Zeleny", "Lukáš Provod", "David Doudera", "ě pán Chaloupek", "Denis Visinsky", "Vladimír Darida", "Tomáš Chory", "David Zima", "Mojmír Chytil", "David Jurasek", "Hugo Sochurek", "Jan Kuchta", "Jind ř ich Stanek", "Lukáš Hornicek"], "ECU": ["Gonzalo Jordy Plata", "Nilson David Angulo", "Hernán Ismael Galindez", "Moisés Isaac Caicedo", "Pedro Jeampierre Vite", "Willian Joel Pacho", "Piero Martin Hincapie", "John Yeboah", "Enner Remberto Valencia", "Alan Steven Franco", "Joel Leandro Ordonez", "Kevin Jose Rodriguez", "Ángelo Smit Preciado", "Pervis Josue Estupinan", "Alan Steve Minda", "Jordy Jose Alcivar", "Yaimar Abel Medina", "Jackson Gabriel Porozo", "Jordy Josue Caicedo", "Ray Kendry Paez", "Félix Eduardo Torres", "Anthony Lenin Valencia", "Denil Daniel Castillo", "Gonzalo Roberto Valle", "Jeremy Alberto Arevalo", "Wellington Moisés Ramirez"], "EGY": ["Ashour Metwaly Emam", "Hany Gamal Mohamed Hany", "Hamed Mahrous Mohamed Salah", "Mohamed Zaky Mostafa Zico", "Ahmed Ibrahim Trezeguet", "Saber Abdelmohsen Mahmoud", "Abdelaziz Mohame Mostafa", "Ahmed Ibrahim Yasser", "Attia Fahim Marawan Attia", "Mohamed Abdelsalam Omar", "Abdelaziz Moustafa Ramy Rabia", "Mostafa Ahmed Mohanad Lashin", "Mohamed Aboelfetouh Ahmed Fatouh", "Fathy Abdelhalim Hamdy Fathy", "Hafez Ramadan Karim Hafez", "Abdelmegeed Abdelsalam Hossam Abdelmaguid", "Mohamed Abdelkarim Hamza", "Mostafa Mohamed Zizo", "Yousry Fouad Haissem Hassan", "Abdelmoneim Elsayed Mohamed", "Adel Aly Mohamed Ibrahim", "Abdelghaffar Abdel Tarek Alaa", "Alaaeldin Soliman Mohamed Alaa", "Aly Elmahdy Nabil", "Elsayed Mohamed Mohamed Elshenawy", "Mohamed Soliman Mahdy Soliman"], "ENG": ["Harry Edward Kane", "Jude Victor William Bellingham", "Marcus Rashford", "Ezri Ngoyo Konsa", "Jordan Lee Pickford", "Elliot Junior Anderson", "Nico Oreilly", "Keaninkin Marc-Isreal Guehi", "Declan Rice", "Azuka Tristan Madueke", "Reece Lewis James", "Tehuti Djed-Hotep Spence", "Anthony Michael Gordon", "Bukayo Ayoyinka Saka", "Morgan Elliot Rogers", "John Stones", "Jarell Amorin Quansah", "Eberechi Oluchi Eze", "George Arthur Watkins", "Jordan Brian Henderson", "Daniel Johnson Burn", "Dean Bradley Henderson", "Ivan Benjamin Elijah Toney", "James Harrington Trafford", "Kobbie Boateng Mainoo", "Trevoh Tom Chalobah"], "ESP": ["Mikel Oyarzabal", "Lamine Yamal Yamal", "Alejandro Baena", "Pedro Antonio Porro", "Aymeric Laporte", "Marc Cucurella", "Pau Cubarsi", "Unai Simon", "Rodrigo Rodri", "Pedro Pedri", "Marcos Llorente", "Daniel Olmo", "Ferran Torres", "Mikel Merino", "Fabian Ruiz", "Pablo Gavi", "Yeremy Jesús Pino", "Nicholas Williams", "Marc Pubill", "Alejandro Grimaldo", "Borja Iglesias", "David Raya", "Eric Garcia", "Joan Garcia", "Martin Zubimendi", "Victor Munoz"], "FRA": ["Kylian Mbappe", "Masour Ousmane Dembele", "Bradley Jean-Manuel Essolisa Barcola", "Désiré Nonka-Maho Doue", "Mike Peterson Maignan", "Dayotchanculle Oswald Upamecano", "Jules Olivier Kounde", "Michael Akpovie Olise", "Adrien Thibault Marie Rabiot", "Aurélien Djani Tchouameni", "William Alain André Gabriel Saliba", "Théo Bernard François Hernandez", "Emmanuel Boris Kone", "Lucas Digne", "Maxence Guy Lacroix", "Mathis Rayan Cherki", "Malo Arthur Gusto", "Ibrahima Konate", "Jean-Philippe Mateta", "Maghnes Akliouche", "Marcus Lilian Thuram", "Brice Lauriche Samba", "Lucas Francois Bernard Hernandez", "N'golo Kante", "Robin François Philippe Risser", "Warren Marie Jean-Pierre Zaire-Emery"], "GER": ["Kai Lukas Havertz", "Deniz Undav", "Leroy Aziz Sane", "Nathaniel Christopher Brown", "Felix Kalu Nmecha", "Jamal Musiala", "Nico Cédric Schlotterbeck", "Manuel Peter Neuer", "Jonathan Glao Tah", "Florian Richard Wirtz", "Joshua Walter Kimmich", "Aleksandar Pavlovic", "Antonio Ruediger", "David Raum", "Leon Christoph Goretzka", "Waldemar Anton", "Angelo Nicolas Stiller", "Malick Thiaw", "Nadiem Amiri", "Nick Woltemade", "Jamie Jaleel Jeremy Leweling", "Maximilian Beier", "Pascal Alexander GROß GROß Gross", "Alexander Nuebel", "Forzan Assan Ouedraogo", "Oliver Baumann"], "GHA": ["Caleb Marfo Yirenkyi", "Derrick Luckassen", "Antoine Serlom Semenyo", "Gideon Mensah", "Jordan Pierre Ayew", "Marvin Elom Senaya", "Jerome Opoku", "Thomas Teye Partey", "Kwasi Sibo", "Jonas Adjei Adjetey", "Benjamin Asare", "Elisha Owusu", "Lawrence Ati Zigi", "Kamal Deen Sulemana", "Abdul Fatawu Fatawu", "Inaki Williams", "Ernest Nuamah Nuamah", "Alidu Seidu", "Brandon Michael Clarke Thomas-Asante", "Kojo Peprah Oppong", "Prince Kwabena Adu", "Abdul Rahman Rahman", "Abdul Mumin Mumin", "Augustine Boakye", "Christopher Bonsu Bonsu Baah", "Joseph Tetteh Anang"], "HAI": ["Wilson Isidor", "Hannes Piterson Delcroix", "Johny Placide", "Martin Yves Roberns Didier Experience", "Ricardo Ade", "Jean Ricner Bellegarde", "Danley Jean Jacques", "Ruben Fritzner Providence", "Josue Jeremie Casimir", "Jean-Kévin Duverne", "Carlens Jean Fedlaire Ruby Arcus", "Frantzdy Pierrot", "Lenny Alvin Pico Joseph", "Don Deedson Deedson", "Dominique Celidor Simon", "Duckens Nazon", "Derrick Burckley Etienne", "Yassin Enzo Fortune", "Alexandre Jr Pierre", "Carl Fred Sainte", "Garven-Michee Metusala", "Josue Duverger", "Keeto Thermoncy", "Markhus Lacroix", "Olivier Woodensky Pierre", "Wilguens Raphael Polynice Paugain"], "IRN": ["Ramin Rezaeian", "Mohammad Mohebbi", "Ali Nemati", "Ali Reza Beiranvand", "Shojae Khalilzadeh", "Saeid Ezatolahi", "Mehdi Taremi", "Seyed Saman Ghoddos", "Milad Mohammadi", "Mohammadhossein Kanani", "Ehsan Hajisafi", "Mohammad Ghorbani", "Saleh Hardani", "Shahriyar Moghanloo", "Alireza Jahanbakhsh", "Arya Yousefi", "Mehdi Ghayedi", "Ali Alipour", "Mahdi Torabi", "Amirhossein Hosseinzadeh", "Amirmohammad Razaghinia", "Danial Iri", "Dennis Dargahi", "Roozbeh Cheshmi", "Seyedhossein Hosseini", "Seyedpayam Niazmand"], "IRQ": ["Hussein Ghadhban Aymen", "Ghazi Salih Merchas", "Hashim Rahman Akam Hashim", "Fouad Aboud Amir Alammari", "Bayesh Kamil Ibrahim Bayesh", "Aamar Iqbal Zidane", "Ibrahim Karim Ali Alhamadi", "Haydar Hussein Hussein", "Tahseen Abd Zaid Zaid", "Basil Fadhil Ahmed", "Hasan Hachim Jalal Hassan", "Jasim Elaibi Ali Jasim", "Ihab Ahmed Ahmed", "Ghareeb Solaka Rebin Sulaka", "Ismael Khaleel Zaid Ismael", "Dhia Jirjis Frans", "Younus Hashim Munaf Younus", "Jabbar Hussein Marko Farji", "Hasan Maknazi Ahmed Maknazi", "Yousif Hashim Ali Yousif", "Wali Faeq Youssef Amyn", "Yakob William Kevin Yakob", "Hazar Anwar Aimar", "Saadoon Abbood Mustafa", "Ali Kadhim Mohanad Ali", "Talib Raheem Fahad Talib"], "JOR": ["Iyad Ali Ali Olwan", "Mahmoud Ahmed Nizar Alrashdan", "Mohammad Mousa Mousa Altamari", "Mahmoud Ali Noor Alrawabdeh", "Mo'ien Hasan Yazeed Abulaila", "Mousa Mahmoud Yazan Alarab", "Mahmoud Saleh Mohannad Abutaha", "Manel Farhan Ehsan Haddad", "Mousa Musallam Abdallah Nasib", "Ali Mohammad Husam Abudahab", "Ra'ed Mahmoud Abdallah Alfakhori", "Nayef Ahmad Mahmoud Almardi", "Majed Jamil Mohammad Abualnadi", "Ahmad Ali Ali Azaizeh", "Amer Saleem Saleem", "Rasem Adel Amer Jamous", "Ahmad Salameh Saed", "Ali Hasan Mohammad", "Faisal Yousef Mohammad", "Ratib Mohammad Mohammad Aldaoud", "Ahmed Mohammad Mohammad", "Ayed Fadel Rajaei Ayed", "Burhan Shehadeh Odeh Fakhoury", "Mohammad Sami Ibrahim", "Said Ghazi Anas Badawi", "Zaid Khaleel Nour Baniateyah"], "JPN": ["Daichi Kamada", "Ayase Ueda", "Keito Nakamura", "Kaishu Sano", "Daizen Maeda", "Junya Ito", "Hiroki Ito", "Zion Suzuki", "Ritsu Doan", "Shogo Taniguchi", "Ao Tanaka", "Takehiro Tomiyasu", "Yukinari Sugawara", "Kou Itakura", "Tsuyoshi Watanabe", "Ayumu Seko", "Takefusa Kubo", "Junnosuke Suzuki", "Koki Ogawa", "Yuto Nagatomo", "Shuto Machino", "Yuito Suzuki", "Keisuke Goto", "Kento Shiogai", "Keisuke Osako", "Tomoki Hayakawa"], "KOR": ["Inbeom Hwang", "Hyeongyu Oh", "Gihyuk Lee", "Hanbeom Lee", "Kangin Lee", "Seunggyu Kim", "Youngwoo Seol", "Minjae Kim", "Seungho Paik", "Heung Min Son", "Jae Sung Lee", "Taeseok Lee", "Hee Chan Hwang", "Moonhwan Kim", "Jingyu Kim", "Jens Castrop", "Jisung Eom", "Jinseob Park", "Guesung Cho", "Hyunjun Yang", "Bumkeun Song", "Donggyeong Lee", "Hyeonwoo Jo", "Junho Bae", "Taehyeon Kim", "Wije Cho"], "KSA": ["Ali Abdulelah Alamri", "Abdullah Saud Abdulhamid", "Khalil Mohammed Alowais", "Mohammed Salem Aldawsari", "Tariq Feras", "Ibrahim Mohamed", "Mohammed Hassan Altambakti", "Essa Nasser Aldawsari", "Saad Moteb Alharbi", "Mohammed Abdullah Alkhaibari", "Fahad Musab Aljuwayr", "Mohammed Ali Lajami", "Waheeb Mohammed Abu Alshamat", "Meshari Nawaf Bu Washl", "Abdulrahman Abdullah Alhamddan", "Ahmed Sultan Mandash", "Mohsen Ala Alhajji", "Essa Khalid Alghannam", "Abdullatif Jehad Thikri", "Ali Ahmed", "Dhahi Nawaf Alaqidi", "Hassan Ali Majrashi", "Kadish Hassan", "Khalid Saleh", "Mubarak Ziyad Aljohani", "Yahya Aiman Yahya"], "MAR": ["Ismael Saibari", "Achraf Hakimi", "Issa Laye Lucas Jean Diop", "Gessime Ben Youssef Mustapha Yassine", "Soufiane Rahimi", "Yassine Bounou", "Neil Yoni El Aynaoui", "Chadi Riad", "Bilal El Khannouss", "Brahim Diaz", "Noussair Mazraoui", "Azz-Eddine Ounahi", "Ayyoub Bouaddi", "Anass Salah Eddine", "Redouane Halhal", "Sofyan Amrabat", "Samir El Mourabet", "Ayoub El Kaabi", "Chemsdine Talbi", "Ayoube Amaimouni", "Ahmed Reda Tagnaouti", "Marwane Saadane", "Mohamed Amine Sbai", "Monir El Kajoui", "Youssef Belammari", "Zakaria El Ouahdi"], "MEX": ["Julián Andrés Quinones", "Raúl Alonso Jimenez", "Luis Francisco Romo", "Álvaro Fidalgo", "Mateo Chavez", "José Raúl Rangel", "Roberto Carlos Alvarado", "Jesús Daniel Gallardo", "César Jasib Montes", "Johan Felipe Vasquez", "Jorge Eduardo Sanchez", "Erik Antonio Lira", "Israel Reyes", "Edson Omar Alvarez", "Brian Gutierrez", "Gilberto Rafael Mora", "Guillermo Martinez", "Obed Goméz Vargas", "Santiago Tomás Gimenez", "Orbelín Pineda", "Luis Gerardo Chavez", "Armando Gonzalez", "Francisco Guillermo Ochoa", "Ernesto Alexis Vega", "César Saúl Huerta", "Carlos Acevedo"], "NED": ["Cody Mathès Gakpo", "Brian Ebenezer Adjei Brobbey", "Crysencio Jilbert Sylverio Cir Summerville", "Paul Jan-Paul Van Hecke", "Virgil Van Dijk", "Bart Verbruggen", "Denzel Justus Morris Dumfries", "Ryan Jiro Gravenberch", "Frenkie De Jong", "Micky Van De Ven", "Tijjani Martinus Jan Reijnders", "Donyell Malen", "Nathan Benjamin Ake", "Teun Koopmeiners", "Quinten Ryan Crispito Timber", "Memphis Depay", "Wout François Maria Weghorst", "Jorrel Evan Hato", "Guus Berend Til", "Justin Dean Kluivert", "Marten Elco De Roon", "Noa Noëll Lang", "Lutsharel Emiliano Geertruida", "Mark Maria Hubertus Flekken", "Mats Henrik Berne Wieffer", "Robin Gerardus Petrus Roefs"], "NOR": ["Erling Braut Haaland", "Antonio Eromonsele Nordby Nusa", "Marcus Holmgren Holmgren Pedersen", "Leo Skiri Ostigard", "Thelonious Gerard Aasgaard", "Kristoffer Vassbakk Köpp Ajer", "Sander Gard Bolin Berge", "Ørjan Haskjold Nyland", "Torbjørn Lysaker Heggem", "Martín Odegaard", "David Møller Moller Wolfe", "Patrick Berg", "Alexander Sorloth", "Fredrik Aursnes", "Andreas Rædergård Schjelderup", "Oscar Bobb", "Julian Ryerson", "Egil Selvik", "Jørgen Strand Strand Larsen", "Henrik Sælebakke Falchener", "Kristian Thorstvedt", "Fredrik André Bjorkan", "Morten Thorsby", "Sondre Klingen Langas", "Jens Petter Hauge", "Sander Tangvik"], "NZL": ["Elijah Henry Just", "Finn Surman", "Christopher Grant Wood", "Marko Seufatu Nikola Stamenic", "Maxime Teremoana Crocombe", "Joe Zen Robert Bell", "Timothy John Payne", "Liberato Gianpaolo Cacace", "Sarpreet Singh", "Michael Joseph Boxall", "Mc", "Tyler Grant Bindon", "Benjamin Craig Old", "Ryan Jared Thomas", "Jesse Carmichael Randall", "Francis De Vries", "Callan Rennie Elliot", "Alex Arthur Rufer", "Alexander Noah Paulsen", "Benjamin Peter Waine", "Kosta Barbarouses", "Lachlan Ryan Bayliss", "Logan Tipene Rogerson", "Michael Cornelis Woud", "Nando Zen Pijnaker", "Thomas Jefferson Smith"], "PAN": ["Andres Alberto Andrade", "Jose Angel Cordoba", "Michael Amir Murillo", "Orlando Mosquera", "Carlos Miguel Harvey", "Edgar Yoel Barcenas", "Cristian Jesus Martinez", "Jose Luis Rodriguez", "Cesar Rodolfo Blackman", "Jiovany Javier Ramos", "Jose Fajardo", "Fidel Escobar", "Jorge Abdiel Gutierrez", "Cecilio Alfonso Waterman", "Azarías Emmanuel Londono", "Tomas Abdiel Rodriguez", "Ismael Diaz", "Eric Javier Davis", "Alberto Abdiel Quintero", "Anibal Casis Godoy", "Adalberto Eliecer Carrasquilla", "Cesar Augusto Yanis", "Cesar Jair Samudio", "Edgardo Issac Farina", "Luis Ricardo Mejia", "Roderick Alonso Miller"], "PAR": ["Julio Cesar Enciso", "Matias Galarza", "Damián Josue Bobadilla", "Mauricio Mauricio", "Adrián Andrés Cubas", "Gustavo Raul Gomez", "Orlando Daniel Gill", "Juan Jose Caceres", "Júnior Osmar Ignacio Alonso", "Omar Federico Alderete", "Miguel Angel Almiron", "Diego Alexander Gomez", "Victor Gustavo Velazquez", "Jose Maria Canale", "Gabriel Avalos", "Arnaldo Antonio Sanabria", "Gustavo Ruben Caballero", "Alexandro Maidana", "Alex Adrian Arce", "Isidro Miguel Pitta", "Braian Oscar Ojeda", "Alejandro Sebastian Romero Gamarra", "Ramón Sosa", "Fabián Cornelio Balbuena", "Gastón Hernán Olveira", "Roberto Junior Fernandez"], "POR": ["Ronaldo Cristiano Ronaldo", "Alexandre Nuno", "Pedro Joao Neves", "Alexandre Rafael Leao", "RAMOSGonçalo Goncalo", "Diogo Diogo Costa", "Renato Renato Veiga", "Miguel Bruno", "Vitor Vitinha", "Pedro Pedro Neto", "Rúben Ruben Dias", "Pedro Joao Cancelo", "João Joao Felix", "Francisco Francisco Conceicao", "Tomás Tomas Araujo", "SEMEDONélson Nelson", "Bernardo Bernardo Silva", "Diogo Ruben", "Diogo Diogo Dalot", "António Francisco Trincao", "Samuel Samu Costa", "Luiz Matheus", "Gonçalo Goncalo Inacio", "Manuel Goncalo", "Pedro Jose Sa", "Tiago Rui Silva"], "QAT": ["Khalid Hassan Alhaydos", "Gueye Issa Laye", "Ibrahim Mahmoud Abunada", "KHOUKHIBoualem Boualem", "Miguel Pedro", "Hassan Akram", "Junior Edmilson", "Elamin Homam", "Omer Assim Madibo", "Gaber Jassem", "Fathy Ahmed Fathy", "Mohamed Ayoub Aloui", "Hussain Sultan", "Karim Karim Boudiaf", "Abdurisag Yusuf Abdurisag", "Naceur Mohamed Manai", "Hatim Abdulaziz Hatem", "Alaaeldin Ahmed", "Mohamed Ahmed Alganehi", "Alhussein Alhashmi", "Ali Zainelabdeen Almoez", "Michel Lucas", "Aissa Meshaal Barsham", "Mohammad Tahsin", "Mohammed Mohammed Muntari", "Zakaria Salah Zakaria"], "RSA": ["Teboho Mokoena", "Thapelo Maseko", "Ime Daniel Okon", "Khuliso Johnson Mudau", "Mbekezeli Mfanufikile Mbokazi", "Ronwen Hayden Williams", "Aubrey Maphosa Modiba", "Sphephelo S'miso Sithole", "Thalente Wandile Mbatha", "Oswin Reagan Appollis", "Sekotori Evidence Makgopa", "Relebohile Mofokeng", "Iqraam Rayners", "Jayden Oswin Adams", "Nkosinathi Emmanuel Sibisi", "Lyle Brent Foster", "Tshepang Moremi", "Themba Zwane", "Kamogelo Michael Sebelebele", "Bradley Paul Cross", "Khulumani Ndamane", "Olwethu Mpilwenhle Makhanya", "Samukele Alucious Kabini", "Sipho Justin Chaine", "Stuart Ricardo Goss", "Tholo Thabang Matuludi"], "SCO": ["Mc", "Angus Fraser James Gunn", "Jack William Hendry", "Lewis Ferguson", "Mc", "Andrew Henry Robertson", "Ben Gannon Gannon-Doak", "Nathan Kenneth Patterson", "Grant Campbell Hanley", "Lawrence Shankland", "Che Sac Everton Fred Adams", "Mc", "Kieran Tierney", "Ryan Christie", "Mc", "Aaron Buchanan Hickey", "Lyndon John Dykes", "Anthony Ralston", "Findlay Kenneth Curtis", "Ross Cameron Stewart", "Craig Sinclair Gordon", "Dominic John Hyam", "George David Eric Hirst", "John Francis Souttar", "Liam Patrick Kelly", "Tyler Robert Fletcher"], "SEN": ["Ismaila Sarr", "Pape Alassane Gueye", "Habib Mbacke Diarra", "Ibrahim Mbaye", "Iliman Cheikh Baroy Ndiaye", "Krepin Diatta", "Moussa Niakhate", "Idrissa Gana Gueye", "Sadio Mane", "Lamine Camara", "Mory Diaw", "Nicolas Jackson", "Ismail Joshua Jakobs", "Ismaila Pathe Ciss", "El Hadji Malick Diouf", "Kalidou Koulibaly", "Edouard Osoque Mendy", "Pape Matar Sarr", "Abdoulaye Seck", "Bara Sapoko Ndiaye", "Assane Diao", "Ahmadou Bamba Mbacke Dieng", "Antoine Alpha Mendy", "Mamadou Sarr", "Pape Cherif Ndiaye", "Yehvann Djibril Victor Diouf"], "SUI": ["Johan Kula Manzambi", "Breel Donald Embolo", "Ruben Estephan Vargas", "Granit Xhaka", "Dan Ndoye", "Gregor Kobel", "Manuel Obafemi Akanji", "Nico Elvedi", "Ricardo Ivan Rodriguez", "Remo Marco Freuler", "Denis Lemi Zakaria", "Michel Aebischer", "Fabian Rieder", "Djibril Ibrahima Sow", "Silvan Dominic Widmer", "Luca Antony Jaquez", "Noah Arinzechukwu Okafor", "Mohamed Zeki Amdouni", "Cedric Jan Itten", "Christian Andreas Fassnacht", "Ardon Jashari", "Miro Max Maria Muheim", "Aurèle Florian Amenda", "Eray Ervin Coemert", "Marvin Keller", "Yvon Landry Mvogo"], "SWE": ["Yasin Ayari", "Anthony David Junior Elanga", "Viktor Einar Gyokeres", "Alexander Isak", "Mattias Olof Svanberg", "Gustaf Johan Lagerbielke", "Victor Jörgen Lindelof", "Gabriel Johan Gudmundsson", "Alexander Olof Bernhardsson", "Isak Malcolm Kwaku Hien", "Bo Kristoffer Nordfeldt", "Jacob Mikael Widell Zetterstrom", "Lucas Erik Holger Bergvall", "Elliot Karl Stroud", "Jesper Kewe Karlstrom", "Erik Benjamin Nygren", "Daniel Jonathan Svensson", "Besfort Zeneli", "Taha Abdi Ali", "Ken Sema", "Carl Anders Theodor Starfelt", "Håkan Gustaf Nilsson", "Eric Anders Smith", "Herman Nils Johansson", "Hjalmar Ekdal", "Tobias Viktor Johansson"], "TUN": ["Omar Rekik", "Hazem Mastouri", "Ali Abdi", "Hannibal Mejbri", "Montassar Omar Talbi", "Ellyes Joris Skhiri", "Yan Valery", "Anis Slimane", "Mohamed Amine Ben Hmida", "Aymen Dahmen", "Rani Khedira", "Ismael Seifallah Gharbi", "Elias Saad", "Abdelmouhib Chamakh", "Sebastian Tounekti", "Firas Chaouat", "Dylan Daniel Mahmoud Bronn", "Mohamed Elyes Achouri", "Mohamed Hadj Mahmoud", "Ahmed Mortadha Ben Ouanes", "Adam Arous", "Khalil Ayari", "Moutaz Neffati", "Raed Chikhaoui", "Rayan Elloumi", "Sabri Ben Hessen"], "TUR": ["Arda Guler", "Orkun Kokcu", "Kaan Ayhan", "Ugurcan Cakir", "Abdülker Bardakci", "Kenan Yildiz", "Barı ş Alper Yilmaz", "Hakan Calhanoglu", "Merih Demiral", "Mehmet Zeki Celik", "Ferdi Erenay Kadioglu", "Ismailİsma Yuksek", "Muhammed Kerem Akturkoglu", "Evren Eren Elmali", "Can İrfan Kahveci", "Salih Ozcan", "Oguz Aydin", "Ozan Muhammed Kabak", "Yunus Akgun", "Can Yılmaz Uzun", "Deniz Daniel Gul", "Ça ğ lar Soyuncu", "Altay Bayindir", "Fehmi Mert Gunok", "Mert Muldur", "Samet Akaydin"], "URU": ["Maximiliano Javier Araujo", "Agustin Canobbio", "Guillermo Varela", "Mathías Olivera", "Rodrigo Bentancur", "Sebastián Enzo Caceres", "Federico Santiago Valverde", "Nestor Fernando Muslera", "Juan Manuel Sanabria", "Federico Sebastian Vinas", "Manuel Ugarte", "Darwin Gabriel Nunez", "Diego Nicolás De La Cruz", "Matías Nicolas Vina", "Sergio Ramón Rochet", "Paul Brian Rodriguez", "Rodrigo Sebastian Aguirre", "Emiliano Martinez", "Facundo Pellistri", "Giorgian Daniel De Arrascaeta", "Joaquin Piquerez", "José María Gimenez", "Radrigo Zalazar", "Ronald Federico Araujo", "Santiago Andres Mele", "Santiago Ignacio Bueno"], "USA": ["Folarin Jolaoluwa Balogun", "Alexander Michael Freeman", "Malik Leon Tillman", "Sebastian Matthew Berhalter", "Auston Levi-Jesaiah Trusty", "Giovanni Alejandro Reyna", "Mc", "Christopher Jeffrey Richards", "Matthew Andrew Geary Freese", "Timothy Michael Ream", "Tyler Shaan Adams", "Antonee Robinson", "Sergiño Gianni Dest", "Ricardo Daniel Pepi", "Christian Mate Pulisic", "Matthew Charles Turner", "Mc", "Miles Gordon Robinson", "Joseph Michael Scally", "Brenden Russell Aaronson", "Timothy Tarpeh Weah", "Alejandro Zendejas", "Haji Amir Wright", "Christopher Keith Brady", "Cristian Roldan", "Maximilian Michael Arfsten"], "UZB": ["Eldor Shomurodov", "Abbosbek Fayzullaev", "Abdukodir Khusanov", "Rustamjon Ashurmatov", "Otabek Shukurov", "Akmal Mozgovoy", "Sherzod Nasrullaev", "Abdulla Abdullaev", "Abduvakhid Nematov", "Behruzjon Karimov", "Khojiakbar Alijonov", "Azizjon Ganiev", "Dostonbek Khamdamov", "Jakhongir Urozov", "Utkir Yusupov", "Odiljon Xamrobekov", "Oston Urunov", "Farrukh Sayfiev", "Igor Sergeev", "Azizbek Amonov", "Jamshid Iskanderov", "Ruslanbek Jiyanov", "Sherzod Esanov", "Avazbek Ulmasaliyev", "Botirali Ergashev", "Umarbek Eshmurodov"]};
+
+/* ---- guante de oro: top 10 del torneo + arqueros argentinos (al 1/7) ---- */
+const GK_BASE = [{"name": "Unai Simon", "norm": "unai simon", "team": "ESP", "cs": 4, "gc": 0, "sv": 7, "arg": false}, {"name": "José Raúl Rangel", "norm": "jose raul rangel", "team": "MEX", "cs": 4, "gc": 0, "sv": 5, "arg": false}, {"name": "Camilo Andres Vargas", "norm": "camilo andres vargas", "team": "COL", "cs": 3, "gc": 1, "sv": 6, "arg": false}, {"name": "Matthew Andrew Geary Freese", "norm": "matthew andrew geary freese", "team": "USA", "cs": 2, "gc": 1, "sv": 5, "arg": false}, {"name": "Diogo Diogo Costa", "norm": "diogo diogo costa", "team": "POR", "cs": 2, "gc": 2, "sv": 18, "arg": false}, {"name": "Mike Peterson Maignan", "norm": "mike peterson maignan", "team": "FRA", "cs": 2, "gc": 2, "sv": 9, "arg": false}, {"name": "Ramsés Alisson", "norm": "ramses alisson", "team": "BRA", "cs": 2, "gc": 2, "sv": 4, "arg": false}, {"name": "Jordan Lee Pickford", "norm": "jordan lee pickford", "team": "ENG", "cs": 2, "gc": 3, "sv": 9, "arg": false}, {"name": "Patrick Thomas Beach", "norm": "patrick thomas beach", "team": "AUS", "cs": 2, "gc": 3, "sv": 7, "arg": false}, {"name": "Maxime Crepeau", "norm": "maxime crepeau", "team": "CAN", "cs": 2, "gc": 3, "sv": 6, "arg": false}, {"name": "Damián Emiliano Martinez", "norm": "damian emiliano martinez", "team": "ARG", "cs": 2, "gc": 3, "sv": 2, "arg": true}];
+/* ---- totales oficiales al 1/7: goles y tarjetas de todo el mundial ---- */
+const TOT_BASE = {"g": 248, "y": 218, "r": 11};
+
 function baseMatch(name){
   const n = normName(name);
   if(n in BASE_BY_NORM) return BASE_BY_NORM[n];
@@ -2052,7 +2118,7 @@ const KEY = "mundial2026-resultados";
 let memState = null;
 function defaultState(){
   const prefLight = (typeof matchMedia==="function") && matchMedia("(prefers-color-scheme: light)").matches;
-  return {g:{}, k:{}, pen:{}, pens:{}, third:{}, f:{}, awards:{}, gAdj:{}, inj:{}, ft:{}, fdIds:{}, fdDet:{}, lang:"es", theme: prefLight ? "light" : "dark", koview:"list"};
+  return {g:{}, k:{}, pen:{}, pens:{}, third:{}, f:{}, awards:{}, gAdj:{}, gkOv:{}, inj:{}, ft:{}, fdIds:{}, fdDet:{}, lang:"es", theme: prefLight ? "light" : "dark", koview:"list"};
 }
 function load(){
   try{
@@ -2264,6 +2330,32 @@ function parseScorers(str){
   }).filter(Boolean);
 }
 
+function gkTally(){
+  const ov = state.gkOv || {};
+  return GK_BASE.map(b=>{
+    const o = ov[b.norm] || {};
+    return {name:b.name, norm:b.norm, team:b.team, arg:b.arg,
+      cs: o.cs!==undefined ? o.cs : b.cs,
+      gc: o.gc!==undefined ? o.gc : b.gc,
+      sv: o.sv!==undefined ? o.sv : b.sv};
+  }).sort((a,b)=> b.cs-a.cs || a.gc-b.gc || b.sv-a.sv);
+}
+/* totales del torneo: base oficial + partidos posteriores al 1/7 que cargues vos */
+function tourneyTotals(){
+  let g = TOT_BASE.g, y = TOT_BASE.y, r = TOT_BASE.r;
+  allMatches().forEach(m=>{
+    if(m.hs===null || m.as===null) return;
+    if(artDate(m.d, m.h).getTime() <= SCORER_BASE_TS) return;
+    g += m.hs + m.as;
+    const f = fichaOf(m.key);
+    if(f){
+      y += (val(f.y0)||0) + (val(f.y1)||0);
+      r += (val(f.r0)||0) + (val(f.r1)||0);
+    }
+  });
+  return {g,y,r};
+}
+
 function scorersTally(){
   const tally = {};
   SCORER_BASE.forEach(b=>{ tally["b:"+b.norm] = {name:b.name, team:b.team, n:b.g}; });
@@ -2272,7 +2364,7 @@ function scorersTally(){
     const f = fichaOf(m.key);
     if(!f) return;
     /* la base ya incluye grupos + dieciseisavos: sólo suma lo posterior */
-    const post = m.ko && m.ko.id > SCORER_BASE_CUTOFF;
+    const post = artDate(m.d, m.h).getTime() > SCORER_BASE_TS;
     [["sc0", m.home],["sc1", m.away]].forEach(([field, team])=>{
       parseScorers(f[field]).forEach(g=>{
         const b = baseMatch(g.name);
@@ -2537,6 +2629,12 @@ function fichaPanel(key, homeCode, awayCode, force){
       html += '<select class="sq sc-add" data-gk="'+key+'" data-gf="'+field+'" aria-label="'+l.fGoles+'">' +
         '<option value="">'+l.scAdd+'</option>'+scOpts+'</select>';
     } else {
+      const rr = ROSTER[code];
+      if(rr && rr.length){
+        const rOpts = rr.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join("");
+        html += '<select class="sq sc-add" data-gk="'+key+'" data-gf="'+field+'" aria-label="'+l.fGoles+' '+esc(tshort(code))+'">' +
+          '<option value="">'+l.scAdd+'</option>'+rOpts+'</select>';
+      }
       html += '<div class="scrow">' +
         '<input class="sc-txt" type="text" maxlength="48" data-gk="'+key+'" data-gf="'+field+'" placeholder="'+l.scAddTxt+'" aria-label="'+l.fGoles+' '+esc(tshort(code))+'">' +
         '<button type="button" data-scaddbtn aria-label="'+l.scAddBtn+'">＋</button></div>';
@@ -2784,7 +2882,19 @@ function refreshMatchPop(){
   $("#pop-body").innerHTML = matchPopHTML(KO_BY_ID[matchPopId]);
 }
 
-let statsEditGoals = false;
+let statsEditGoals = false, statsEditGK = false;
+const statsPanelOpen = {boot:false, jers:false, gk:false};   /* plegadas: top 2 a la vista; tocá para ver todo */
+function numerRoot(n){
+  n = Number(n);
+  while(n>9 && n!==11 && n!==22){ n = String(n).split("").reduce((a,c)=>a+Number(c),0); }
+  return n;
+}
+const plOpen = {boot:false, jers:false};   /* paneles de jugadores: cerrados muestran el top 2 */
+function numerolOf(n){
+  n = Number(n);
+  while(n>9 && n!==11 && n!==22){ n = String(n).split("").reduce((a,c)=>a+Number(c),0); }
+  return n;
+}
 const collapsedRounds = new Set();
 /* vista por ronda: cada cruce abierto mientras falte definirlo; terminado, se pliega solo.
    Tocar la tarjeta lo vuelve a abrir para editar. Sólo memoria de esta sesión. */
@@ -3009,26 +3119,42 @@ function renderStats(){
 
   html += '</div></div>';
 
-  /* botín de oro + goles por dorsal: base oficial + fichas + tus ajustes (✎) */
+  /* botín de oro + goles por camiseta: base oficial + fichas + tus ajustes (✎) */
   const boot2 = scorersTally();
+  const bOpen = statsPanelOpen.boot, jOpen = statsPanelOpen.jers;
+  const aw0 = state.awards || {};
+  const gbNorm = aw0.botin ? normName(aw0.botin) : null;
+  const crowned = p => gbNorm && (normName(p.name)===gbNorm || gbNorm.indexOf(normName(p.name))>=0);
+  const tt = tourneyTotals();
+  html += '<div class="scard totcard"><h2>🧮 '+l.totalsT+'<small>'+l.totalsSub+'</small></h2>' +
+    '<div class="totrow">' +
+      '<span class="tstat"><b>'+tt.g+'</b> ⚽ '+l.totGl+'</span>' +
+      '<span class="tstat"><b>'+tt.y+'</b> 🟨</span>' +
+      '<span class="tstat"><b>'+tt.r+'</b> 🟥</span>' +
+    '</div></div>';
   html += '<div class="pl-grid">';
-  html += '<div class="scard"><h2>⚽ '+l.boot+
-    '<button type="button" class="gedit'+(statsEditGoals?" on":"")+'" data-gedit aria-pressed="'+statsEditGoals+'">'+(statsEditGoals?l.editGDone:l.editG)+'</button>' +
-    '<small>'+l.bootSub+'</small></h2>';
+  html += '<div class="scard bootcard'+(bOpen?'':' closed')+'">' +
+    '<h2><button type="button" class="pltog" data-pltog="boot" aria-expanded="'+bOpen+'"><span class="gcaret" aria-hidden="true">'+(bOpen?'▾':'▸')+'</span>⚽ '+l.boot+'</button><small>'+l.bootSub+'</small></h2>' +
+    (bOpen ? '<button type="button" class="gedit'+(statsEditGoals?" on":"")+'" data-gedit aria-pressed="'+statsEditGoals+'">'+(statsEditGoals?l.editGDone:l.editG)+'</button>' : '');
   if(!boot2.length){ html += '<div class="pad">'+l.noStats+'</div>'; }
   else {
-    html += '<table class="stats pltbl"><thead><tr><th>#</th><th class="team">'+l.playersCol+'</th><th>👕</th><th>'+l.sTh.team+'</th><th>⚽</th>'+(statsEditGoals?'<th></th>':'')+'</tr></thead><tbody>';
-    boot2.slice(0, statsEditGoals?30:15).forEach((p,i)=>{
+    const showBoot = bOpen ? boot2 : boot2.slice(0,2);
+    const edit = bOpen && statsEditGoals;
+    html += '<table class="stats pltbl"><thead><tr><th>#</th><th class="team">'+l.playersCol+'</th><th class="jc" title="'+esc(l.jersT)+'">👕</th><th>'+l.sTh.team+'</th><th class="gc">⚽</th>'+(edit?'<th></th>':'')+'</tr></thead><tbody>';
+    showBoot.forEach((p,i)=>{
       const j = jerseyOf(p.name);
       const nk = normName(p.name);
-      html += '<tr><td>'+(i+1)+'</td><td class="team">'+esc(p.name)+'</td><td>'+(j===null?'–':j)+'</td><td>'+(p.team&&T[p.team]?T[p.team][2]+' '+esc(p.team):'–')+'</td><td class="pts">'+p.n+'</td>' +
-        (statsEditGoals ? '<td class="gadj-td"><button type="button" class="gadj" data-gadj="'+esc(nk)+'" data-d="-1" aria-label="−1 '+esc(p.name)+'">−</button><button type="button" class="gadj" data-gadj="'+esc(nk)+'" data-d="1" aria-label="+1 '+esc(p.name)+'">+</button></td>' : '') +
+      const gb = crowned(p);
+      html += '<tr'+(gb?' class="gb-row"':'')+'><td>'+(i+1)+'</td><td class="team">'+(gb?'🥇 ':'')+esc(p.name)+'</td><td class="jc">'+(j===null?'–':j)+'</td><td>'+(p.team&&T[p.team]?T[p.team][2]+' '+esc(p.team):'–')+'</td><td class="pts gc">'+p.n+'</td>' +
+        (edit ? '<td class="gadj-td"><button type="button" class="gboot'+(gb?" on":"")+'" data-gboot="'+esc(p.name)+'" title="'+esc(l.aw.botin)+'" aria-pressed="'+gb+'">🥇</button><button type="button" class="gadj" data-gadj="'+esc(nk)+'" data-d="-1" aria-label="−1 '+esc(p.name)+'">−</button><button type="button" class="gadj" data-gadj="'+esc(nk)+'" data-d="1" aria-label="+1 '+esc(p.name)+'">+</button></td>' : '') +
         '</tr>';
     });
     html += '</tbody></table>';
+    if(!bOpen && boot2.length>2) html += '<button type="button" class="pl-more" data-pltog="boot">+'+(boot2.length-2)+'</button>';
   }
   html += '</div>';
-  html += '<div class="scard"><h2>👕 '+l.jersT+'<small>'+l.jersSub+'</small></h2>';
+  html += '<div class="scard'+(jOpen?'':' closed')+'">' +
+    '<h2><button type="button" class="pltog" data-pltog="jers" aria-expanded="'+jOpen+'"><span class="gcaret" aria-hidden="true">'+(jOpen?'▾':'▸')+'</span>👕 '+l.jersT+'</button><small>'+l.jersSub+'</small></h2>';
   const byJ = {};
   let totG = 0;
   boot2.forEach(p=>{
@@ -3039,12 +3165,16 @@ function renderStats(){
     totG += p.n;
     byJ[k].names.push(esc(p.name));
   });
-  const jr = Object.values(byJ).filter(r=>r.n>0).sort((a,b)=> b.n-a.n || (a.j==="?")-(b.j==="?") || Number(a.j)-Number(b.j));
+  /* la barra compara sólo camisetas conocidas; lo desconocido va como nota al pie */
+  const unk = byJ["?"] ? byJ["?"].n : 0;
+  const jr = Object.values(byJ).filter(r=>r.n>0 && r.j!=="?").sort((a,b)=> b.n-a.n || Number(a.j)-Number(b.j));
   if(!jr.length){ html += '<div class="pad">'+l.noStats+'</div>'; }
   else {
     const maxJ = Math.max(1, ...jr.map(r=>r.n));
-    jr.slice(0,12).forEach(r=>{
+    const showJ = jOpen ? jr : jr.slice(0,2);
+    showJ.forEach(r=>{
       const pct = totG ? (r.n/totG*100) : 0;
+      const root = r.j==="?" ? null : numerRoot(r.j);
       html += '<div class="jrow">' +
         '<div class="jtop">' +
           '<span class="jnum">'+(r.j==="?" ? '<i>'+l.jersUnk+'</i>' : '#'+r.j)+'</span>' +
@@ -3052,9 +3182,40 @@ function renderStats(){
           '<span class="jval">'+r.n+' <em>· '+(pct>=10?pct.toFixed(0):pct.toFixed(1))+'%</em></span>' +
         '</div>' +
         '<div class="jwho">'+r.names.join(", ")+'</div>' +
+        (root!==null && l.nums[root] ? '<div class="jnumer">✨ '+l.numerolPre+' '+root+' · '+l.nums[root]+'</div>' : '') +
         '</div>';
     });
+    if(jOpen && unk>0) html += '<div class="junk">🤷 +'+unk+' '+l.totGl+' · '+l.jersUnk+'</div>';
+    if(!jOpen && jr.length>2) html += '<button type="button" class="pl-more" data-pltog="jers">+'+(jr.length-2)+'</button>';
   }
+  html += '</div>';
+
+  /* guante de oro: top 10 + arqueros argentinos, editable con ✎ */
+  const kOpen = statsPanelOpen.gk;
+  const gks = gkTally();
+  const glNorm = aw0.guante ? normName(aw0.guante) : null;
+  const gloved = p => glNorm && (p.norm===glNorm || glNorm.indexOf(p.norm)>=0);
+  html += '<div class="scard gkcard'+(kOpen?'':' closed')+'">' +
+    '<h2><button type="button" class="pltog" data-pltog="gk" aria-expanded="'+kOpen+'"><span class="gcaret" aria-hidden="true">'+(kOpen?'▾':'▸')+'</span>🧤 '+l.gloveT+'</button><small>'+l.gloveSub+'</small></h2>' +
+    (kOpen ? '<button type="button" class="gedit'+(statsEditGK?" on":"")+'" data-gkedit aria-pressed="'+statsEditGK+'">'+(statsEditGK?l.editGDone:l.editG)+'</button>' : '');
+  const showGk = kOpen ? gks : gks.slice(0,2);
+  const gkEdit = kOpen && statsEditGK;
+  const gkCell = (p,f,v) => gkEdit
+    ? '<input class="gkin" type="number" min="0" max="99" inputmode="numeric" value="'+v+'" data-gkn="'+esc(p.norm)+'" data-gkf="'+f+'" aria-label="'+esc(l['gk'+f.toUpperCase()])+' — '+esc(p.name)+'">'
+    : String(v);
+  html += '<table class="stats pltbl gktbl"><thead><tr><th>#</th><th class="team">'+l.playersCol+'</th><th>'+l.sTh.team+'</th>' +
+    '<th class="gk-n" title="'+esc(l.gkCS)+'">🧤</th><th class="gk-n" title="'+esc(l.gkGC)+'">🥅</th><th class="gk-n" title="'+esc(l.gkSV)+'">🖐</th>'+(gkEdit?'<th></th>':'')+'</tr></thead><tbody>';
+  showGk.forEach((p,i)=>{
+    const gl = gloved(p);
+    html += '<tr'+((gl?'class="gb-row" ':'')?' class="'+(gl?'gb-row ':'')+(p.arg?'arg-row':'')+'"':'')+'>'+
+      '<td>'+(i+1)+'</td><td class="team">'+(gl?'🧤 ':'')+esc(p.name)+(p.arg?' <span class="argtag">'+l.argTag+'</span>':'')+'</td>' +
+      '<td>'+(T[p.team]?T[p.team][2]+' '+esc(p.team):'–')+'</td>' +
+      '<td class="gk-n">'+gkCell(p,"cs",p.cs)+'</td><td class="gk-n">'+gkCell(p,"gc",p.gc)+'</td><td class="gk-n">'+gkCell(p,"sv",p.sv)+'</td>' +
+      (gkEdit ? '<td class="gadj-td"><button type="button" class="gboot'+(gl?" on":"")+'" data-gglove="'+esc(p.name)+'" title="'+esc(l.aw.guante)+'" aria-pressed="'+gl+'">🧤</button></td>' : '') +
+      '</tr>';
+  });
+  html += '</tbody></table>';
+  if(!kOpen && gks.length>2) html += '<button type="button" class="pl-more" data-pltog="gk">+'+(gks.length-2)+'</button>';
   html += '</div></div>';
 
   /* tabla completa, plegada por defecto */
@@ -3607,6 +3768,8 @@ function scheduleRender(){
     if(ae && ae.classList){
       if(ae.classList.contains("score"))
         sel = 'input.score[data-kind="'+ae.dataset.kind+'"][data-key="'+ae.dataset.key+'"][data-side="'+ae.dataset.side+'"]';
+      else if(ae.classList.contains("gkin"))
+        sel = 'input.gkin[data-gkn="'+ae.dataset.gkn+'"][data-gkf="'+ae.dataset.gkf+'"]';
       else if(ae.dataset && ae.dataset.fk !== undefined)
         sel = '[data-fk="'+ae.dataset.fk+'"][data-ff="'+ae.dataset.ff+'"]';
       else if(ae.dataset && ae.dataset.ficha)
@@ -3665,6 +3828,19 @@ document.body.addEventListener("change", e=>{
       if(r) r.n = Math.min(9, r.n+1); else rows.push({name, n:1});
       setFicha(key, field, scSerialize(rows));
       save(); renderAll();
+    }
+    return;
+  }
+  if(el.classList.contains("gkin")){
+    const nk = el.dataset.gkn, f = el.dataset.gkf;
+    const b = GK_BASE.find(x=>x.norm===nk);
+    if(b){
+      let v = el.value==="" ? b[f] : Math.max(0, Math.min(99, Math.round(Number(el.value))));
+      if(!state.gkOv) state.gkOv = {};
+      if(!state.gkOv[nk]) state.gkOv[nk] = {};
+      if(v === b[f]) delete state.gkOv[nk][f]; else state.gkOv[nk][f] = v;
+      if(!Object.keys(state.gkOv[nk]).length) delete state.gkOv[nk];
+      save(); scheduleRender();
     }
     return;
   }
@@ -3786,6 +3962,41 @@ document.body.addEventListener("click", e=>{
     const g = gh.dataset.group;
     if(collapsedGroups.has(g)) collapsedGroups.delete(g); else collapsedGroups.add(g);
     renderGroups();
+    return;
+  }
+  const pt = e.target.closest("[data-pltog]");
+  if(pt){
+    const k = pt.dataset.pltog;
+    statsPanelOpen[k] = !statsPanelOpen[k];
+    renderStats();
+    const b = document.querySelector('.pltog[data-pltog="'+k+'"]');
+    if(b) b.focus({preventScroll:true});
+    return;
+  }
+  const gke = e.target.closest("[data-gkedit]");
+  if(gke){
+    statsEditGK = !statsEditGK;
+    if(statsEditGK) statsPanelOpen.gk = true;
+    renderStats();
+    const b = document.querySelector("[data-gkedit]");
+    if(b) b.focus({preventScroll:true});
+    return;
+  }
+  const gv = e.target.closest("[data-gglove]");
+  if(gv){
+    const name = gv.dataset.gglove;
+    state.awards.guante = (state.awards.guante===name) ? "" : name;
+    save(); renderAll();
+    const b = document.querySelector('[data-gglove="'+name.replace(/["\\]/g,"\\$&")+'"]');
+    if(b) b.focus({preventScroll:true});
+    return;
+  }
+  const gb = e.target.closest("[data-gboot]");
+  if(gb){
+    if(!state.awards) state.awards = {};
+    const name = gb.dataset.gboot;
+    state.awards.botin = (state.awards.botin && normName(state.awards.botin)===normName(name)) ? "" : name;
+    save(); renderAll();
     return;
   }
   const ge = e.target.closest("[data-gedit]");
