@@ -1163,7 +1163,7 @@ const I18N = {
     sTh:{team:"Equipo",pj:"PJ",gf:"GF",gc:"GC",dg:"DG",y:"🟨",r:"🟥",fp:"FP"},
     noStats:"Todavía no hay datos: cargá resultados y fichas.",
     boot:"Botín de Oro — Goleadores",
-    bootSub:"Se arma con los goleadores que anotás en las fichas.",
+    bootSub:"Base oficial hasta dieciseisavos · desde octavos suma lo que anotás en las fichas.",
     bTh:{p:"Jugador",t:"Equipo",g:"Goles"},
     awardsT:"Premios del torneo",
     awardsSub:"Anotá los ganadores cuando termine el Mundial.",
@@ -1247,7 +1247,7 @@ const I18N = {
     sTh:{team:"Team",pj:"P",gf:"GF",gc:"GA",dg:"GD",y:"🟨",r:"🟥",fp:"FP"},
     noStats:"No data yet — enter results and match details.",
     boot:"Golden Boot — Top scorers",
-    bootSub:"Built from the scorers you record in match details.",
+    bootSub:"Official base through the round of 32 · from the R16 on, your match details add to it.",
     bTh:{p:"Player",t:"Team",g:"Goals"},
     awardsT:"Tournament awards",
     awardsSub:"Write down the winners when the World Cup ends.",
@@ -1820,6 +1820,24 @@ Object.keys(JERSEY_BASE).forEach(k=>{
   const last = k.split(" ").pop();
   JERSEY_LAST[last] = (last in JERSEY_LAST && JERSEY_LAST[last]!==JERSEY_BASE[k]) ? null : JERSEY_BASE[k];
 });
+/* ---- base de goleadores: totales oficiales hasta dieciseisavos (partido 88) incluido.
+   Desde octavos (89+), lo que cargues en las fichas SUMA sobre esta base.
+   Para jugadores fuera de la base, todo sale de tus fichas como siempre. ---- */
+const SCORER_BASE = [{"name": "Lionel Messi", "norm": "lionel messi", "team": "ARG", "g": 7}, {"name": "Kylian Mbappe", "norm": "kylian mbappe", "team": "FRA", "g": 6}, {"name": "Erling Haaland", "norm": "erling haaland", "team": "NOR", "g": 5}, {"name": "Harry Kane", "norm": "harry kane", "team": "ENG", "g": 5}, {"name": "Ismaila Sarr", "norm": "ismaila sarr", "team": "SEN", "g": 4}, {"name": "Mikel Oyarzabal", "norm": "mikel oyarzabal", "team": "ESP", "g": 4}, {"name": "Vinicius Junior", "norm": "vinicius junior", "team": "BRA", "g": 4}, {"name": "Ousmane Dembele", "norm": "ousmane dembele", "team": "FRA", "g": 4}, {"name": "Matheus Cunha", "norm": "matheus cunha", "team": "BRA", "g": 3}, {"name": "Kai Havertz", "norm": "kai havertz", "team": "GER", "g": 3}, {"name": "Cody Gakpo", "norm": "cody gakpo", "team": "NED", "g": 3}, {"name": "Yoane Wissa", "norm": "yoane wissa", "team": "COD", "g": 3}, {"name": "Johan Manzambi", "norm": "johan manzambi", "team": "SUI", "g": 3}, {"name": "Cristiano Ronaldo", "norm": "cristiano ronaldo", "team": "POR", "g": 3}, {"name": "Folarin Balogun", "norm": "folarin balogun", "team": "USA", "g": 3}, {"name": "Jonathan David", "norm": "jonathan david", "team": "CAN", "g": 3}, {"name": "Ismael Saibari", "norm": "ismael saibari", "team": "MAR", "g": 3}, {"name": "Elijah Just", "norm": "elijah just", "team": "NZL", "g": 3}, {"name": "Brian Brobbey", "norm": "brian brobbey", "team": "NED", "g": 3}, {"name": "Julian Quinones", "norm": "julian quinones", "team": "MEX", "g": 3}, {"name": "Deniz Undav", "norm": "deniz undav", "team": "GER", "g": 3}, {"name": "Daichi Kamada", "norm": "daichi kamada", "team": "JPN", "g": 2}, {"name": "Daniel Munoz", "norm": "daniel munoz", "team": "COL", "g": 2}, {"name": "Anthony Elanga", "norm": "anthony elanga", "team": "SWE", "g": 2}, {"name": "Yasin Ayari", "norm": "yasin ayari", "team": "SWE", "g": 2}];
+const SCORER_BASE_CUTOFF = 88;
+const BASE_BY_NORM = {}, BASE_BY_LAST = {};
+SCORER_BASE.forEach(b=>{
+  BASE_BY_NORM[b.norm] = b;
+  const last = b.norm.split(" ").pop();
+  BASE_BY_LAST[last] = (last in BASE_BY_LAST && BASE_BY_LAST[last]!==b) ? null : b;
+});
+function baseMatch(name){
+  const n = normName(name);
+  if(n in BASE_BY_NORM) return BASE_BY_NORM[n];
+  const last = n.split(" ").pop();
+  return (last in BASE_BY_LAST && BASE_BY_LAST[last]) || null;
+}
+
 function jerseyOf(name){
   const n = normName(name);
   if(n in JERSEY_BASE) return JERSEY_BASE[n];
@@ -2230,15 +2248,23 @@ function parseScorers(str){
 
 function scorersTally(){
   const tally = {};
+  SCORER_BASE.forEach(b=>{ tally["b:"+b.norm] = {name:b.name, team:b.team, n:b.g}; });
   allMatches().forEach(m=>{
     if(m.hs===null || m.as===null) return;
     const f = fichaOf(m.key);
     if(!f) return;
+    /* la base ya incluye grupos + dieciseisavos: sólo suma lo posterior */
+    const post = m.ko && m.ko.id > SCORER_BASE_CUTOFF;
     [["sc0", m.home],["sc1", m.away]].forEach(([field, team])=>{
       parseScorers(f[field]).forEach(g=>{
-        const k = g.name.toLowerCase()+"|"+(team||"?");
-        if(!tally[k]) tally[k] = {name:g.name, team, n:0};
-        tally[k].n += g.n;
+        const b = baseMatch(g.name);
+        if(b){
+          if(post) tally["b:"+b.norm].n += g.n;
+        } else {
+          const k = g.name.toLowerCase()+"|"+(team||"?");
+          if(!tally[k]) tally[k] = {name:g.name, team, n:0};
+          tally[k].n += g.n;
+        }
       });
     });
   });
