@@ -563,14 +563,32 @@ html[data-theme="light"] .ko-toggle button.on{color:#fff}
 .pl-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 @media screen and (max-width:860px){.pl-grid{grid-template-columns:1fr}}
 .pltbl td.team{font-weight:600}
-.jrow{display:grid;grid-template-columns:64px 1fr 28px minmax(90px,38%);gap:9px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line-soft);font-size:.82rem}
+.pl-grid{align-items:start}
+.jrow{padding:7px 0;border-bottom:1px solid var(--line-soft)}
 .jrow:last-child{border-bottom:none}
-.jnum{font-family:"Saira";font-weight:700;color:var(--gold);letter-spacing:.03em}
-.jnum i{color:var(--muted);font-weight:400;font-size:.72rem}
-.jbar{height:8px;border-radius:5px;background:var(--inp);overflow:hidden}
-.jbar i{display:block;height:100%;background:var(--celeste);border-radius:5px}
-.jn{text-align:right;font-family:"Saira";font-weight:700;color:var(--chalk)}
-.jwho{color:var(--muted);font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jtop{display:grid;grid-template-columns:52px 1fr 86px;gap:10px;align-items:center}
+.jnum{font-family:"Saira";font-weight:700;font-size:.95rem;color:var(--gold);letter-spacing:.03em}
+.jnum i{color:var(--muted);font-weight:400;font-size:.68rem;font-style:normal}
+.jbar{height:6px;border-radius:4px;background:var(--inp);overflow:hidden}
+.jbar i{display:block;height:100%;background:linear-gradient(90deg,var(--celeste),#a8d2f0);border-radius:4px}
+.jval{text-align:right;font-family:"Saira";font-weight:700;font-size:.92rem;color:var(--chalk);white-space:nowrap}
+.jval em{font-style:normal;font-weight:600;font-size:.72rem;color:var(--muted)}
+.jwho{color:var(--muted);font-size:.7rem;margin:3px 0 0 62px;line-height:1.5}
+.gedit{
+  font-family:inherit;font-size:.66rem;font-weight:700;letter-spacing:.05em;
+  color:var(--celeste);background:none;border:1px solid var(--line);border-radius:7px;
+  padding:3px 9px;margin-left:10px;cursor:pointer;vertical-align:2px;
+}
+.gedit:hover,.gedit.on{border-color:var(--celeste)}
+.gedit.on{background:var(--celeste);color:#0a1420}
+.gadj-td{white-space:nowrap}
+.gadj{
+  width:26px;height:26px;font-size:1rem;font-weight:700;line-height:1;
+  color:var(--chalk);background:var(--inp);border:1px solid var(--line);border-radius:7px;
+  cursor:pointer;margin-left:4px;
+}
+.gadj:hover{border-color:var(--celeste);color:var(--celeste)}
+@media screen and (max-width:720px){ .gadj{width:38px;height:38px} }
 .thirds-panel .tp-toggle{
   background:none;border:none;cursor:pointer;font:inherit;color:inherit;
   display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:0;
@@ -1148,7 +1166,7 @@ const I18N = {
     pen:"Empate — ¿quién pasa por penales?",
     updNewV:"🔄 Hay una versión nueva de la app", updNewBtn:"Actualizar",
     jersT:"Goles por dorsal", jersSub:"Qué camiseta grita más goles. Dorsales conocidos de la base del torneo y del plantel argentino.",
-    jersUnk:"sin dorsal", playersCol:"Jugador",
+    jersUnk:"sin dorsal", playersCol:"Jugador", editG:"✎ editar", editGDone:"✓ listo",
     pos:(p,g)=>p+"° Grupo "+g, third:gs=>"3° de "+gs.join("/"), win:m=>"Ganador "+m, lose:m=>"Perdedor "+m,
     wd:{sun:"Dom",mon:"Lun",tue:"Mar",wed:"Mié",thu:"Jue",fri:"Vie",sat:"Sáb"},
     ficha:"📋 ficha",
@@ -1232,7 +1250,7 @@ const I18N = {
     pen:"Draw — who wins on penalties?",
     updNewV:"🔄 A new version of the app is available", updNewBtn:"Refresh",
     jersT:"Goals by jersey number", jersSub:"Which shirt scores the most. Known numbers from the tournament base and the Argentine squad.",
-    jersUnk:"no number", playersCol:"Player",
+    jersUnk:"no number", playersCol:"Player", editG:"✎ edit", editGDone:"✓ done",
     pos:(p,g)=>(p===1?"1st":"2nd")+" Group "+g, third:gs=>"3rd of "+gs.join("/"), win:m=>"Winner of "+m, lose:m=>"Loser of "+m,
     wd:{sun:"Sun",mon:"Mon",tue:"Tue",wed:"Wed",thu:"Thu",fri:"Fri",sat:"Sat"},
     ficha:"📋 details",
@@ -1432,7 +1450,7 @@ I18N.fr = Object.assign({}, I18N.en, {
   pen:"Égalité — qui passe aux tirs au but ?",
   updNewV:"🔄 Nouvelle version de l’app disponible", updNewBtn:"Mettre à jour",
   jersT:"Buts par numéro de maillot", jersSub:"Quel maillot marque le plus.",
-  jersUnk:"sans numéro", playersCol:"Joueur",
+  jersUnk:"sans numéro", playersCol:"Joueur", editG:"✎ modifier", editGDone:"✓ ok",
   pos:(p,g)=>(p===1?"1er":"2e")+" Groupe "+g, third:gs=>"3e de "+gs.join("/"), win:m=>"Vainqueur du "+m, lose:m=>"Perdant du "+m,
   wd:{sun:"Dim",mon:"Lun",tue:"Mar",wed:"Mer",thu:"Jeu",fri:"Ven",sat:"Sam"},
   ficha:"📋 détails",
@@ -1555,7 +1573,7 @@ I18N.ja = Object.assign({}, I18N.en, {
   pen:"引き分け — PK戦の勝者は？",
   updNewV:"🔄 新しいバージョンがあります", updNewBtn:"更新",
   jersT:"背番号別ゴール", jersSub:"どの背番号が一番決めているか。",
-  jersUnk:"番号不明", playersCol:"選手",
+  jersUnk:"番号不明", playersCol:"選手", editG:"✎ 編集", editGDone:"✓ 完了",
   pos:(p,g)=>"グループ"+g+" "+p+"位", third:gs=>gs.join("/")+" の3位", win:m=>"試合"+m+"の勝者", lose:m=>"試合"+m+"の敗者",
   wd:{sun:"日",mon:"月",tue:"火",wed:"水",thu:"木",fri:"金",sat:"土"},
   ficha:"📋 詳細",
@@ -2034,7 +2052,7 @@ const KEY = "mundial2026-resultados";
 let memState = null;
 function defaultState(){
   const prefLight = (typeof matchMedia==="function") && matchMedia("(prefers-color-scheme: light)").matches;
-  return {g:{}, k:{}, pen:{}, pens:{}, third:{}, f:{}, awards:{}, inj:{}, ft:{}, fdIds:{}, fdDet:{}, lang:"es", theme: prefLight ? "light" : "dark", koview:"list"};
+  return {g:{}, k:{}, pen:{}, pens:{}, third:{}, f:{}, awards:{}, gAdj:{}, inj:{}, ft:{}, fdIds:{}, fdDet:{}, lang:"es", theme: prefLight ? "light" : "dark", koview:"list"};
 }
 function load(){
   try{
@@ -2268,7 +2286,12 @@ function scorersTally(){
       });
     });
   });
-  return Object.values(tally).sort((a,b)=> b.n-a.n || a.name.localeCompare(b.name));
+  const adj = state.gAdj || {};
+  const out = Object.values(tally).map(e=>{
+    e.n = Math.max(0, e.n + (adj[normName(e.name)]||0));
+    return e;
+  }).filter(e=> e.n>0 || baseMatch(e.name));
+  return out.sort((a,b)=> b.n-a.n || a.name.localeCompare(b.name));
 }
 
 function matchPlayer(entered, squadName){
@@ -2761,6 +2784,7 @@ function refreshMatchPop(){
   $("#pop-body").innerHTML = matchPopHTML(KO_BY_ID[matchPopId]);
 }
 
+let statsEditGoals = false;
 const collapsedRounds = new Set();
 /* vista por ronda: cada cruce abierto mientras falte definirlo; terminado, se pliega solo.
    Tocar la tarjeta lo vuelve a abrir para editar. Sólo memoria de esta sesión. */
@@ -2985,38 +3009,50 @@ function renderStats(){
 
   html += '</div></div>';
 
-  /* botín de oro + goles por dorsal: se arman con los goleadores de las fichas */
+  /* botín de oro + goles por dorsal: base oficial + fichas + tus ajustes (✎) */
   const boot2 = scorersTally();
   html += '<div class="pl-grid">';
-  html += '<div class="scard"><h2>⚽ '+l.boot+'<small>'+l.bootSub+'</small></h2>';
+  html += '<div class="scard"><h2>⚽ '+l.boot+
+    '<button type="button" class="gedit'+(statsEditGoals?" on":"")+'" data-gedit aria-pressed="'+statsEditGoals+'">'+(statsEditGoals?l.editGDone:l.editG)+'</button>' +
+    '<small>'+l.bootSub+'</small></h2>';
   if(!boot2.length){ html += '<div class="pad">'+l.noStats+'</div>'; }
   else {
-    html += '<table class="stats pltbl"><thead><tr><th>#</th><th class="team">'+l.playersCol+'</th><th>👕</th><th>'+l.sTh.team+'</th><th>⚽</th></tr></thead><tbody>';
-    boot2.slice(0,15).forEach((p,i)=>{
+    html += '<table class="stats pltbl"><thead><tr><th>#</th><th class="team">'+l.playersCol+'</th><th>👕</th><th>'+l.sTh.team+'</th><th>⚽</th>'+(statsEditGoals?'<th></th>':'')+'</tr></thead><tbody>';
+    boot2.slice(0, statsEditGoals?30:15).forEach((p,i)=>{
       const j = jerseyOf(p.name);
-      html += '<tr><td>'+(i+1)+'</td><td class="team">'+esc(p.name)+'</td><td>'+(j===null?'–':j)+'</td><td>'+(p.team&&T[p.team]?T[p.team][2]+' '+esc(p.team):'–')+'</td><td class="pts">'+p.n+'</td></tr>';
+      const nk = normName(p.name);
+      html += '<tr><td>'+(i+1)+'</td><td class="team">'+esc(p.name)+'</td><td>'+(j===null?'–':j)+'</td><td>'+(p.team&&T[p.team]?T[p.team][2]+' '+esc(p.team):'–')+'</td><td class="pts">'+p.n+'</td>' +
+        (statsEditGoals ? '<td class="gadj-td"><button type="button" class="gadj" data-gadj="'+esc(nk)+'" data-d="-1" aria-label="−1 '+esc(p.name)+'">−</button><button type="button" class="gadj" data-gadj="'+esc(nk)+'" data-d="1" aria-label="+1 '+esc(p.name)+'">+</button></td>' : '') +
+        '</tr>';
     });
     html += '</tbody></table>';
   }
   html += '</div>';
   html += '<div class="scard"><h2>👕 '+l.jersT+'<small>'+l.jersSub+'</small></h2>';
   const byJ = {};
+  let totG = 0;
   boot2.forEach(p=>{
     const j = jerseyOf(p.name);
     const k = j===null ? "?" : String(j);
     if(!byJ[k]) byJ[k] = {j:k, n:0, names:[]};
     byJ[k].n += p.n;
+    totG += p.n;
     byJ[k].names.push(esc(p.name));
   });
-  const jr = Object.values(byJ).sort((a,b)=> b.n-a.n || (a.j==="?")-(b.j==="?") || Number(a.j)-Number(b.j));
+  const jr = Object.values(byJ).filter(r=>r.n>0).sort((a,b)=> b.n-a.n || (a.j==="?")-(b.j==="?") || Number(a.j)-Number(b.j));
   if(!jr.length){ html += '<div class="pad">'+l.noStats+'</div>'; }
   else {
     const maxJ = Math.max(1, ...jr.map(r=>r.n));
     jr.slice(0,12).forEach(r=>{
-      html += '<div class="jrow"><span class="jnum">'+(r.j==="?" ? '<i>'+l.jersUnk+'</i>' : '#'+r.j)+'</span>' +
-        '<span class="jbar"><i style="width:'+(r.n/maxJ*100).toFixed(1)+'%"></i></span>' +
-        '<span class="jn">'+r.n+'</span>' +
-        '<span class="jwho" title="'+r.names.join(", ")+'">'+r.names.slice(0,3).join(", ")+(r.names.length>3?" +"+(r.names.length-3):"")+'</span></div>';
+      const pct = totG ? (r.n/totG*100) : 0;
+      html += '<div class="jrow">' +
+        '<div class="jtop">' +
+          '<span class="jnum">'+(r.j==="?" ? '<i>'+l.jersUnk+'</i>' : '#'+r.j)+'</span>' +
+          '<span class="jbar"><i style="width:'+(r.n/maxJ*100).toFixed(1)+'%"></i></span>' +
+          '<span class="jval">'+r.n+' <em>· '+(pct>=10?pct.toFixed(0):pct.toFixed(1))+'%</em></span>' +
+        '</div>' +
+        '<div class="jwho">'+r.names.join(", ")+'</div>' +
+        '</div>';
     });
   }
   html += '</div></div>';
@@ -3750,6 +3786,25 @@ document.body.addEventListener("click", e=>{
     const g = gh.dataset.group;
     if(collapsedGroups.has(g)) collapsedGroups.delete(g); else collapsedGroups.add(g);
     renderGroups();
+    return;
+  }
+  const ge = e.target.closest("[data-gedit]");
+  if(ge){
+    statsEditGoals = !statsEditGoals;
+    renderStats();
+    const b = document.querySelector("[data-gedit]");
+    if(b) b.focus({preventScroll:true});
+    return;
+  }
+  const ga = e.target.closest("[data-gadj]");
+  if(ga){
+    const k = ga.dataset.gadj, d = Number(ga.dataset.d);
+    if(!state.gAdj) state.gAdj = {};
+    state.gAdj[k] = (state.gAdj[k]||0) + d;
+    if(state.gAdj[k]===0) delete state.gAdj[k];
+    save(); renderAll();
+    const b = document.querySelector('[data-gadj="'+k.replace(/["\\]/g,"\\$&")+'"][data-d="'+d+'"]');
+    if(b) b.focus({preventScroll:true});
     return;
   }
   const tt = e.target.closest("[data-thirds-toggle]");
