@@ -506,6 +506,23 @@ html[data-theme="light"] .ko-toggle button.on{color:#fff}
 #ko-list .kcard.kcompact select.third,
 #ko-list .kcard.kcompact .pen{display:none}
 #ko-list .kcard.kcompact .kteam{padding:2px 0}
+.kscore{
+  width:38px;height:27px;display:inline-flex;align-items:center;justify-content:center;
+  font-family:"Saira";font-weight:700;font-size:.9rem;color:var(--gold);
+  background:var(--inp);border:1px solid var(--line);border-radius:6px;
+}
+.kedit{font-size:.78rem;opacity:.55;line-height:1}
+.bracket .kcard.kclick:hover .kedit,
+.bracket .kcard.kclick:focus-visible .kedit{opacity:1}
+.bracket .kcard.kclick{cursor:pointer}
+.bracket .kcard.kclick:hover{border-color:var(--celeste)}
+.bracket .kcard.kclick:focus-visible{outline:2px solid var(--celeste);outline-offset:2px}
+.mpop{margin-top:12px}
+.mpop .kteam{grid-template-columns:1fr 64px;padding:5px 0}
+.mpop .kteam .tname{font-size:1.05rem}
+.mpop .kteam input.score{height:42px;font-size:1.2rem}
+.mpop .kcards{margin-top:10px;padding-top:10px}
+.mpop .ficha{margin-top:10px}
 .bracket .ktoggle{cursor:default;pointer-events:none}
 .bracket .ktoggle .kcaret{display:none}
 .champion.list-ch{max-width:460px}
@@ -2404,8 +2421,8 @@ function mvpFor(key, homeCode, awayCode){
   return auto ? { name: auto, auto: true } : null;
 }
 
-function fichaPanel(key, homeCode, awayCode){
-  if(!openFichas.has(key)) return "";
+function fichaPanel(key, homeCode, awayCode, force){
+  if(!force && !openFichas.has(key)) return "";
   const l = L();
   const sc = scoreForKey(key);
   const inj = state.inj || {};
@@ -2574,10 +2591,11 @@ function koCard(m, opts){
   const key = "k:"+m.id;
   const drawNeedsPen = t.a.code && t.b.code && val(s[0])!==null && val(s[1])!==null && val(s[0])===val(s[1]);
   const isArgMatch = t.a.code==="ARG" || t.b.code==="ARG";
+  const B = !!(opts && opts.board);   /* cuadro: celda de sólo lectura, tocá para editar en la ficha grande */
   /* en la lista: abierto mientras el cruce no esté definido; definido → compacto */
   const listExp = koCardOpen.has(m.id) ? koCardOpen.get(m.id) : !w;
-  let html = '<div class="kcard'+(opts&&opts.final?" final-card":"")+(w?" live-gold":"")+(listExp?"":" kcompact")+'" data-mid="'+m.id+'">' +
-    '<div class="knum"><button type="button" class="ktoggle" data-ktog="'+m.id+'" aria-expanded="'+listExp+'"><span class="kcaret" aria-hidden="true">'+(listExp?'▾':'▸')+'</span><b>'+m.id+'</b> · '+(lp=>lp.wd+' '+lp.d+' · '+lp.h+l.hs)(locParts(m.d,m.h))+'</button><span>'+(isArgMatch?ftChip(key,m.d,m.h,val(s[0])!==null&&val(s[1])!==null):"")+fichaBtn(key)+'</span></div>' +
+  let html = '<div class="kcard'+(opts&&opts.final?" final-card":"")+(w?" live-gold":"")+(listExp?"":" kcompact")+(B?" kclick":"")+'" data-mid="'+m.id+'"'+(B?' tabindex="0" role="button" aria-label="'+esc((t.a.code?tshort(t.a.code):t.a.label)+' – '+(t.b.code?tshort(t.b.code):t.b.label))+'"':'')+'>' +
+    '<div class="knum"><button type="button" class="ktoggle" data-ktog="'+m.id+'" aria-expanded="'+listExp+'"'+(B?' tabindex="-1"':'')+'><span class="kcaret" aria-hidden="true">'+(listExp?'▾':'▸')+'</span><b>'+m.id+'</b> · '+(lp=>lp.wd+' '+lp.d+' · '+lp.h+l.hs)(locParts(m.d,m.h))+'</button><span>'+(B?'<span class="kedit" title="'+esc(l.ficha)+'" aria-hidden="true">📋</span>':(isArgMatch?ftChip(key,m.d,m.h,val(s[0])!==null&&val(s[1])!==null):"")+fichaBtn(key))+'</span></div>' +
     '<div class="kvenue">'+esc(ven(m.v))+'</div>';
   const noScore = val(s[0])===null && val(s[1])===null;
   [["a",0],["b",1]].forEach(([side,idx])=>{
@@ -2596,8 +2614,10 @@ function koCard(m, opts){
     }
     html += '<div class="kteam'+cls+'">' +
       '<span class="tname'+(slot.code?"":" tbd")+'">'+inner+badge+'</span>' +
-      scoreInput("k", m.id, idx, val(s[idx]), slot.code || slot.proj || "") + '</div>';
+      (B ? '<span class="kscore">'+(val(s[idx])===null?'·':val(s[idx]))+'</span>'
+         : scoreInput("k", m.id, idx, val(s[idx]), slot.code || slot.proj || "")) + '</div>';
   });
+  if(B){ html += '</div>'; return html; }   /* celda del cuadro: equipos + goles, nada más */
   /* tarjetas: sólo cuando el cruce está definido — un equipo solo contra "a definir" no tiene sentido */
   if(t.a.code && t.b.code){
     html += '<div class="kcards stack">'+chips(key,0,t.a.code)+chips(key,1,t.b.code)+'</div>';
@@ -2622,6 +2642,60 @@ function koCard(m, opts){
   html += fichaPanel(key, t.a.code, t.b.code);
   html += '</div>';
   return html;
+}
+
+/* ---- ficha grande del partido: se abre tocando un cruce en el cuadro ----
+   Todo en un solo lugar: goles, penales, tercero, tarjetas y goleadores. */
+let matchPopId = null;
+function matchPopHTML(m){
+  const l = L();
+  const t = koTeams(m);
+  const s = state.k[m.id] || ["",""];
+  const w = koWinner(m);
+  const key = "k:"+m.id;
+  const isArgMatch = t.a.code==="ARG" || t.b.code==="ARG";
+  const drawNeedsPen = t.a.code && t.b.code && val(s[0])!==null && val(s[1])!==null && val(s[0])===val(s[1]);
+  let html = '<div class="pop-head"><span class="pop-flag">🏟️</span><div>' +
+    '<div class="pop-name" id="pop-name"><b style="color:var(--gold)">'+m.id+'</b> · '+l.rounds[m.r]+'</div>' +
+    '<div class="pop-tot">'+(lp=>lp.wd+' '+lp.d+' · '+lp.h+l.hs)(locParts(m.d,m.h))+' · '+esc(ven(m.v))+
+    (isArgMatch?' '+ftChip(key,m.d,m.h,val(s[0])!==null&&val(s[1])!==null):'')+'</div></div></div>' +
+    '<div class="mpop">';
+  [["a",0],["b",1]].forEach(([side,idx])=>{
+    const slot = t[side];
+    let cls = "";
+    if(w && slot.code){ cls = (w.win===slot.code) ? " winner" : " loser"; }
+    const inner = slot.code ? tlabel(slot.code) : (slot.proj ? '<span class="projname">'+tlabel(slot.proj)+'</span>' : esc(slot.label));
+    html += '<div class="kteam'+cls+'"><span class="tname'+(slot.code?"":" tbd")+'">'+inner+'</span>' +
+      scoreInput("k", m.id, idx, val(s[idx]), slot.code || slot.proj || "") + '</div>';
+  });
+  if(m.b.t==="third") html += thirdOptions(m);
+  if(drawNeedsPen){
+    let p = state.pen[m.id];
+    if(!p){
+      const ps = state.pens && state.pens[m.id];
+      if(ps){ const pa=val(ps[0]), pb=val(ps[1]); if(pa!==null&&pb!==null&&pa!==pb) p = pa>pb?"a":"b"; }
+    }
+    html += '<div class="pen">'+l.pen+'<div class="pen-row">' +
+      '<button class="pen-btn'+(p==="a"?" sel":"")+'" data-pen="'+m.id+'" data-side="a">'+esc(tshort(t.a.code))+'</button>' +
+      '<button class="pen-btn'+(p==="b"?" sel":"")+'" data-pen="'+m.id+'" data-side="b">'+esc(tshort(t.b.code))+'</button>' +
+      '</div></div>';
+  }
+  if(t.a.code && t.b.code){
+    html += '<div class="kcards stack">'+chips(key,0,t.a.code)+chips(key,1,t.b.code)+'</div>';
+  }
+  html += fichaPanel(key, t.a.code, t.b.code, true);
+  return html + '</div>';
+}
+function openMatchPop(mid){
+  const m = KO_BY_ID[mid];
+  if(!m) return;
+  matchPopId = mid;
+  $("#pop-body").innerHTML = matchPopHTML(m);
+  showPop();
+}
+function refreshMatchPop(){
+  if(matchPopId===null || $("#pop-back").hidden) return;
+  $("#pop-body").innerHTML = matchPopHTML(KO_BY_ID[matchPopId]);
 }
 
 const collapsedRounds = new Set();
@@ -2664,13 +2738,13 @@ function renderBracket(){
     if(collapsedRounds.has(r)) return;
     LAYOUT[r].forEach((id,i)=>{
       html += '<div class="slot" style="grid-column:'+col[r]+';grid-row:'+(i*span[r]+1)+' / span '+span[r]+'">' +
-        koCard(KO_BY_ID[id]) + '</div>';
+        koCard(KO_BY_ID[id], {board:true}) + '</div>';
     });
   });
   const final = KO_BY_ID[104], third = KO_BY_ID[103];
   const w = koWinner(final);
   html += '<div class="final-col" style="grid-column:5;grid-row:1 / span '+totalRows+'">' +
-    koCard(final, {final:true}) +
+    koCard(final, {final:true, board:true}) +
     '<div class="round-banner goldb"><span class="mini">🏆</span>'+l.champ+'</div>' +
     '<div class="champion'+(w?" won":"")+'">' +
       '<span class="cup">'+trophyIMG()+'</span>' +
@@ -2678,7 +2752,7 @@ function renderBracket(){
     '</div>' +
     '<div class="col-divide"></div>' +
     '<div class="round-banner green">'+l.rounds.tp+'</div>' +
-    koCard(third) +
+    koCard(third, {board:true}) +
   '</div>';
   $("#bracket-grid").innerHTML = html;
 }
@@ -3112,6 +3186,7 @@ function showPop(){
   const x = $("#pop-x"); if(x) x.focus();
 }
 function closeTeamPop(){
+  matchPopId = null;
   const wasOpen = !$("#pop-back").hidden;
   $("#pop-back").hidden = true;
   if(wasOpen && popOpener && document.contains(popOpener) && popOpener.focus){ popOpener.focus({preventScroll:true}); }
@@ -3404,9 +3479,10 @@ function scheduleRender(){
       else if(ae.matches && ae.matches('.gcard h2[data-group]'))
         sel = '.gcard h2[data-group="'+ae.dataset.group+'"]';
     }
+    const inPop = ae && ae.closest && ae.closest("#pop-body");
     renderAll();
     if(sel){
-      const el = document.querySelector(sel);
+      const el = (inPop && document.querySelector("#pop-body "+sel)) || document.querySelector(sel);
       if(el){ el.focus({preventScroll:true}); if(el.select) el.select(); }
     }
   });
@@ -3414,6 +3490,7 @@ function scheduleRender(){
 
 function renderAll(){
   renderChrome();
+  refreshMatchPop();
   renderGroups();
   renderThirdsPanel();
   renderBracket();
@@ -3584,6 +3661,8 @@ document.body.addEventListener("click", e=>{
     if(b) b.focus({preventScroll:true});
     return;
   }
+  const bk = e.target.closest("#bracket .kcard.kclick");
+  if(bk){ openMatchPop(Number(bk.dataset.mid)); return; }
   const kt = e.target.closest("#ko-list .kcard");
   if(kt && !e.target.closest("input,select,.ficha,a,label,.flag-btn") &&
      (e.target.closest(".ktoggle") || !e.target.closest("button"))){
@@ -3730,6 +3809,12 @@ document.addEventListener("keydown", e=>{
     } else {
       e.target.blur();
     }
+  }
+  /* Enter/Espacio abre la ficha grande de un cruce del cuadro */
+  if((e.key==="Enter"||e.key===" ") && e.target.matches && e.target.matches('#bracket .kcard.kclick')){
+    e.preventDefault();
+    openMatchPop(Number(e.target.dataset.mid));
+    return;
   }
   /* Enter/Espacio abre y cierra los grupos con teclado */
   if((e.key==="Enter"||e.key===" ") && e.target.matches && e.target.matches('.gcard h2[data-group]')){
