@@ -560,6 +560,17 @@ html[data-theme="light"] .ko-toggle button.on{color:#fff}
 .legend .l-celeste{background:var(--celeste)}
 .legend .l-path{background:var(--gold);box-shadow:0 0 6px rgba(228,181,74,.8)}
 
+.pl-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media screen and (max-width:860px){.pl-grid{grid-template-columns:1fr}}
+.pltbl td.team{font-weight:600}
+.jrow{display:grid;grid-template-columns:64px 1fr 28px minmax(90px,38%);gap:9px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line-soft);font-size:.82rem}
+.jrow:last-child{border-bottom:none}
+.jnum{font-family:"Saira";font-weight:700;color:var(--gold);letter-spacing:.03em}
+.jnum i{color:var(--muted);font-weight:400;font-size:.72rem}
+.jbar{height:8px;border-radius:5px;background:var(--inp);overflow:hidden}
+.jbar i{display:block;height:100%;background:var(--celeste);border-radius:5px}
+.jn{text-align:right;font-family:"Saira";font-weight:700;color:var(--chalk)}
+.jwho{color:var(--muted);font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .thirds-panel .tp-toggle{
   background:none;border:none;cursor:pointer;font:inherit;color:inherit;
   display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:0;
@@ -1136,6 +1147,8 @@ const I18N = {
     pickThird:"Elegí el tercero…", sug:"Sugeridos (grupos ", oth:"Otros terceros",
     pen:"Empate — ¿quién pasa por penales?",
     updNewV:"🔄 Hay una versión nueva de la app", updNewBtn:"Actualizar",
+    jersT:"Goles por dorsal", jersSub:"Qué camiseta grita más goles. Dorsales conocidos de la base del torneo y del plantel argentino.",
+    jersUnk:"sin dorsal", playersCol:"Jugador",
     pos:(p,g)=>p+"° Grupo "+g, third:gs=>"3° de "+gs.join("/"), win:m=>"Ganador "+m, lose:m=>"Perdedor "+m,
     wd:{sun:"Dom",mon:"Lun",tue:"Mar",wed:"Mié",thu:"Jue",fri:"Vie",sat:"Sáb"},
     ficha:"📋 ficha",
@@ -1218,6 +1231,8 @@ const I18N = {
     pickThird:"Pick the third-place team…", sug:"Suggested (groups ", oth:"Other thirds",
     pen:"Draw — who wins on penalties?",
     updNewV:"🔄 A new version of the app is available", updNewBtn:"Refresh",
+    jersT:"Goals by jersey number", jersSub:"Which shirt scores the most. Known numbers from the tournament base and the Argentine squad.",
+    jersUnk:"no number", playersCol:"Player",
     pos:(p,g)=>(p===1?"1st":"2nd")+" Group "+g, third:gs=>"3rd of "+gs.join("/"), win:m=>"Winner of "+m, lose:m=>"Loser of "+m,
     wd:{sun:"Sun",mon:"Mon",tue:"Tue",wed:"Wed",thu:"Thu",fri:"Fri",sat:"Sat"},
     ficha:"📋 details",
@@ -1416,6 +1431,8 @@ I18N.fr = Object.assign({}, I18N.en, {
   pickThird:"Choisissez le troisième…", sug:"Suggérés (groupes ", oth:"Autres troisièmes",
   pen:"Égalité — qui passe aux tirs au but ?",
   updNewV:"🔄 Nouvelle version de l’app disponible", updNewBtn:"Mettre à jour",
+  jersT:"Buts par numéro de maillot", jersSub:"Quel maillot marque le plus.",
+  jersUnk:"sans numéro", playersCol:"Joueur",
   pos:(p,g)=>(p===1?"1er":"2e")+" Groupe "+g, third:gs=>"3e de "+gs.join("/"), win:m=>"Vainqueur du "+m, lose:m=>"Perdant du "+m,
   wd:{sun:"Dim",mon:"Lun",tue:"Mar",wed:"Mer",thu:"Jeu",fri:"Ven",sat:"Sam"},
   ficha:"📋 détails",
@@ -1537,6 +1554,8 @@ I18N.ja = Object.assign({}, I18N.en, {
   pickThird:"3位チームを選択…", sug:"推奨（グループ ", oth:"その他の3位",
   pen:"引き分け — PK戦の勝者は？",
   updNewV:"🔄 新しいバージョンがあります", updNewBtn:"更新",
+  jersT:"背番号別ゴール", jersSub:"どの背番号が一番決めているか。",
+  jersUnk:"番号不明", playersCol:"選手",
   pos:(p,g)=>"グループ"+g+" "+p+"位", third:gs=>gs.join("/")+" の3位", win:m=>"試合"+m+"の勝者", lose:m=>"試合"+m+"の敗者",
   wd:{sun:"日",mon:"月",tue:"火",wed:"水",thu:"木",fri:"金",sat:"土"},
   ficha:"📋 詳細",
@@ -1789,6 +1808,24 @@ const ARG_SQUAD = [
 ];
 /* alfabetizado por nombre de pila — para listas y selects */
 const SQUAD_AZ = ARG_SQUAD.slice().sort((a,b)=> a[0].localeCompare(b[0], "es"));
+
+/* ---- dorsales conocidos: base de goleadores del torneo + plantel argentino ---- */
+const JERSEY_BASE = {"lionel messi": 10, "kylian mbappe": 10, "erling haaland": 9, "harry kane": 9, "ismaila sarr": 23, "mikel oyarzabal": 21, "vinicius junior": 7, "ousmane dembele": 7, "matheus cunha": 9, "kai havertz": 7, "cody gakpo": 11, "yoane wissa": 20, "johan manzambi": 9, "cristiano ronaldo": 7, "folarin balogun": 20, "jonathan david": 10, "ismael saibari": 11, "elijah just": 11, "brian brobbey": 19, "julian quinones": 16, "deniz undav": 26, "daichi kamada": 15, "daniel munoz": 2, "anthony elanga": 11, "yasin ayari": 18};
+function normName(x){
+  return x.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+ARG_SQUAD.forEach(p=>{ JERSEY_BASE[normName(p[0])] = p[2]; });
+const JERSEY_LAST = {};   /* apellido → dorsal, sólo si es inequívoco */
+Object.keys(JERSEY_BASE).forEach(k=>{
+  const last = k.split(" ").pop();
+  JERSEY_LAST[last] = (last in JERSEY_LAST && JERSEY_LAST[last]!==JERSEY_BASE[k]) ? null : JERSEY_BASE[k];
+});
+function jerseyOf(name){
+  const n = normName(name);
+  if(n in JERSEY_BASE) return JERSEY_BASE[n];
+  const last = n.split(" ").pop();
+  return (last in JERSEY_LAST && JERSEY_LAST[last]!==null) ? JERSEY_LAST[last] : null;
+}
 
 const VEN = {
   "Cdad. de México":["Cdad. de México","Mexico City"],
@@ -2920,6 +2957,42 @@ function renderStats(){
       return '<i class="disy" style="width:'+yw+'%"></i><i class="disr" style="width:'+rw+'%"></i>';
     });
 
+  html += '</div></div>';
+
+  /* botín de oro + goles por dorsal: se arman con los goleadores de las fichas */
+  const boot2 = scorersTally();
+  html += '<div class="pl-grid">';
+  html += '<div class="scard"><h2>⚽ '+l.boot+'<small>'+l.bootSub+'</small></h2>';
+  if(!boot2.length){ html += '<div class="pad">'+l.noStats+'</div>'; }
+  else {
+    html += '<table class="stats pltbl"><thead><tr><th>#</th><th class="team">'+l.playersCol+'</th><th>👕</th><th>'+l.sTh.team+'</th><th>⚽</th></tr></thead><tbody>';
+    boot2.slice(0,15).forEach((p,i)=>{
+      const j = jerseyOf(p.name);
+      html += '<tr><td>'+(i+1)+'</td><td class="team">'+esc(p.name)+'</td><td>'+(j===null?'–':j)+'</td><td>'+(p.team&&T[p.team]?T[p.team][2]+' '+esc(p.team):'–')+'</td><td class="pts">'+p.n+'</td></tr>';
+    });
+    html += '</tbody></table>';
+  }
+  html += '</div>';
+  html += '<div class="scard"><h2>👕 '+l.jersT+'<small>'+l.jersSub+'</small></h2>';
+  const byJ = {};
+  boot2.forEach(p=>{
+    const j = jerseyOf(p.name);
+    const k = j===null ? "?" : String(j);
+    if(!byJ[k]) byJ[k] = {j:k, n:0, names:[]};
+    byJ[k].n += p.n;
+    byJ[k].names.push(esc(p.name));
+  });
+  const jr = Object.values(byJ).sort((a,b)=> b.n-a.n || (a.j==="?")-(b.j==="?") || Number(a.j)-Number(b.j));
+  if(!jr.length){ html += '<div class="pad">'+l.noStats+'</div>'; }
+  else {
+    const maxJ = Math.max(1, ...jr.map(r=>r.n));
+    jr.slice(0,12).forEach(r=>{
+      html += '<div class="jrow"><span class="jnum">'+(r.j==="?" ? '<i>'+l.jersUnk+'</i>' : '#'+r.j)+'</span>' +
+        '<span class="jbar"><i style="width:'+(r.n/maxJ*100).toFixed(1)+'%"></i></span>' +
+        '<span class="jn">'+r.n+'</span>' +
+        '<span class="jwho" title="'+r.names.join(", ")+'">'+r.names.slice(0,3).join(", ")+(r.names.length>3?" +"+(r.names.length-3):"")+'</span></div>';
+    });
+  }
   html += '</div></div>';
 
   /* tabla completa, plegada por defecto */
