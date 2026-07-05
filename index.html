@@ -599,8 +599,8 @@ html[data-theme="light"] .ko-toggle button.on{color:#fff}
 .jnumer{color:var(--gold-deep);font-size:.68rem;margin:3px 0 0 62px;font-style:italic}
 [data-theme="dark"] .jnumer{color:var(--gold)}
 @media screen and (max-width:720px){ .gboot{width:38px;height:38px} }
-.bootcard{position:relative}
-.bootcard h2{padding-right:86px}   /* lugar para el botón editar */
+.bootcard,.gkcard{position:relative}   /* ancla del botón ✎ — sin esto queda flotando fuera de la tarjeta */
+.bootcard h2,.gkcard h2{padding-right:86px}
 .pltbl{table-layout:fixed;width:100%}
 .pltbl th:first-child,.pltbl td:first-child{width:34px}
 .pltbl .jc{width:48px;text-align:center}
@@ -625,8 +625,11 @@ table.stats.pltbl td.gc,table.stats.pltbl th.gc{width:64px;text-align:right;padd
 .gadj:hover{border-color:var(--celeste);color:var(--celeste)}
 @media screen and (max-width:720px){ .gadj{width:38px;height:38px} }
 .junk{font-size:.72rem;color:var(--muted);margin-top:9px;padding-top:8px;border-top:1px dashed var(--line-soft)}
-.totcard{margin-bottom:14px}
-.totcard .totrow{padding-top:8px}
+/* totales: banda de una sola línea — los números son el mensaje, no la tarjeta */
+.totcard{margin-bottom:14px;display:flex;align-items:center;gap:26px;padding:12px 18px}
+.totcard h2{margin:0;font-size:.86rem;white-space:nowrap}
+.totcard .totrow{padding:0;margin-left:auto}
+.totcard .tstat b{font-size:1.35rem}
 table.stats td.nc,table.stats th.nc{width:46px;text-align:center}
 table.stats td.mc,table.stats th.mc{width:64px;text-align:right;padding-right:14px;color:var(--muted)}
 .adjset{white-space:nowrap;margin-left:8px;font-size:.72rem}
@@ -3138,10 +3141,10 @@ function renderStats(){
   html += '<div class="pl-grid">';
   html += '<div class="scard bootcard'+(bOpen?'':' closed')+'">' +
     '<h2><button type="button" class="pltog" data-pltog="boot" aria-expanded="'+bOpen+'"><span class="gcaret" aria-hidden="true">'+(bOpen?'▾':'▸')+'</span>⚽ '+l.boot+'</button></h2>' +
-    (bOpen ? '<button type="button" class="gedit'+(statsEditGoals?" on":"")+'" data-gedit aria-pressed="'+statsEditGoals+'">'+(statsEditGoals?l.editGDone:l.editG)+'</button>' : '');
+    '<button type="button" class="gedit'+(statsEditGoals?" on":"")+'" data-gedit aria-pressed="'+statsEditGoals+'">'+(statsEditGoals?l.editGDone:l.editG)+'</button>';
   if(!boot2.length){ html += '<div class="pad">'+l.noStats+'</div>'; }
   else {
-    const showBoot = bOpen ? boot2 : boot2.slice(0,2);
+    const showBoot = bOpen ? boot2 : boot2.slice(0,10);   /* plegado = top 10, mismo alto que las otras tarjetas */
     const edit = bOpen && statsEditGoals;
     html += '<table class="stats pltbl"><thead><tr><th>#</th><th class="team">'+l.playersCol+'</th><th>'+l.sTh.team+'</th><th class="nc">⚽</th><th class="nc">🅰</th><th class="mc">⏱</th>'+(edit?'<th></th>':'')+'</tr></thead><tbody>';
     showBoot.forEach((p,i)=>{
@@ -3155,7 +3158,7 @@ function renderStats(){
         '</tr>';
     });
     html += '</tbody></table>';
-    if(!bOpen && boot2.length>2) html += '<button type="button" class="pl-more" data-pltog="boot">+'+(boot2.length-2)+'</button>';
+    if(!bOpen && boot2.length>10) html += '<button type="button" class="pl-more" data-pltog="boot">+'+(boot2.length-10)+'</button>';
   }
   html += '</div>';
   html += '<div class="scard'+(jOpen?'':' closed')+'">' +
@@ -3176,7 +3179,7 @@ function renderStats(){
   if(!jr.length){ html += '<div class="pad">'+l.noStats+'</div>'; }
   else {
     const maxJ = Math.max(1, ...jr.map(r=>r.n));
-    const showJ = jOpen ? jr.slice(0,10) : jr.slice(0,2);
+    const showJ = jOpen ? jr.slice(0,10) : jr.slice(0,5);
     showJ.forEach(r=>{
       const pct = totG ? (r.n/totG*100) : 0;
       const root = r.j==="?" ? null : Number(r.j);   /* numerología del número de la camiseta, tal cual */
@@ -3190,7 +3193,7 @@ function renderStats(){
         (root!==null && l.nums[root] ? '<div class="jnumer">✨ '+l.numerolPre+' '+root+' · '+l.nums[root]+'</div>' : '') +
         '</div>';
     });
-    if(!jOpen && jr.length>2) html += '<button type="button" class="pl-more" data-pltog="jers">+'+(Math.min(10,jr.length)-2)+'</button>';
+    if(!jOpen && jr.length>5) html += '<button type="button" class="pl-more" data-pltog="jers">+'+(Math.min(10,jr.length)-5)+'</button>';
   }
   html += '</div>';
 
@@ -3201,8 +3204,8 @@ function renderStats(){
   const gloved = p => glNorm && (p.norm===glNorm || glNorm.indexOf(p.norm)>=0);
   html += '<div class="scard gkcard'+(kOpen?'':' closed')+'">' +
     '<h2><button type="button" class="pltog" data-pltog="gk" aria-expanded="'+kOpen+'"><span class="gcaret" aria-hidden="true">'+(kOpen?'▾':'▸')+'</span>🧤 '+l.gloveT+'</button><small>'+l.gloveSub+'</small></h2>' +
-    (kOpen ? '<button type="button" class="gedit'+(statsEditGK?" on":"")+'" data-gkedit aria-pressed="'+statsEditGK+'">'+(statsEditGK?l.editGDone:l.editG)+'</button>' : '');
-  const showGk = kOpen ? gks : gks.slice(0,2);
+    '<button type="button" class="gedit'+(statsEditGK?" on":"")+'" data-gkedit aria-pressed="'+statsEditGK+'">'+(statsEditGK?l.editGDone:l.editG)+'</button>';
+  const showGk = kOpen ? gks : gks.slice(0,10);
   const gkEdit = kOpen && statsEditGK;
   const gkCell = (p,f,v) => gkEdit
     ? '<input class="gkin" type="number" min="0" max="99" inputmode="numeric" value="'+v+'" data-gkn="'+esc(p.norm)+'" data-gkf="'+f+'" aria-label="'+esc(l['gk'+f.toUpperCase()])+' — '+esc(p.name)+'">'
@@ -3219,7 +3222,7 @@ function renderStats(){
       '</tr>';
   });
   html += '</tbody></table>';
-  if(!kOpen && gks.length>2) html += '<button type="button" class="pl-more" data-pltog="gk">+'+(gks.length-2)+'</button>';
+  if(!kOpen && gks.length>10) html += '<button type="button" class="pl-more" data-pltog="gk">+'+(gks.length-10)+'</button>';
   html += '</div></div>';
 
   /* tabla completa, plegada por defecto */
@@ -4006,6 +4009,7 @@ document.body.addEventListener("click", e=>{
   const ge = e.target.closest("[data-gedit]");
   if(ge){
     statsEditGoals = !statsEditGoals;
+    if(statsEditGoals) statsPanelOpen.boot = true;
     renderStats();
     const b = document.querySelector("[data-gedit]");
     if(b) b.focus({preventScroll:true});
