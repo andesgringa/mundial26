@@ -614,6 +614,12 @@ html[data-theme="light"] .ko-toggle button.on{color:#fff}
 .pltbl tbody tr:hover{background:rgba(124,192,232,.08)}
 .pltbl td.nc,.pltbl th.nc,.pltbl td.mc,.pltbl th.mc,.pltbl td.gk-n,.pltbl th.gk-n{text-align:right}
 .pltbl td.rkc{color:var(--muted)}
+.pin{width:46px;background:var(--inp);border:1px solid var(--line);border-radius:8px;
+  color:inherit;font:inherit;font-size:.82rem;padding:4px 5px;text-align:right}
+.pin:focus{outline:none;border-color:var(--celeste)}
+.pin-m{width:56px}
+.pin::-webkit-outer-spin-button,.pin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.pin{-moz-appearance:textfield;appearance:textfield}
 .gb-row td{background:rgba(228,181,74,.1)}
 .gb-row td.team{color:var(--gold)}
 .gboot{
@@ -1962,6 +1968,7 @@ function baseMatch(name){
 
 function jerseyOf(name){
   const n = normName(name);
+  if(state.jOv && state.jOv[n]!=null) return state.jOv[n];
   if(n in JERSEY_BASE) return JERSEY_BASE[n];
   const last = n.split(" ").pop();
   return (last in JERSEY_LAST && JERSEY_LAST[last]!==null) ? JERSEY_LAST[last] : null;
@@ -2423,11 +2430,12 @@ function scorersTally(){
       });
     });
   });
-  const adj = state.gAdj || {}, aadj = state.aAdj || {};
+  const adj = state.gAdj || {}, aadj = state.aAdj || {}, mov = state.mOv || {};
   const out = Object.values(tally).map(e=>{
     const nk = normName(e.name);
     e.n = Math.max(0, e.n + (adj[nk]||0));
     e.a = Math.max(0, (e.a||0) + (aadj[nk]||0));
+    if(mov[nk]!=null) e.min = mov[nk];
     return e;
   }).filter(e=> e.n>0 || baseMatch(e.name));
   /* criterio FIFA del Botín: goles, después asistencias, después menos minutos */
@@ -3188,15 +3196,18 @@ function renderStats(){
   else {
     const showBoot = bOpen ? boot2 : boot2.slice(0,10);   /* plegado = top 10, mismo alto que las otras tarjetas */
     const edit = bOpen && statsEditGoals;
-    html += '<table class="stats pltbl"><thead><tr><th>#</th><th class="team">'+l.playersCol+'</th><th>'+l.sTh.team+'</th><th class="nc">⚽</th><th class="nc">🅰</th><th class="mc">⏱</th>'+(edit?'<th></th>':'')+'</tr></thead><tbody>';
+    html += '<table class="stats pltbl"><thead><tr><th>#</th><th class="team">'+l.playersCol+'</th><th>'+l.sTh.team+'</th><th class="nc">⚽</th><th class="nc">🅰</th><th class="mc">⏱</th>'+(edit?'<th class="nc">👕</th><th></th>':'')+'</tr></thead><tbody>';
     showBoot.forEach((p,i)=>{
       const nk = normName(p.name);
       const gb = crowned(p);
       html += '<tr'+(gb?' class="gb-row"':'')+'><td class="rkc'+(i<3?' rk'+(i+1):'')+'">'+(i+1)+'</td><td class="team" title="'+esc(p.name)+'">'+(gb?'🥇 ':'')+esc(shortPlayer(p.name))+'</td><td>'+(p.team&&T[p.team]?T[p.team][2]+' '+esc(p.team):'–')+'</td>' +
-        '<td class="pts nc">'+p.n+'</td><td class="nc">'+(p.a||0)+'</td><td class="mc">'+(p.min==null?'–':p.min+'′')+'</td>' +
-        (edit ? '<td class="gadj-td"><button type="button" class="gboot'+(gb?" on":"")+'" data-gboot="'+esc(p.name)+'" title="'+esc(l.aw.botin)+'" aria-pressed="'+gb+'">🥇</button>' +
-          '<span class="adjset">⚽<button type="button" class="gadj" data-gadj="'+esc(nk)+'" data-d="-1" aria-label="−1 ⚽ '+esc(p.name)+'">−</button><button type="button" class="gadj" data-gadj="'+esc(nk)+'" data-d="1" aria-label="+1 ⚽ '+esc(p.name)+'">+</button></span>' +
-          '<span class="adjset">🅰<button type="button" class="gadj" data-aadj="'+esc(nk)+'" data-d="-1" aria-label="−1 🅰 '+esc(p.name)+'">−</button><button type="button" class="gadj" data-aadj="'+esc(nk)+'" data-d="1" aria-label="+1 🅰 '+esc(p.name)+'">+</button></span></td>' : '') +
+        (edit
+          ? '<td class="nc"><input class="pin" type="number" min="0" inputmode="numeric" data-pset="g" data-nk="'+esc(nk)+'" data-base="'+(p.n-((state.gAdj||{})[nk]||0))+'" value="'+p.n+'" aria-label="⚽ '+esc(p.name)+'"></td>' +
+            '<td class="nc"><input class="pin" type="number" min="0" inputmode="numeric" data-pset="a" data-nk="'+esc(nk)+'" data-base="'+((p.a||0)-((state.aAdj||{})[nk]||0))+'" value="'+(p.a||0)+'" aria-label="🅰 '+esc(p.name)+'"></td>' +
+            '<td class="mc"><input class="pin pin-m" type="number" min="0" inputmode="numeric" data-pset="m" data-nk="'+esc(nk)+'" value="'+(p.min==null?'':p.min)+'" placeholder="–" aria-label="⏱ '+esc(p.name)+'"></td>' +
+            '<td class="nc"><input class="pin" type="number" min="0" max="99" inputmode="numeric" data-pset="j" data-nk="'+esc(nk)+'" value="'+(jerseyOf(p.name)==null?'':jerseyOf(p.name))+'" placeholder="?" aria-label="👕 '+esc(p.name)+'"></td>' +
+            '<td class="gadj-td"><button type="button" class="gboot'+(gb?" on":"")+'" data-gboot="'+esc(p.name)+'" title="'+esc(l.aw.botin)+'" aria-pressed="'+gb+'">🥇</button></td>'
+          : '<td class="pts nc">'+p.n+'</td><td class="nc">'+(p.a||0)+'</td><td class="mc">'+(p.min==null?'–':p.min+'′')+'</td>') +
         '</tr>';
     });
     html += '</tbody></table>';
@@ -3863,6 +3874,25 @@ function renderAll(){
 /* ================= EVENTOS ================= */
 
 document.body.addEventListener("change", e=>{
+  if(e.target.matches && e.target.matches("input[data-pset]")){
+    const t = e.target, nk = t.dataset.nk, kind = t.dataset.pset;
+    const raw = t.value.trim();
+    const v = raw === "" ? null : Math.max(0, parseInt(raw, 10) || 0);
+    if(kind === "g" || kind === "a"){
+      const key = kind === "g" ? "gAdj" : "aAdj";
+      if(!state[key]) state[key] = {};
+      const delta = (v==null ? 0 : v) - Number(t.dataset.base);
+      if(delta === 0) delete state[key][nk]; else state[key][nk] = delta;
+    } else if(kind === "m"){
+      if(!state.mOv) state.mOv = {};
+      if(v==null) delete state.mOv[nk]; else state.mOv[nk] = v;
+    } else if(kind === "j"){
+      if(!state.jOv) state.jOv = {};
+      if(v==null) delete state.jOv[nk]; else state.jOv[nk] = v;
+    }
+    save(); renderStats();
+    return;
+  }
   const el = e.target;
   if(el.classList.contains("inj-add")){
     if(el.value){
